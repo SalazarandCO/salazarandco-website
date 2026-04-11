@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Salazar & Co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: rgb(88, 88, 88);
+  --gray-light: rgb(200, 200, 200);
+  --gray-bg: #f5f5f5;
+  --font: 'Inter Tight', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  background: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.container {
+  max-width: 1410px;
+  margin: 0 30px;
+  padding: 0 15px;
+}
+@media (min-width: 1470px) {
+  .container { margin: 0 auto; }
+}
+
+
+/* ═══════════════════════════════════════
+   NAVBAR
+   ═══════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  padding: 24px 0;
+}
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 23px;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+.nav-link {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+  letter-spacing: normal;
+  transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   CONTACT HERO
+   ═══════════════════════════════════════ */
+.contact-hero {
+  padding: 160px 0 60px;
+}
+.contact-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: end;
+}
+.contact-hero h1 {
+  font-family: var(--font);
+  font-size: 120px;
+  font-weight: 500;
+  line-height: 108px;
+  letter-spacing: -8px;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.contact-tagline {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.96px;
+  color: var(--black);
+  max-width: 500px;
+}
+
+
+/* ═══════════════════════════════════════
+   CONTACT INFO BAR
+   ═══════════════════════════════════════ */
+.contact-info-bar {
+  padding: 48px 0;
+  border-top: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+}
+.info-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.info-item-label {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.info-item-value {
+  font-size: 18px;
+  color: var(--black);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.info-item-value a {
+  color: var(--black);
+  transition: opacity 0.3s;
+}
+.info-item-value a:hover { opacity: 0.5; }
+
+
+/* ═══════════════════════════════════════
+   CONTACT FORM SECTION
+   ═══════════════════════════════════════ */
+.contact-form-section {
+  padding: 80px 0;
+}
+.form-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 80px;
+}
+.form-sidebar h2 {
+  font-family: var(--font);
+  font-size: 82px;
+  font-weight: 500;
+  line-height: 82px;
+  letter-spacing: -3.28px;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.form-sidebar-text {
+  font-size: 18px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin-top: 32px;
+  max-width: 340px;
+}
+.form-sidebar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  font-size: 16px;
+  color: var(--gray);
+}
+.icon-star {
+  font-size: 14px;
+  color: var(--black);
+}
+
+/* Form Fields */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.form-field {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--gray-light);
+  position: relative;
+}
+.form-field:first-child,
+.form-row:first-child .form-field {
+  border-top: 1px solid var(--gray-light);
+}
+.form-row .form-field:first-child {
+  padding-right: 24px;
+  border-right: 1px solid var(--gray-light);
+}
+.form-row .form-field:last-child {
+  padding-left: 24px;
+}
+.form-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  margin-bottom: 10px;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  background: transparent;
+  letter-spacing: -0.18px;
+  line-height: 1.3;
+  resize: none;
+}
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--gray-light);
+}
+.form-field select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23585858' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: 20px;
+}
+.form-field textarea {
+  min-height: 100px;
+}
+
+/* Inquiry Type Chips */
+.inquiry-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--gray-light);
+}
+.inquiry-chips label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  margin-bottom: 14px;
+  width: 100%;
+}
+.chip {
+  padding: 10px 20px;
+  border: 1px solid var(--gray-light);
+  border-radius: 40px;
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.25s;
+  background: transparent;
+  letter-spacing: -0.16px;
+}
+.chip:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+.chip.active {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+
+/* Submit */
+.form-submit {
+  padding-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+  color: var(--white);
+  padding: 14px 24px;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.18px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  width: 296px;
+  border-radius: 8px;
+}
+.btn-submit:hover { opacity: 0.85; }
+.btn-submit .arrow { font-size: 18px; }
+.form-note {
+  font-size: 14px;
+  color: var(--gray);
+}
+
+
+/* ═══════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════ */
+.footer {
+  padding: 80px 0 40px;
+  border-top: 1px solid var(--gray-light);
+}
+.footer-bottom {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--gray);
+}
+.footer-bottom a { margin-left: 24px; transition: opacity 0.3s; }
+.footer-bottom a:hover { opacity: 0.5; }
+
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .contact-hero h1 { font-size: 80px; line-height: 76px; letter-spacing: -5px; }
+  .form-layout { grid-template-columns: 300px 1fr; gap: 48px; }
+  .form-sidebar h2 { font-size: 64px; line-height: 64px; }
+}
+@media (max-width: 768px) {
+  .container { margin: 0 20px; padding: 0; }
+  .contact-hero h1 { font-size: 52px; line-height: 50px; letter-spacing: -3px; }
+  .contact-hero-grid { grid-template-columns: 1fr; gap: 32px; }
+  .info-bar-grid { grid-template-columns: 1fr; gap: 24px; }
+  .form-layout { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+  .form-row .form-field:first-child {
+    padding-right: 0;
+    border-right: none;
+  }
+  .form-row .form-field:last-child { padding-left: 0; }
+  .form-sidebar h2 { font-size: 42px; line-height: 42px; }
+  .btn-submit { width: 100%; }
+  .form-submit { flex-direction: column; gap: 16px; align-items: flex-start; }
+  .nav-left .nav-link { display: none; }
+}
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-left">
+      <a href="salazarandco-website.html" class="nav-logo">S&CO</a>
+      <a href="salazarandco-website.html#about" class="nav-link">Who I Am</a>
+      <a href="salazarandco-website.html#projects" class="nav-link">Work</a>
+      <a href="#" class="nav-link">Property Search</a>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="nav-link" style="color: var(--black); font-weight: 500;">CONTACT</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════ -->
+<section class="contact-hero">
+  <div class="container">
+    <div class="contact-hero-grid">
+      <div class="reveal">
+        <h1>Let's</h1>
+        <h1>Talk</h1>
+        <h1>Real</h1>
+        <h1>Estate.</h1>
+      </div>
+      <div class="reveal">
+        <p class="contact-tagline">Whether you're buying your first home, selling an investment, or exploring a development opportunity — it starts with a conversation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     INFO BAR
+     ═══════════════════════════════════════ -->
+<section class="contact-info-bar">
+  <div class="container">
+    <div class="info-bar-grid reveal">
+      <div>
+        <div class="info-item-label">Office</div>
+        <div class="info-item-value">1000 Brickell Avenue #1112<br>Miami, FL 33131</div>
+      </div>
+      <div>
+        <div class="info-item-label">Email</div>
+        <div class="info-item-value"><a href="mailto:alex@salazarandco.com">alex@salazarandco.com</a></div>
+      </div>
+      <div>
+        <div class="info-item-label">Response Time</div>
+        <div class="info-item-value">Within 24 hours</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FORM SECTION
+     ═══════════════════════════════════════ -->
+<section class="contact-form-section">
+  <div class="container">
+    <div class="form-layout">
+      <!-- Sidebar -->
+      <div class="form-sidebar reveal">
+        <h2>Get</h2>
+        <h2>In</h2>
+        <h2>Touch</h2>
+        <p class="form-sidebar-text">Every deal is different. Tell us what you're working with and we'll figure out the best path forward — no pressure, no fluff.</p>
+        <div class="form-sidebar-meta">
+          <span class="icon-star">&#x2726;</span>
+          <span>Confidential &amp; no obligation</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form class="contact-form reveal" onsubmit="return false;">
+        <!-- Inquiry Type -->
+        <div class="inquiry-chips">
+          <label>I'm interested in</label>
+          <button type="button" class="chip" onclick="toggleChip(this)">Buying a Home</button>
+          <button type="button" class="chip" onclick="toggleChip(this)">Selling Property</button>
+          <button type="button" class="chip" onclick="toggleChip(this)">Investment Opportunity</button>
+          <button type="button" class="chip" onclick="toggleChip(this)">Development</button>
+          <button type="button" class="chip" onclick="toggleChip(this)">Portfolio Review</button>
+          <button type="button" class="chip" onclick="toggleChip(this)">Something Else</button>
+        </div>
+
+        <!-- Name + Phone -->
+        <div class="form-row">
+          <div class="form-field">
+            <label>Full Name</label>
+            <input type="text" placeholder="Your name">
+          </div>
+          <div class="form-field">
+            <label>Phone</label>
+            <input type="tel" placeholder="(305) 000-0000">
+          </div>
+        </div>
+
+        <!-- Email + Budget -->
+        <div class="form-row">
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" placeholder="you@email.com">
+          </div>
+          <div class="form-field">
+            <label>Budget Range</label>
+            <select>
+              <option value="" disabled selected>Select a range</option>
+              <option>Under $500K</option>
+              <option>$500K – $1M</option>
+              <option>$1M – $3M</option>
+              <option>$3M – $5M</option>
+              <option>$5M – $10M</option>
+              <option>$10M+</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Location + Timeline -->
+        <div class="form-row">
+          <div class="form-field">
+            <label>Preferred Location</label>
+            <input type="text" placeholder="Brickell, Coral Gables, Miami Beach...">
+          </div>
+          <div class="form-field">
+            <label>Timeline</label>
+            <select>
+              <option value="" disabled selected>How soon?</option>
+              <option>Immediately</option>
+              <option>1 – 3 months</option>
+              <option>3 – 6 months</option>
+              <option>6 – 12 months</option>
+              <option>Just exploring</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="form-field">
+          <label>Tell Us More</label>
+          <textarea placeholder="What are you looking for? Any specifics on property type, size, features, or investment goals..."></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-submit">
+          <button type="submit" class="btn-submit">
+            <span>Send Message</span>
+            <span class="arrow">&#8599;</span>
+          </button>
+          <span class="form-note">We'll get back to you within 24 hours.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="margin-top: 0; border-top: none;">
+      <span>&copy; 2026 Salazar &amp; Co. All rights reserved.</span>
+      <div>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+// Chip toggle
+function toggleChip(el) {
+  el.classList.toggle('active');
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

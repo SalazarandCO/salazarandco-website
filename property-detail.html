@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Detail — Salazar & Co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: rgb(88, 88, 88);
+  --gray-light: rgb(200, 200, 200);
+  --gray-bg: #f5f5f5;
+  --font: 'Inter Tight', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+
+/* ═══════════════════════════════════════
+   NAVBAR
+   ═══════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  padding: 24px 30px;
+  border-bottom: 1px solid var(--gray-light);
+  height: 71px;
+  display: flex;
+  align-items: center;
+}
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+.nav-link {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+  letter-spacing: normal;
+  transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   BACK BAR
+   ═══════════════════════════════════════ */
+.back-bar {
+  position: fixed;
+  top: 71px;
+  left: 0; right: 0;
+  z-index: 999;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 0 30px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+.back-link {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.25s;
+}
+.back-link:hover { color: var(--black); }
+.back-link svg { width: 16px; height: 16px; }
+
+
+/* ═══════════════════════════════════════
+   COMPASS-STYLE HEADER BAR
+   ═══════════════════════════════════════ */
+.property-header-bar {
+  margin-top: 121px;
+  border-bottom: 1px solid var(--gray-light);
+  padding: 20px 0;
+}
+.header-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left {}
+.detail-address {
+  font-size: 22px;
+  color: var(--black);
+  font-weight: 500;
+  letter-spacing: -0.4px;
+}
+.detail-city {
+  font-size: 15px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.header-stat {
+  text-align: center;
+  padding: 0 24px;
+}
+.header-stat:last-child { padding-right: 0; }
+.header-stat-value {
+  display: block;
+  font-family: var(--font);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.header-price .header-stat-value {
+  font-size: 28px;
+}
+.header-stat-label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 2px;
+  text-transform: capitalize;
+}
+.header-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--gray-light);
+}
+
+/* Agent listed by line */
+.agent-section {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gray-light);
+  margin-bottom: 32px;
+}
+.agent-listed-by {
+  font-size: 15px;
+  color: var(--gray);
+}
+.agent-listed-by span {
+  color: var(--black);
+  font-weight: 400;
+}
+
+
+/* ═══════════════════════════════════════
+   PAGE LAYOUT — 2 columns, content + sidebar
+   ═══════════════════════════════════════ */
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  padding-top: 24px;
+  padding-bottom: 40px;
+  align-items: start;
+}
+.main-col { min-width: 0; }
+.side-col {
+  position: sticky;
+  top: 130px;
+  align-self: start;
+}
+.content-block {
+  margin-top: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   PHOTO GALLERY — Hero + Thumbnail Strip
+   ═══════════════════════════════════════ */
+.gallery-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  background: var(--gray-bg);
+}
+.gallery-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+.gallery-hero-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(10, 10, 10, 0.7);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Thumbnail strip */
+.gallery-thumbs {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+  padding-bottom: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-light) transparent;
+}
+.gallery-thumbs::-webkit-scrollbar { height: 4px; }
+.gallery-thumbs::-webkit-scrollbar-thumb { background: var(--gray-light); border-radius: 4px; }
+.gallery-thumb {
+  flex: 0 0 auto;
+  width: 80px;
+  height: 56px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, opacity 0.2s;
+  opacity: 0.6;
+}
+.gallery-thumb:hover { opacity: 0.9; }
+.gallery-thumb.active {
+  border-color: var(--black);
+  opacity: 1;
+}
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Nav arrows on hero */
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--black);
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 2;
+}
+.gallery-nav:hover { background: var(--white); }
+.gallery-nav-prev { left: 12px; }
+.gallery-nav-next { right: 12px; }
+
+.gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 500px;
+  background: var(--gray-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 8px;
+}
+
+
+/* ═══════════════════════════════════════
+   LIGHTBOX
+   ═══════════════════════════════════════ */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.92);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.lightbox.open { display: flex; }
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 300;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.lightbox-close:hover { opacity: 1; }
+.lightbox img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  font-family: var(--font);
+}
+.lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+.lightbox-counter {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════ */
+.detail-container {
+  max-width: 1410px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+
+
+/* ─── Left Column ─── */
+
+/* Description */
+.section-title {
+  font-family: var(--font);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+.description-text {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--gray);
+  margin-bottom: 40px;
+  white-space: pre-line;
+}
+.description-text.collapsed {
+  max-height: 160px;
+  overflow: hidden;
+  position: relative;
+}
+.description-text.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, var(--white));
+}
+.read-more-btn {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--black);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: -28px;
+  margin-bottom: 40px;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+.read-more-btn:hover { text-decoration: underline; }
+
+/* Property Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--gray-light);
+  margin-bottom: 40px;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gray-light);
+  font-size: 15px;
+}
+.detail-row:nth-child(odd) { padding-right: 32px; }
+.detail-row:nth-child(even) { padding-left: 32px; border-left: 1px solid var(--gray-light); }
+.detail-label {
+  color: var(--gray);
+  font-weight: 400;
+}
+.detail-value {
+  color: var(--black);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Map */
+.property-map-section {
+  margin-bottom: 40px;
+}
+#detailMap {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-light);
+}
+
+
+/* ─── Sidebar Cards ─── */
+.agent-card {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.agent-card-title {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+.agent-name {
+  font-family: var(--font);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.3px;
+}
+.agent-firm {
+  font-size: 15px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+.agent-divider {
+  height: 1px;
+  background: var(--gray-light);
+  margin: 20px 0;
+}
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.25s;
+  border: none;
+}
+.sidebar-btn:hover { opacity: 0.85; }
+.sidebar-btn-primary {
+  background: var(--black);
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.sidebar-btn-secondary {
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid var(--gray-light);
+}
+
+.quick-facts {
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.quick-facts-subtitle {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+.quick-fact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-light);
+  font-size: 14px;
+}
+.quick-fact:last-child { border-bottom: none; }
+.quick-fact-label { color: var(--black); font-weight: 400; }
+.quick-fact-value { color: var(--black); font-weight: 500; text-align: right; }
+
+
+/* MLS Disclaimer */
+.mls-disclaimer {
+  padding: 40px 0;
+  border-top: 1px solid var(--gray-light);
+  font-size: 12px;
+  color: var(--gray-light);
+  line-height: 1.5;
+}
+
+
+/* ═══════════════════════════════════════
+   LOADING STATE
+   ═══════════════════════════════════════ */
+.loading-page {
+  margin-top: 121px;
+  padding: 120px 30px;
+  text-align: center;
+}
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--gray-bg);
+  border-top-color: var(--black);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 16px; color: var(--gray); }
+
+.error-page {
+  margin-top: 121px;
+  padding: 120px 30px;
+  text-align: center;
+}
+.error-page h2 {
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+.error-page p {
+  font-size: 16px;
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+.error-page a {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--black);
+  color: var(--white);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity 0.25s;
+}
+.error-page a:hover { opacity: 0.85; }
+
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .page-layout { grid-template-columns: 1fr 320px; gap: 20px; }
+}
+@media (max-width: 860px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .side-col { position: static; }
+}
+@media (max-width: 768px) {
+  .gallery { height: 280px; grid-template-columns: 1fr; }
+  .gallery-side { display: none; }
+  .header-bar-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header-right { gap: 0; }
+  .header-stat { padding: 0 16px; }
+  .header-stat:first-child { padding-left: 0; }
+  .header-stat-value { font-size: 20px; }
+  .header-price .header-stat-value { font-size: 22px; }
+  .details-grid { grid-template-columns: 1fr; }
+  .detail-row:nth-child(even) { padding-left: 0; border-left: none; }
+  .detail-row:nth-child(odd) { padding-right: 0; }
+  .detail-container { padding: 0 16px; }
+  .navbar { padding: 24px 16px; }
+  .back-bar { padding: 0 16px; }
+  .nav-left .nav-link { display: none; }
+}
+</style>
+</head>
+<body>
+
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="nav-left">
+      <a href="salazarandco-website.html" class="nav-logo">S&CO</a>
+      <a href="salazarandco-website.html#about" class="nav-link">Who I Am</a>
+      <a href="salazarandco-website.html#projects" class="nav-link">Work</a>
+      <a href="property-search.html" class="nav-link">Property Search</a>
+    </div>
+    <div class="nav-right">
+      <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="nav-link">CONTACT</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- BACK BAR -->
+<div class="back-bar">
+  <a href="property-search.html" class="back-link" id="backLink">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back to Search
+  </a>
+</div>
+
+
+<!-- LOADING STATE -->
+<div id="loadingPage" class="loading-page">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading property details...</div>
+</div>
+
+<!-- ERROR STATE -->
+<div id="errorPage" class="error-page" style="display:none;">
+  <h2>Property Not Found</h2>
+  <p>We couldn't find this listing. It may have been removed or the link may be incorrect.</p>
+  <a href="property-search.html">Back to Search</a>
+</div>
+
+
+<!-- MAIN CONTENT (hidden until loaded) -->
+<div id="propertyContent" style="display:none;">
+
+  <!-- COMPASS-STYLE HEADER BAR — address left, stats right -->
+  <div class="property-header-bar">
+    <div class="detail-container">
+      <div class="header-bar-inner">
+        <div class="header-left">
+          <div class="detail-address" id="detailAddress"></div>
+          <div class="detail-city" id="detailCity"></div>
+        </div>
+        <div class="header-right">
+          <div class="header-stat header-price">
+            <span class="header-stat-value" id="detailPrice"></span>
+            <span class="header-stat-label">Price</span>
+          </div>
+          <div class="header-stat-divider"></div>
+          <div class="header-stat" id="headerBeds">
+            <span class="header-stat-value" id="headerBedsVal"></span>
+            <span class="header-stat-label">Beds</span>
+          </div>
+          <div class="header-stat-divider"></div>
+          <div class="header-stat" id="headerBaths">
+            <span class="header-stat-value" id="headerBathsVal"></span>
+            <span class="header-stat-label">Baths</span>
+          </div>
+          <div class="header-stat-divider"></div>
+          <div class="header-stat" id="headerSqft">
+            <span class="header-stat-value" id="headerSqftVal"></span>
+            <span class="header-stat-label">Sq. Ft.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL 2-COLUMN LAYOUT — content left, sidebar right -->
+  <div class="detail-container">
+    <div class="page-layout">
+
+      <!-- LEFT COLUMN: Gallery + Description + Details + Map -->
+      <div class="main-col">
+        <div id="gallery"></div>
+
+        <div id="descriptionSection" class="content-block">
+          <h3 class="section-title">About This Property</h3>
+          <div class="description-text collapsed" id="descriptionText"></div>
+          <button class="read-more-btn" id="readMoreBtn" onclick="toggleDescription()">Read more</button>
+        </div>
+
+        <div id="agentSection" class="agent-section">
+          <div class="agent-listed-by">
+            Listed by <span id="agentName"></span> · <span id="agentOffice"></span>
+          </div>
+        </div>
+
+        <h3 class="section-title" id="detailsTitle">Property Details</h3>
+        <div class="details-grid" id="detailsGrid"></div>
+
+        <div class="property-map-section">
+          <h3 class="section-title">Location</h3>
+          <div id="detailMap"></div>
+        </div>
+
+        <div class="mls-disclaimer" id="mlsDisclaimer">
+          Listing data provided via Bridge Interactive RESO Web API. Information deemed reliable but not guaranteed. Buyer to verify all information. Salazar & Co is not the listing agent unless stated otherwise.
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Sidebar -->
+      <div class="side-col">
+        <div class="quick-facts" id="quickFacts"></div>
+        <div class="agent-card">
+          <div class="agent-card-title">Contact Salazar & Co</div>
+          <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="sidebar-btn sidebar-btn-primary">Schedule a Showing</a>
+          <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="sidebar-btn sidebar-btn-secondary">Book a Call</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">&#8249;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">&#8250;</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const BRIDGE_CONFIG = {
+  API_KEY: 'de50709fb6d81c3dc56501e76d9b41e0',
+  DATASET: 'miamire',
+  BASE_URL: 'https://api.bridgedataoutput.com/api/v2/OData'
+};
+
+let allPhotos = [];
+let lightboxIndex = 0;
+
+
+// ═══════════════════════════════════════
+// INIT — parse URL and fetch listing
+// ═══════════════════════════════════════
+(async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const listingKey = params.get('key');
+  const mlsId = params.get('mlsid');
+
+  if (!listingKey && !mlsId) {
+    showError('No listing key in URL.');
+    return;
+  }
+
+  // Preserve back link
+  const backParams = params.get('back');
+  if (backParams) {
+    document.getElementById('backLink').href = 'property-search.html?' + backParams;
+  }
+
+  // Use the EXACT same fields that work on the search page
+  // (the search page already fetches these successfully)
+  const baseFields = [
+    'ListingKey', 'ListingId', 'ListPrice', 'StandardStatus',
+    'BedroomsTotal', 'BathroomsTotalInteger', 'LivingArea',
+    'StreetNumber', 'StreetDirPrefix', 'StreetName', 'StreetSuffix', 'StreetDirSuffix', 'UnitNumber',
+    'City', 'StateOrProvince', 'PostalCode',
+    'PropertyType', 'PropertySubType',
+    'Media', 'ListOfficeName',
+    'Latitude', 'Longitude',
+    'ModificationTimestamp', 'DaysOnMarket'
+  ].join(',');
+
+  // Extra fields for detail page — we'll try with these first, fallback without
+  const extraFields = ',LotSizeSquareFeet,LotSizeAcres,YearBuilt,Stories,GarageSpaces,CountyOrParish,AssociationFee,TaxAnnualAmount,PublicRemarks,ListAgentFullName,OriginalListPrice';
+
+  const headers = {
+    'Authorization': `Bearer ${BRIDGE_CONFIG.API_KEY}`,
+    'Accept': 'application/json'
+  };
+
+  let listing = null;
+  const errors = [];
+
+  // Build filter attempts: try ListingKey first, then ListingId
+  const attempts = [];
+  if (listingKey) {
+    attempts.push({ filter: `ListingKey eq '${listingKey}'`, label: 'ListingKey' });
+  }
+  if (mlsId && mlsId !== listingKey) {
+    attempts.push({ filter: `ListingId eq '${mlsId}'`, label: 'ListingId' });
+  }
+
+  for (const attempt of attempts) {
+    if (listing) break;
+
+    // Try 1: with extra fields
+    try {
+      const url = `${BRIDGE_CONFIG.BASE_URL}/${BRIDGE_CONFIG.DATASET}/Property`
+        + `?$filter=${encodeURIComponent(attempt.filter)}`
+        + `&$select=${baseFields}${extraFields}`
+        + `&$top=1`;
+      console.log(`Attempt ${attempt.label} (full fields):`, url);
+      const resp = await fetch(url, { headers });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.value && data.value.length > 0) {
+          listing = data.value[0];
+          console.log('Success with full fields via', attempt.label);
+          break;
+        }
+      }
+      errors.push(`${attempt.label} full: ${resp.status}`);
+    } catch (e) {
+      errors.push(`${attempt.label} full: ${e.message}`);
+    }
+
+    // Try 2: with base fields only (in case extras cause errors)
+    try {
+      const url = `${BRIDGE_CONFIG.BASE_URL}/${BRIDGE_CONFIG.DATASET}/Property`
+        + `?$filter=${encodeURIComponent(attempt.filter)}`
+        + `&$select=${baseFields}`
+        + `&$top=1`;
+      console.log(`Attempt ${attempt.label} (base fields):`, url);
+      const resp = await fetch(url, { headers });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.value && data.value.length > 0) {
+          listing = data.value[0];
+          console.log('Success with base fields via', attempt.label);
+          break;
+        }
+      }
+      errors.push(`${attempt.label} base: ${resp.status}`);
+    } catch (e) {
+      errors.push(`${attempt.label} base: ${e.message}`);
+    }
+
+    // Try 3: no $select at all
+    try {
+      const url = `${BRIDGE_CONFIG.BASE_URL}/${BRIDGE_CONFIG.DATASET}/Property`
+        + `?$filter=${encodeURIComponent(attempt.filter)}`
+        + `&$top=1`;
+      console.log(`Attempt ${attempt.label} (no select):`, url);
+      const resp = await fetch(url, { headers });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.value && data.value.length > 0) {
+          listing = data.value[0];
+          console.log('Success with no select via', attempt.label);
+          break;
+        }
+      }
+      errors.push(`${attempt.label} nosel: ${resp.status}`);
+    } catch (e) {
+      errors.push(`${attempt.label} nosel: ${e.message}`);
+    }
+  }
+
+  if (listing) {
+    renderProperty(listing);
+  } else {
+    console.error('All attempts failed:', errors);
+    showError(`key=${listingKey || '?'} mlsid=${mlsId || '?'} | ${errors.join(' | ')}`);
+  }
+})();
+
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function renderProperty(listing) {
+  document.title = `${formatAddress(listing)} — Salazar & Co`;
+
+  // Gallery
+  allPhotos = (listing.Media || []).map(m => m.MediaURL).filter(Boolean);
+  renderGallery(allPhotos);
+
+  // Header bar — address + price + stats (Compass style)
+  document.getElementById('detailAddress').textContent = formatAddress(listing);
+  const cityLine = [listing.City, listing.StateOrProvince].filter(Boolean).join(', ') + (listing.PostalCode ? ' ' + listing.PostalCode : '');
+  document.getElementById('detailCity').textContent = cityLine;
+  document.getElementById('detailPrice').textContent = formatPrice(listing.ListPrice);
+  document.getElementById('headerBedsVal').textContent = listing.BedroomsTotal || '–';
+  document.getElementById('headerBathsVal').textContent = listing.BathroomsTotalInteger || '–';
+  document.getElementById('headerSqftVal').textContent = listing.LivingArea ? formatNumber(listing.LivingArea) : '–';
+
+  // Description
+  const remarks = listing.PublicRemarks || '';
+  if (remarks) {
+    document.getElementById('descriptionText').textContent = remarks;
+    if (remarks.length < 300) {
+      document.getElementById('descriptionText').classList.remove('collapsed');
+      document.getElementById('readMoreBtn').style.display = 'none';
+    }
+  } else {
+    document.getElementById('descriptionSection').style.display = 'none';
+  }
+
+  // Agent listed by
+  const agentName = listing.ListAgentFullName || '';
+  const officeName = listing.ListOfficeName || '';
+  if (agentName || officeName) {
+    document.getElementById('agentName').textContent = agentName || 'Agent';
+    document.getElementById('agentOffice').textContent = officeName || '';
+  } else {
+    document.getElementById('agentSection').style.display = 'none';
+  }
+
+  // Property Details Grid (Compass-style 2-col table)
+  const details = [];
+  if (listing.StandardStatus) details.push(['Status', listing.StandardStatus]);
+  if (listing.ListingId) details.push(['MLS #', listing.ListingId]);
+  if (listing.DaysOnMarket !== undefined) details.push(['Days on Market', listing.DaysOnMarket]);
+  if (listing.TaxAnnualAmount) details.push(['Taxes', formatPrice(listing.TaxAnnualAmount) + ' / year']);
+  if (listing.AssociationFee) details.push(['HOA Fees', formatPrice(listing.AssociationFee)]);
+  if (listing.PropertyType) details.push(['Property Type', listing.PropertyType]);
+  if (listing.PropertySubType) details.push(['MLS Type', listing.PropertySubType]);
+  if (listing.YearBuilt) details.push(['Year Built', listing.YearBuilt]);
+  if (listing.LotSizeSquareFeet) {
+    const acres = listing.LotSizeAcres ? listing.LotSizeAcres + ' AC / ' : '';
+    details.push(['Lot Size', acres + formatNumber(listing.LotSizeSquareFeet) + ' SF']);
+  }
+  if (listing.CountyOrParish) details.push(['County', listing.CountyOrParish]);
+  if (listing.Stories) details.push(['Stories', listing.Stories]);
+  if (listing.GarageSpaces) details.push(['Garage', listing.GarageSpaces]);
+
+  document.getElementById('detailsGrid').innerHTML = details.map(([label, value]) =>
+    `<div class="detail-row">
+      <span class="detail-label">${label}</span>
+      <span class="detail-value">${value}</span>
+    </div>`
+  ).join('');
+
+  if (details.length > 0) {
+    const addr = formatAddress(listing);
+    document.getElementById('detailsTitle').textContent = `Property Details for ${listing.City || addr}`;
+  }
+
+  // Map — must init AFTER content is visible so Leaflet can measure the container
+  if (listing.Latitude && listing.Longitude) {
+    // Store coords so we can init the map after display:block
+    window._mapCoords = [listing.Latitude, listing.Longitude];
+  } else {
+    document.querySelector('.property-map-section').style.display = 'none';
+  }
+
+  // Quick Facts sidebar (Compass-style: updated date at top, then key/value rows)
+  const modDate = listing.ModificationTimestamp
+    ? new Date(listing.ModificationTimestamp).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : '';
+
+  const facts = [];
+  if (listing.StandardStatus) facts.push(['Status', listing.StandardStatus]);
+  if (listing.ListingId) facts.push(['MLS #', listing.ListingId]);
+  if (listing.DaysOnMarket !== undefined) facts.push(['Days on Market', listing.DaysOnMarket]);
+  if (listing.TaxAnnualAmount) facts.push(['Taxes', formatPrice(listing.TaxAnnualAmount) + ' / year']);
+  if (listing.AssociationFee) facts.push(['HOA Fees', formatPrice(listing.AssociationFee)]);
+  else facts.push(['HOA Fees', '-']);
+  if (listing.PropertyType) facts.push(['Property Type', listing.PropertyType]);
+  if (listing.PropertySubType) facts.push(['MLS Type', listing.PropertySubType]);
+  if (listing.YearBuilt) facts.push(['Year Built', listing.YearBuilt]);
+  if (listing.LotSizeSquareFeet) {
+    const acres = listing.LotSizeAcres ? listing.LotSizeAcres + ' AC / ' : '';
+    facts.push(['Lot Size', acres + formatNumber(listing.LotSizeSquareFeet) + ' SF']);
+  }
+  if (listing.CountyOrParish) facts.push(['County', listing.CountyOrParish]);
+
+  if (facts.length > 0) {
+    document.getElementById('quickFacts').innerHTML =
+      (modDate ? `<div class="quick-facts-subtitle">LISTING UPDATED: ${modDate.toUpperCase()}</div>` : '') +
+      facts.map(([label, value]) =>
+        `<div class="quick-fact">
+          <span class="quick-fact-label">${label}</span>
+          <span class="quick-fact-value">${value}</span>
+        </div>`
+      ).join('');
+  }
+
+  // Show content
+  document.getElementById('loadingPage').style.display = 'none';
+  document.getElementById('propertyContent').style.display = 'block';
+
+  // Init map AFTER content is visible (Leaflet needs a measured container)
+  if (window._mapCoords) {
+    setTimeout(() => {
+      const coords = window._mapCoords;
+      const detailMap = L.map('detailMap', {
+        center: coords,
+        zoom: 15,
+        zoomControl: true,
+        scrollWheelZoom: false
+      });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OSM &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(detailMap);
+      L.marker(coords).addTo(detailMap);
+      detailMap.invalidateSize();
+    }, 100);
+  }
+}
+
+
+// ═══════════════════════════════════════
+// GALLERY — Hero photo + thumbnail strip
+// ═══════════════════════════════════════
+let currentHeroIndex = 0;
+
+function renderGallery(photos) {
+  const container = document.getElementById('gallery');
+
+  if (!photos || photos.length === 0) {
+    container.outerHTML = '<div class="gallery-placeholder">No Photos Available</div>';
+    return;
+  }
+
+  // Hero image
+  const heroHtml = `
+    <div class="gallery-hero" onclick="openLightbox(currentHeroIndex)">
+      <img id="heroImg" src="${photos[0]}" alt="Property photo">
+      ${photos.length > 1 ? `<button class="gallery-nav gallery-nav-prev" onclick="event.stopPropagation(); galleryNav(-1)">&#8249;</button>` : ''}
+      ${photos.length > 1 ? `<button class="gallery-nav gallery-nav-next" onclick="event.stopPropagation(); galleryNav(1)">&#8250;</button>` : ''}
+      ${photos.length > 1 ? `<span class="gallery-hero-count"><span id="heroCounter">1</span> / ${photos.length}</span>` : ''}
+    </div>
+  `;
+
+  // Thumbnails
+  let thumbsHtml = '';
+  if (photos.length > 1) {
+    thumbsHtml = `<div class="gallery-thumbs" id="galleryThumbs">` +
+      photos.map((url, i) =>
+        `<div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="setHeroPhoto(${i})" data-thumb="${i}">
+          <img src="${url}" alt="Photo ${i + 1}" onerror="this.parentElement.style.display='none'">
+        </div>`
+      ).join('') +
+      `</div>`;
+  }
+
+  container.innerHTML = heroHtml + thumbsHtml;
+}
+
+function setHeroPhoto(index) {
+  if (index < 0 || index >= allPhotos.length) return;
+  currentHeroIndex = index;
+
+  // Update hero image
+  const heroImg = document.getElementById('heroImg');
+  heroImg.src = allPhotos[index];
+
+  // Update counter
+  const counter = document.getElementById('heroCounter');
+  if (counter) counter.textContent = index + 1;
+
+  // Update active thumbnail
+  document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === index);
+  });
+
+  // Scroll active thumbnail into view
+  const activeThumb = document.querySelector(`.gallery-thumb[data-thumb="${index}"]`);
+  if (activeThumb) {
+    activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+}
+
+function galleryNav(dir) {
+  const newIndex = (currentHeroIndex + dir + allPhotos.length) % allPhotos.length;
+  setHeroPhoto(newIndex);
+}
+
+
+// ═══════════════════════════════════════
+// LIGHTBOX
+// ═══════════════════════════════════════
+function openLightbox(index) {
+  if (allPhotos.length === 0) return;
+  lightboxIndex = index;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lightboxNav(dir) {
+  lightboxIndex = (lightboxIndex + dir + allPhotos.length) % allPhotos.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  document.getElementById('lightboxImg').src = allPhotos[lightboxIndex];
+  document.getElementById('lightboxCounter').textContent =
+    `${lightboxIndex + 1} / ${allPhotos.length}`;
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxNav(-1);
+  if (e.key === 'ArrowRight') lightboxNav(1);
+});
+
+// Click outside to close
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+
+
+// ═══════════════════════════════════════
+// DESCRIPTION TOGGLE
+// ═══════════════════════════════════════
+function toggleDescription() {
+  const text = document.getElementById('descriptionText');
+  const btn = document.getElementById('readMoreBtn');
+  text.classList.toggle('collapsed');
+  btn.textContent = text.classList.contains('collapsed') ? 'Read more' : 'Read less';
+}
+
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function formatPrice(price) {
+  if (!price) return '$–';
+  return '$' + price.toLocaleString('en-US');
+}
+
+function formatNumber(num) {
+  if (!num) return '';
+  return num.toLocaleString('en-US');
+}
+
+function formatAddress(listing) {
+  const parts = [
+    listing.StreetNumber,
+    listing.StreetDirPrefix,
+    listing.StreetName,
+    listing.StreetSuffix,
+    listing.StreetDirSuffix
+  ].filter(Boolean);
+  let addr = parts.join(' ');
+  if (listing.UnitNumber) addr += ` #${listing.UnitNumber}`;
+  return addr || 'Address Unavailable';
+}
+
+function arrOrStr(val) {
+  if (Array.isArray(val)) return val.join(', ');
+  return val || '';
+}
+
+function showError(debugMsg) {
+  document.getElementById('loadingPage').style.display = 'none';
+  document.getElementById('errorPage').style.display = 'block';
+  // Show debug info so we can diagnose
+  if (debugMsg) {
+    const debugEl = document.createElement('p');
+    debugEl.style.cssText = 'font-size:12px;color:#999;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto;word-break:break-all;';
+    debugEl.textContent = 'Debug: ' + debugMsg;
+    document.getElementById('errorPage').appendChild(debugEl);
+
+    // Also show the current URL params
+    const urlEl = document.createElement('p');
+    urlEl.style.cssText = 'font-size:12px;color:#bbb;margin-top:8px;max-width:600px;margin-left:auto;margin-right:auto;word-break:break-all;';
+    urlEl.textContent = 'URL: ' + window.location.href;
+    document.getElementById('errorPage').appendChild(urlEl);
+  }
+}
+</script>
+
+</body>
+</html>

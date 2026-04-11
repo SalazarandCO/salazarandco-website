@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salazar & Co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   NICHOLS TEMPLATE — Pixel-Perfect Replica
+   Font: Inter Tight | All specs extracted
+   from nichols-template.webflow.io
+   ══════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: rgb(88, 88, 88);
+  --gray-light: rgb(200, 200, 200);
+  --gray-bg: #f5f5f5;
+  --font: 'Inter Tight', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  background: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ── Container: max-width 1410, margin 0 30px, padding 0 15px ── */
+.container {
+  max-width: 1410px;
+  margin: 0 30px;
+  padding: 0 15px;
+}
+@media (min-width: 1470px) {
+  .container { margin: 0 auto; }
+}
+
+
+/* ═══════════════════════════════════════
+   NAVBAR — Fixed, 24px padding, 14px links
+   Logo: 18px, Links: 14px, Height: ~71px
+   ═══════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  padding: 24px 0;
+}
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 23px;
+}
+
+/* Left: Logo + Menu + Links */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+.nav-menu-bracket {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  cursor: pointer;
+}
+.nav-link {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+  letter-spacing: normal;
+  transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+
+/* Center: Book A Call */
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-globe {
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--black);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.nav-globe::before {
+  content: '';
+  width: 8px; height: 18px;
+  border: 1px solid var(--black);
+  border-radius: 50%;
+  position: absolute;
+}
+.nav-globe::after {
+  content: '';
+  width: 18px; height: 0;
+  border-top: 1px solid var(--black);
+  position: absolute;
+}
+.nav-book-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: -0.18px;
+  text-transform: capitalize;
+}
+
+/* Right: Cart + CONTACT */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-contact {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+}
+
+
+/* ═══════════════════════════════════════
+   HERO — padding 90px 0 20px, height ~592px
+   H1: 160px, weight 500, line-height 144px,
+   letter-spacing -11.2px, uppercase
+   Gap between H1s: 0px
+   Banner-wrapper: margin-bottom 100px
+   ═══════════════════════════════════════ */
+.section-hero {
+  padding: 90px 0 20px;
+}
+
+/* Top: H1 titles (left) + tagline (right bottom-aligned) */
+.banner-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 100px;
+}
+
+.hero-titles h1 {
+  font-family: var(--font);
+  font-size: 160px;
+  font-weight: 500;
+  line-height: 144px;
+  letter-spacing: -11.2px;
+  text-transform: uppercase;
+  color: var(--black);
+  margin: 0;
+  padding: 0;
+}
+
+/* Tagline: right-aligned, at bottom of banner-wrapper */
+.hero-tagline-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+.icon-star {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1;
+}
+.hero-tagline {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--gray);
+  letter-spacing: -0.18px;
+}
+
+/* Bottom: Bio (left, ~283px wide) + Contact button (right, 296px) */
+.banner-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.hero-bio {
+  max-width: 550px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--black);
+}
+
+/* Primary Button: width 296px, height ~40px, padding 10px 16px, radius 8px */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+  color: var(--white);
+  padding: 10px 16px;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.18px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  text-decoration: none;
+  width: 296px;
+  border-radius: 8px;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary .arrow {
+  font-size: 18px;
+}
+
+
+/* ═══════════════════════════════════════
+   VIDEO / FULL IMAGE — Flush under hero
+   Width: container width (1410px), margin 0 30px
+   ═══════════════════════════════════════ */
+.section-video {
+  padding: 0;
+}
+.video-wrapper {
+  margin: 0 30px;
+  max-width: 1410px;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(145deg, #1a1a2e, #2d1b3d, #0f3460);
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+}
+@media (min-width: 1470px) {
+  .video-wrapper { margin: 0 auto; }
+}
+.video-wrapper::after {
+  content: '[ Image / Video Placeholder ]';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.2);
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: var(--font);
+}
+.video-overlay {
+  position: absolute;
+  bottom: 24px; left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--white);
+  font-size: 14px;
+}
+
+
+/* ═══════════════════════════════════════
+   ABOUT / JOURNEY — padding 75px 0
+   H2: 82px, weight 500, line-height 82px,
+   letter-spacing -3.28px, uppercase
+   Large text: 32px, weight 400, line-height 1.3
+   letter-spacing -0.96px
+   ═══════════════════════════════════════ */
+.section-about {
+  padding: 75px 0;
+}
+
+h2 {
+  font-family: var(--font);
+  font-size: 82px;
+  font-weight: 500;
+  line-height: 82px;
+  letter-spacing: -3.28px;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+/* About: 2-column grid — left (title + button), right (stats + text) */
+.about-grid {
+  display: grid;
+  grid-template-columns: 525px 1fr;
+  gap: 16px;
+}
+.about-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.about-right {}
+
+/* Stats row: pushed right with flex-end */
+.about-stats-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-bottom: 80px;
+}
+.stat-number-block {}
+.stat-number-block h4 {
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.96px;
+  color: var(--black);
+  text-transform: none;
+}
+.stat-arrow {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-arrow svg {
+  width: 40px;
+  height: 40px;
+}
+.stat-labels {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.stat-label {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--gray);
+  letter-spacing: normal;
+  line-height: 1.3;
+}
+
+/* Large text block */
+.about-content-text {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.96px;
+  color: var(--black);
+  max-width: 705px;
+}
+.text-large {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.96px;
+  color: var(--black);
+}
+
+
+/* ═══════════════════════════════════════
+   PROJECTS — 2-col grid, gap 16px
+   ═══════════════════════════════════════ */
+.section-projects {
+  padding: 75px 0;
+}
+.section-title {
+  margin-bottom: 40px;
+}
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.project-card {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.project-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--gray-bg);
+  overflow: hidden;
+  position: relative;
+}
+.project-image::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: rgba(0,0,0,0.12);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.project-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 0;
+}
+.project-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.18px;
+}
+.project-tag {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--gray);
+}
+.projects-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  color: var(--black);
+  padding: 10px 16px;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.18px;
+  border: 1px solid var(--gray-light);
+  cursor: pointer;
+  transition: border-color 0.3s;
+  text-decoration: none;
+  width: 296px;
+  border-radius: 8px;
+}
+.btn-outline:hover { border-color: var(--black); }
+.btn-outline .arrow { margin-left: auto; }
+
+
+/* ═══════════════════════════════════════
+   SERVICES — H3: 54px, weight 500,
+   line-height 1.1, letter-spacing -2.7px
+   ═══════════════════════════════════════ */
+.section-services {
+  padding: 75px 0;
+}
+
+h3 {
+  font-family: var(--font);
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -2.7px;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+.services-header {
+  margin-bottom: 48px;
+}
+.services-meta {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+.service-card {
+  border-top: 1px solid var(--gray-light);
+  padding-top: 32px;
+}
+.service-title {
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+  color: var(--black);
+}
+.service-desc {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.16px;
+  color: var(--gray);
+  margin-top: 12px;
+  max-width: 320px;
+}
+.service-cta {
+  margin-top: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   AWARDS — Numbered list rows
+   ═══════════════════════════════════════ */
+.section-awards {
+  padding: 75px 0;
+  background: var(--gray-bg);
+}
+.awards-list {
+  margin-top: 48px;
+}
+.award-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 180px 160px;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: padding-left 0.3s;
+}
+.award-row:hover { padding-left: 8px; }
+.award-num {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--gray);
+  opacity: 0.5;
+}
+.award-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.4px;
+}
+.award-category {
+  font-size: 16px;
+  color: var(--gray);
+}
+.award-date {
+  font-size: 16px;
+  color: var(--gray);
+  text-align: right;
+}
+
+
+/* ═══════════════════════════════════════
+   TESTIMONIALS — 2-col, gray bg cards
+   ═══════════════════════════════════════ */
+.section-testimonials {
+  padding: 75px 0;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 48px;
+}
+.testimonial-card {
+  background: var(--gray-bg);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
+}
+.testimonial-quote {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--black);
+  letter-spacing: -0.18px;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+.testimonial-logo {
+  width: 40px; height: 40px;
+  background: var(--gray-light);
+  border-radius: 50%;
+}
+.testimonial-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--black);
+}
+.testimonial-role {
+  font-size: 14px;
+  color: var(--gray);
+}
+
+
+/* ═══════════════════════════════════════
+   LOGO BAR — Scrolling
+   ═══════════════════════════════════════ */
+.section-logos {
+  padding: 48px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.logos-track {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  animation: logoScroll 20s linear infinite;
+  width: max-content;
+}
+.logo-item {
+  font-family: var(--font);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--black);
+  opacity: 0.15;
+  white-space: nowrap;
+  letter-spacing: -0.5px;
+}
+@keyframes logoScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
+/* ═══════════════════════════════════════
+   CTA — READY TO BUILD
+   ═══════════════════════════════════════ */
+.section-cta {
+  padding: 75px 0 0;
+}
+.cta-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+.cta-left { padding-bottom: 75px; }
+.cta-left h2 { margin-bottom: 32px; }
+.cta-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--gray);
+}
+.cta-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(160deg, #1a1a2e 0%, #0f3460 100%);
+  position: relative;
+}
+.cta-image::after {
+  content: '[ Portrait Photo ]';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.15);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+
+/* ═══════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════ */
+.footer {
+  padding: 60px 0 40px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+  gap: 40px;
+}
+.footer-logo {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 24px;
+}
+.footer-label {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+.footer-value {
+  font-size: 16px;
+  color: var(--black);
+  line-height: 1.5;
+}
+.footer-col-title {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+.footer-col a {
+  display: block;
+  font-size: 16px;
+  color: var(--black);
+  margin-bottom: 10px;
+  transition: opacity 0.3s;
+}
+.footer-col a:hover { opacity: 0.5; }
+
+h4 {
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+  color: var(--black);
+}
+
+.footer-newsletter {
+  display: flex;
+  border-bottom: 1px solid var(--black);
+  padding-bottom: 8px;
+  margin-top: 8px;
+}
+.footer-newsletter input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--black);
+  background: transparent;
+}
+.footer-newsletter input::placeholder { color: var(--gray); }
+.footer-newsletter button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--black);
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-size: 14px;
+  color: var(--gray);
+}
+.footer-bottom a { margin-left: 24px; transition: opacity 0.3s; }
+.footer-bottom a:hover { opacity: 0.5; }
+.footer-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   SCROLL ANIMATIONS
+   ═══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .hero-titles h1 { font-size: 120px; line-height: 108px; letter-spacing: -8px; }
+  h2 { font-size: 64px; line-height: 64px; letter-spacing: -2.5px; }
+  h3 { font-size: 42px; letter-spacing: -2px; }
+}
+@media (max-width: 768px) {
+  .container { margin: 0 20px; padding: 0; }
+  .hero-titles h1 { font-size: 64px; line-height: 58px; letter-spacing: -4px; }
+  h2 { font-size: 42px; line-height: 42px; letter-spacing: -1.8px; }
+  h3 { font-size: 28px; letter-spacing: -1.2px; }
+  .banner-wrapper { flex-direction: column; align-items: flex-start; margin-bottom: 60px; gap: 32px; }
+  .banner-bottom { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .hero-bio { max-width: 100%; }
+  .btn-primary { width: 100%; }
+  .nav-left .nav-link,
+  .nav-center { display: none; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 32px; }
+  .about-left { gap: 32px; }
+  .about-stats-row { justify-content: flex-start; margin-bottom: 40px; }
+  .cta-layout { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .award-row { grid-template-columns: 40px 1fr 100px; }
+  .award-date { display: none; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .video-wrapper { margin: 0 20px; }
+  .btn-outline { width: 100%; }
+  .stat-number { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+     Logo left: 18px | Links: 14px | Center: Book A Call | Right: Cart + CONTACT
+     ═══════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-left">
+      <a href="salazarandco-website.html" class="nav-logo">S&amp;CO</a>
+      <span class="nav-menu-bracket">[ Menu ]</span>
+      <a href="#about" class="nav-link">Who I Am</a>
+      <a href="#projects" class="nav-link">Work</a>
+      <a href="property-search.html" class="nav-link">Property Search</a>
+    </div>
+    <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="nav-center" style="text-decoration:none;color:inherit;">
+      <div class="nav-globe"></div>
+      <span class="nav-book-text">Book A Call</span>
+    </a>
+    <div class="nav-right">
+      <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="nav-contact">CONTACT</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     HERO
+     Section padding: 90px 0 20px
+     H1: 160px, line-height 144px, 0 gap
+     Banner-wrapper: flex space-between, mb 100px
+     Banner-bottom: flex space-between, align-end
+     Bio: max-width 283px | Button: width 296px
+     ═══════════════════════════════════════ -->
+<section class="section-hero">
+  <div class="container">
+    <!-- Top area: H1s left, tagline right bottom-aligned -->
+    <div class="banner-wrapper">
+      <div class="hero-titles">
+        <h1>Alex</h1>
+        <h1>Salazar</h1>
+      </div>
+      <div class="hero-tagline-wrap">
+        <span class="icon-star">&#x2726;</span>
+        <span class="hero-tagline">Alex is a real estate entrepreneur</span>
+      </div>
+    </div>
+
+    <!-- Bottom area: Bio left, Contact button right -->
+    <div class="banner-bottom">
+      <div class="hero-bio">
+        20+ years of real estate experience — Alex delivers extensive knowledge in brokering, investment, development, and distressed asset strategy across Miami and Florida. His background ranges from representing homebuyers to sourcing and underwriting commercial development acquisitions and assessing complex investment opportunities.
+      </div>
+      <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="btn-primary">
+        <span>Book A Call</span>
+        <span class="arrow">&#8599;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     VIDEO / IMAGE — margin 0 30px, full container width
+     ═══════════════════════════════════════ -->
+<section class="section-video">
+  <div class="video-wrapper">
+    <div class="video-overlay">
+      <span class="icon-star" style="color: var(--white);">&#x2726;</span>
+      <span>a real estate entrepreneur</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     ABOUT / DESIGNER'S JOURNEY
+     ═══════════════════════════════════════ -->
+<section class="section-about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <!-- LEFT COLUMN: title top, contact button bottom -->
+      <div class="about-left">
+        <div class="reveal">
+          <h2>A Real Estate</h2>
+          <h2>Journey</h2>
+        </div>
+        <div class="reveal">
+          <a href="#contact" class="btn-primary">
+            <span>Property Search</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </div>
+      </div>
+      <!-- RIGHT COLUMN: stats top-right, large text bottom -->
+      <div class="about-right">
+        <div class="about-stats-row reveal">
+          <div class="stat-labels">
+            <span class="stat-label">Development</span>
+            <span class="stat-label">Retco</span>
+            <span class="stat-label">Ubiica</span>
+          </div>
+        </div>
+        <div class="reveal">
+          <p class="about-content-text">Alex has distinguished himself as one of South Florida's most knowledgeable real estate professionals in a variety of disciplines. As the partner in RETCO — distressed foreclosure acquisitions, MICASA — real estate development, and UBIICA — general real estate brokerage.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     BEST PROJECTS — 2-col grid, gap 16px
+     ═══════════════════════════════════════ -->
+<section class="section-projects" id="projects">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>Best</h2>
+      <h2>Projects</h2>
+    </div>
+    <div class="projects-grid">
+      <a href="#" class="project-card reveal">
+        <div class="project-image" data-label="AMBAR" style="background: linear-gradient(135deg, #4a9d8f 0%, #7bb5a8 30%, #d4c5a0 60%, #e8dcc0 80%, #87b2d4 100%);"></div>
+        <div class="project-info">
+          <span class="project-name">AMBAR Orlando Apartments by Marriott Bonvoy</span>
+          <span class="project-tag">Development</span>
+        </div>
+      </a>
+      <a href="#" class="project-card reveal">
+        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #2c2c2c, #555);"></div>
+        <div class="project-info">
+          <span class="project-name">Art for canvas</span>
+          <span class="project-tag">Design</span>
+        </div>
+      </a>
+      <a href="#" class="project-card reveal">
+        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #f7971e, #ffd200);"></div>
+        <div class="project-info">
+          <span class="project-name">Color research &amp; empliment</span>
+          <span class="project-tag">Design</span>
+        </div>
+      </a>
+      <a href="#" class="project-card reveal">
+        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #4b6a4e, #8fa68f);"></div>
+        <div class="project-info">
+          <span class="project-name">Uden Branding &amp; strategy</span>
+          <span class="project-tag">Design</span>
+        </div>
+      </a>
+    </div>
+    <div class="projects-cta reveal">
+      <a href="#" class="btn-outline">
+        <span>All Projects</span>
+        <span class="arrow">&#8599;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SERVICES
+     ═══════════════════════════════════════ -->
+<section class="section-services">
+  <div class="container">
+    <div class="services-header reveal">
+      <h3>RE</h3>
+      <h3>Services</h3>
+      <div class="services-meta">
+        <span class="icon-star">&#x2726;</span>
+        <span>Alex is a real estate entrepreneur</span>
+      </div>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-title">Buyer<br>Representation</div>
+        <p class="service-desc">Tell us what you're looking for — budget, location, property type — and we'll curate your search.</p>
+        <div class="service-cta">
+          <a href="#" class="btn-outline">
+            <span>Start Your Search</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-title">Seller<br>Listings</div>
+        <p class="service-desc">Get a market analysis on your property and a strategy to maximize your sale price.</p>
+        <div class="service-cta">
+          <a href="#" class="btn-outline">
+            <span>List Your Property</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-title">RE Portfolio<br>Analysis</div>
+        <p class="service-desc">Submit your holdings for a full review — valuations, repositioning opportunities, and exit strategies.</p>
+        <div class="service-cta">
+          <a href="#" class="btn-outline">
+            <span>Request Analysis</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+     ═══════════════════════════════════════ -->
+<section class="section-testimonials">
+  <div class="container">
+    <div class="reveal">
+      <h2>Clients</h2>
+      <h2>Feedback</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <p class="testimonial-quote">
+          "Alex made buying our first home in Miami feel effortless. We came in overwhelmed by the market and he broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days. I tell everyone I know to call him first."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-logo"></div>
+          <div>
+            <div class="testimonial-name">Carolina & David Menendez</div>
+            <div class="testimonial-role">Buyer — Coral Gables</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <p class="testimonial-quote">
+          "I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, brought in professional staging and photography, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched — he knew exactly who to put it in front of."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-logo"></div>
+          <div>
+            <div class="testimonial-name">Marco Vidal</div>
+            <div class="testimonial-role">Seller — Little Havana</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ═══════════════════════════════════════
+     CTA — READY TO BUILD
+     ═══════════════════════════════════════ -->
+<section class="section-cta" id="contact">
+  <div class="container">
+    <div class="cta-layout">
+      <div class="cta-left reveal">
+        <h2>Ready to</h2>
+        <h2>start your</h2>
+        <h2>home search?</h2>
+        <div style="margin-top: 32px;">
+          <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="btn-primary">
+            <span>Book A Call</span>
+            <span class="arrow">&#8599;</span>
+          </a>
+        </div>
+        <div class="cta-meta">
+          <span class="icon-star">&#x2726;</span>
+          <span>12 hours</span>
+        </div>
+      </div>
+      <div class="cta-image"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">S&amp;CO</div>
+        <div class="footer-info-grid">
+          <div>
+            <div class="footer-label">Office</div>
+            <div class="footer-value">1000 Brickell Avenue #1112<br>Miami, FL 33131</div>
+          </div>
+          <div>
+            <div class="footer-label">Email</div>
+            <div class="footer-value">alex@salazarandco.com</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Pages</div>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="property-search.html">Property Search</a>
+        <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank">Contact</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Socials</div>
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+      </div>
+      <div>
+        <h4 style="margin-bottom: 16px; font-size: 28px;">Mailing List</h4>
+        <div class="footer-newsletter">
+          <input type="email" placeholder="Email">
+          <button>&rarr;</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Salazar &amp; Co. All rights reserved.</span>
+      <div>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Scripts -->
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
