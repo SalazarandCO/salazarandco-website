@@ -1031,7 +1031,7 @@ h4 {
 
 /* Hero name: decode + color + split/rejoin animation */
 .hero-titles h1 {
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   align-items: baseline;
 }
@@ -1828,13 +1828,6 @@ a, button, [role="button"], input, select, textarea, label {
     if (t.el) runScrambleDecode(t.el, t.text, t.delay);
   });
 
-  // After decode completes, set slides to "split" state
-  setTimeout(function() {
-    if (!isMobile) {
-      nameSlides.forEach(function(el) { el.classList.add('split'); });
-    }
-  }, 1800);
-
   // STAGE 2 & 3: Color activation + Split/Rejoin on scroll
   var nameAnimated = false;
   function updateNameColors() {
@@ -1852,8 +1845,9 @@ a, button, [role="button"], input, select, textarea, label {
         if (nameGold) { nameGold.classList.add('active', 'glow'); }
       }, 150);
 
-      // Stage 3: Rejoin (slide back) with brightness flash
+      // Stage 3: Split apart, then rejoin with brightness flash
       if (!isMobile) {
+        nameSlides.forEach(function(el) { el.classList.add('split'); });
         setTimeout(function() {
           nameSlides.forEach(function(el, i) {
             setTimeout(function() {
@@ -1872,11 +1866,10 @@ a, button, [role="button"], input, select, textarea, label {
     } else if (!active && nameAnimated) {
       nameAnimated = false;
 
-      // Reverse stages 2 & 3
+      // Reset to normal — no color, no split, no joined
       if (!isMobile) {
         nameSlides.forEach(function(el) {
-          el.classList.remove('joined', 'flash', 'flash-done');
-          el.classList.add('split');
+          el.classList.remove('joined', 'split', 'flash', 'flash-done');
         });
       }
       if (nameGreen) { nameGreen.classList.remove('active', 'glow'); }
