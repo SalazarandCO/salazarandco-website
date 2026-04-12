@@ -683,55 +683,90 @@ h3 {
 
 
 /* ═══════════════════════════════════════
-   TESTIMONIALS — Scroll-Driven Carousel
+   TESTIMONIALS — Split Screen Layout
    ═══════════════════════════════════════ */
-.testimonial-scroll-outer {
+.section-testimonials {
+  padding: 120px 0;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 60px;
+  align-items: start;
+}
+.testimonials-left {
+  position: sticky;
+  top: 120px;
+  align-self: start;
+}
+.testimonials-counter {
+  margin-top: 40px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray);
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+.testimonials-progress {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.testimonials-progress-bar {
+  width: 60px;
+  height: 3px;
+  background: var(--gray-light);
+  border-radius: 2px;
+  overflow: hidden;
   position: relative;
 }
-.testimonial-scroll-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+.testimonials-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: var(--fill, 0%);
+  background: var(--black);
+  transition: width 0.15s linear;
+}
+.testimonials-right {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-.testimonial-viewport {
-  position: relative;
-  max-width: 800px;
-  margin: 48px auto 0;
-  min-height: 320px;
+  gap: 80px;
 }
 .testimonial-card {
-  background: var(--gray-bg);
+  position: relative;
+  background: #f5f5f5;
   padding: 48px;
   border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 280px;
-  position: absolute;
-  top: 0; left: 0; right: 0;
   opacity: 0;
-  transform: translateX(60px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  will-change: opacity, transform;
+  transform: translateY(40px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.testimonial-card.active {
+.testimonial-card.visible {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateY(0);
 }
-.testimonial-card.prev {
-  opacity: 0;
-  transform: translateX(-60px);
+.testimonial-quote-mark {
+  position: absolute;
+  top: 24px;
+  left: 36px;
+  font-size: 80px;
+  line-height: 1;
+  color: rgba(0,0,0,0.08);
+  font-family: var(--font);
+  font-weight: 500;
+  pointer-events: none;
 }
 .testimonial-quote {
-  font-size: 22px;
+  position: relative;
+  font-size: 24px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--black);
   letter-spacing: -0.3px;
+  margin-top: 32px;
 }
 .testimonial-author {
   display: flex;
@@ -739,10 +774,12 @@ h3 {
   gap: 16px;
   margin-top: 40px;
 }
-.testimonial-logo {
-  width: 40px; height: 40px;
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
   background: var(--gray-light);
   border-radius: 50%;
+  flex-shrink: 0;
 }
 .testimonial-name {
   font-size: 16px;
@@ -752,23 +789,6 @@ h3 {
 .testimonial-role {
   font-size: 14px;
   color: var(--gray);
-}
-.testimonial-dots {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 32px;
-}
-.testimonial-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--gray-light);
-  transition: background 0.3s, transform 0.3s;
-}
-.testimonial-dot.active {
-  background: var(--black);
-  transform: scale(1.3);
 }
 
 
@@ -1137,11 +1157,7 @@ h4 {
 }
 
 /* Testimonial card hover */
-.testimonial-card {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-}
-.testimonial-card:hover {
-  transform: translateY(-3px);
+.testimonial-card.visible:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
@@ -1209,7 +1225,6 @@ h4 {
     transform: none !important;
   }
   .testimonial-card {
-    position: relative !important;
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
@@ -1277,26 +1292,15 @@ h4 {
   }
   .service-card { flex: none; width: 100%; }
 
-  /* Testimonials: disable carousel, show stacked */
-  .testimonial-scroll-outer { height: auto !important; }
-  .testimonial-scroll-sticky {
-    position: relative;
-    top: auto;
-    height: auto;
-    padding: 75px 0;
-  }
-  .testimonial-viewport {
-    position: relative;
-    min-height: auto;
-  }
-  .testimonial-card {
-    position: relative;
-    opacity: 1;
-    transform: none;
-    margin-bottom: 24px;
-  }
-  .testimonial-dots { display: none; }
+  /* Testimonials: stack vertically, left not sticky */
+  .section-testimonials { padding: 60px 0; }
+  .testimonials-grid { grid-template-columns: 1fr; gap: 40px; }
+  .testimonials-left { position: relative; top: auto; }
+  .testimonials-progress { display: none; }
+  .testimonials-right { gap: 24px; }
+  .testimonial-card { padding: 32px; }
   .testimonial-quote { font-size: 18px; }
+  .testimonial-quote-mark { font-size: 60px; top: 16px; left: 24px; }
 }
 
 /* ═══════════════════════════════════════
@@ -1596,48 +1600,87 @@ a, button, [role="button"], input, select, textarea, label {
 
 
 <!-- ═══════════════════════════════════════
-     TESTIMONIALS — Scroll-Driven Carousel
+     TESTIMONIALS — Split Screen Layout
      ═══════════════════════════════════════ -->
-<div class="testimonial-scroll-outer" id="testimonialScrollOuter">
-  <div class="testimonial-scroll-sticky">
-    <div class="container">
-      <div class="reveal">
-        <h2>Clients</h2>
-        <h2>Feedback</h2>
+<section class="section-testimonials" id="sectionTestimonials">
+  <div class="container">
+    <div class="testimonials-grid">
+      <!-- LEFT: Sticky Title + Counter + Progress -->
+      <div class="testimonials-left">
+        <div class="reveal">
+          <h2>Client</h2>
+          <h2>Feedback</h2>
+        </div>
+        <div class="testimonials-counter" id="testimonialsCounter">01 / 04</div>
+        <div class="testimonials-progress" id="testimonialsProgress">
+          <div class="testimonials-progress-bar" data-index="0"></div>
+          <div class="testimonials-progress-bar" data-index="1"></div>
+          <div class="testimonials-progress-bar" data-index="2"></div>
+          <div class="testimonials-progress-bar" data-index="3"></div>
+        </div>
       </div>
-      <div class="testimonial-viewport" id="testimonialViewport">
-        <div class="testimonial-card active" data-index="0">
+
+      <!-- RIGHT: Testimonial Cards -->
+      <div class="testimonials-right">
+        <div class="testimonial-card" data-index="0">
+          <span class="testimonial-quote-mark">&ldquo;</span>
           <p class="testimonial-quote">
-            "Alex made buying our first home in Miami feel effortless. He broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days."
+            Alex made buying our first home in Miami feel effortless. He broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days.
           </p>
           <div class="testimonial-author">
-            <div class="testimonial-logo"></div>
+            <div class="testimonial-avatar"></div>
             <div>
               <div class="testimonial-name">Carolina &amp; David Menendez</div>
               <div class="testimonial-role">Buyer — Coral Gables</div>
             </div>
           </div>
         </div>
+
         <div class="testimonial-card" data-index="1">
+          <span class="testimonial-quote-mark">&ldquo;</span>
           <p class="testimonial-quote">
-            "I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched."
+            I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched.
           </p>
           <div class="testimonial-author">
-            <div class="testimonial-logo"></div>
+            <div class="testimonial-avatar"></div>
             <div>
               <div class="testimonial-name">Marco Vidal</div>
               <div class="testimonial-role">Seller — Little Havana</div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="testimonial-dots" id="testimonialDots">
-        <div class="testimonial-dot active" data-index="0"></div>
-        <div class="testimonial-dot" data-index="1"></div>
+
+        <div class="testimonial-card" data-index="2">
+          <span class="testimonial-quote-mark">&ldquo;</span>
+          <p class="testimonial-quote">
+            I've been investing in South Florida multifamily for a decade and Alex is the sharpest broker I've worked with. He underwrote a 12-unit in Brickell better than my own analyst, flagged a title issue nobody else caught, and closed the deal at a cap rate I didn't think was possible in this market.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar"></div>
+            <div>
+              <div class="testimonial-name">Jonathan Reyes</div>
+              <div class="testimonial-role">Investor — Multi-Family, Brickell</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" data-index="3">
+          <span class="testimonial-quote-mark">&ldquo;</span>
+          <p class="testimonial-quote">
+            We needed to assemble three adjacent parcels in Coral Gables for a boutique condo project. Alex quietly negotiated with all three owners over six months — no leaks, no price inflation, no holdouts. The assemblage closed clean and our entitlement package is already in review. He's a developer's broker.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar"></div>
+            <div>
+              <div class="testimonial-name">Daniela Ferrer</div>
+              <div class="testimonial-role">Developer — Land Assemblage, Coral Gables</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
 
 
@@ -1757,7 +1800,7 @@ a, button, [role="button"], input, select, textarea, label {
       updateVideoScale();
       updateAboutTextReveal();
       updateServicesScroll();
-      updateTestimonialCarousel();
+      updateTestimonialProgress();
     }
     ticking = false;
   }
@@ -2013,44 +2056,57 @@ a, button, [role="button"], input, select, textarea, label {
 
 
   // ═══════════════════════════════════════
-  // 5. TESTIMONIALS — Scroll-Driven Carousel
+  // 5. TESTIMONIALS — Split Screen, IO reveal + scroll progress
   // ═══════════════════════════════════════
-  var testimonialOuter = document.getElementById('testimonialScrollOuter');
   var testimonialCards = document.querySelectorAll('.testimonial-card');
-  var testimonialDots = document.querySelectorAll('.testimonial-dot');
   var testimonialCount = testimonialCards.length;
-  var currentTestimonial = 0;
+  var testimonialCounter = document.getElementById('testimonialsCounter');
+  var testimonialProgressBars = document.querySelectorAll('.testimonials-progress-bar');
 
-  if (testimonialOuter && testimonialCount > 0 && !isMobile) {
-    // Set outer height: each testimonial gets ~70vh of scroll distance
-    testimonialOuter.style.height = (window.innerHeight + testimonialCount * window.innerHeight * 0.7) + 'px';
+  // Reveal cards via Intersection Observer
+  if (testimonialCount > 0) {
+    var tObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          tObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    testimonialCards.forEach(function(c) { tObserver.observe(c); });
   }
 
-  function updateTestimonialCarousel() {
-    if (!testimonialOuter || testimonialCount === 0) return;
-    var rect = testimonialOuter.getBoundingClientRect();
-    var outerH = testimonialOuter.offsetHeight;
-    var viewH = window.innerHeight;
-    var scrolled = -rect.top;
-    var maxScroll = outerH - viewH;
-    if (maxScroll <= 0) return;
-    var progress = Math.min(1, Math.max(0, scrolled / maxScroll));
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
 
-    var activeIndex = Math.min(testimonialCount - 1, Math.floor(progress * testimonialCount));
-    if (activeIndex === currentTestimonial) return;
-    currentTestimonial = activeIndex;
+  function updateTestimonialProgress() {
+    if (testimonialCount === 0) return;
+    var viewH = window.innerHeight;
+    var centerY = viewH / 2;
+    var activeIndex = 0;
+    var closestDist = Infinity;
 
     testimonialCards.forEach(function(card, i) {
-      card.classList.remove('active', 'prev');
-      if (i === activeIndex) {
-        card.classList.add('active');
-      } else if (i < activeIndex) {
-        card.classList.add('prev');
+      var rect = card.getBoundingClientRect();
+      // Fill progress for this card: 0 when top at viewport bottom, 1 when bottom at viewport top
+      var cardH = rect.height;
+      var total = viewH + cardH;
+      var passed = viewH - rect.top;
+      var fill = Math.min(1, Math.max(0, passed / total));
+      if (testimonialProgressBars[i]) {
+        testimonialProgressBars[i].style.setProperty('--fill', (fill * 100) + '%');
+      }
+      // Determine which card is nearest to viewport center
+      var cardCenter = rect.top + cardH / 2;
+      var dist = Math.abs(cardCenter - centerY);
+      if (dist < closestDist) {
+        closestDist = dist;
+        activeIndex = i;
       }
     });
-    testimonialDots.forEach(function(dot, i) {
-      dot.classList.toggle('active', i === activeIndex);
-    });
+
+    if (testimonialCounter) {
+      testimonialCounter.textContent = pad2(activeIndex + 1) + ' / ' + pad2(testimonialCount);
+    }
   }
 
 
