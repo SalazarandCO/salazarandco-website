@@ -496,6 +496,27 @@ h2 {
   color: var(--gray);
   max-width: 400px;
 }
+
+/* Typewriter effect for Best Projects section */
+.tw-char {
+  display: inline-block;
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+  white-space: pre;
+}
+.tw-char.tw-visible { opacity: 1; }
+.tw-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.85em;
+  background: var(--black);
+  margin-left: 4px;
+  vertical-align: baseline;
+  animation: blink 0.8s step-end infinite;
+}
+.tw-cursor-sm { width: 2px; }
+.tw-cursor-hidden { opacity: 0; transition: opacity 0.4s ease-out; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 .stack-card-link {
   display: inline-flex;
   align-items: center;
@@ -2011,6 +2032,61 @@ a, button, [role="button"], input, select, textarea, label {
 
   var stackContainer = document.getElementById('stackContainer');
 
+  // ─── Typewriter helpers for Best Projects ───
+  function twTypeInto(el, text, speed, cursor, onDone) {
+    var i = 0;
+    function step() {
+      if (i >= text.length) { onDone && onDone(); return; }
+      var span = document.createElement('span');
+      span.className = 'tw-char';
+      span.textContent = text.charAt(i);
+      if (cursor && cursor.parentNode === el) {
+        el.insertBefore(span, cursor);
+      } else {
+        el.appendChild(span);
+      }
+      requestAnimationFrame(function() { span.classList.add('tw-visible'); });
+      i++;
+      setTimeout(step, speed);
+    }
+    step();
+  }
+
+  // Section title "Best Projects" typewriter via Intersection Observer
+  var projTitle = document.querySelector('.section-projects .section-title');
+  if (projTitle) {
+    var projH2s = projTitle.querySelectorAll('h2');
+    var projOriginals = [];
+    projH2s.forEach(function(h) { projOriginals.push(h.textContent); h.textContent = ''; });
+    var projTitleTyped = false;
+    var projTitleObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting && !projTitleTyped) {
+          projTitleTyped = true;
+          var cursor = document.createElement('span');
+          cursor.className = 'tw-cursor';
+          projH2s[0].appendChild(cursor);
+          twTypeInto(projH2s[0], projOriginals[0], 50, cursor, function() {
+            projH2s[1].appendChild(cursor);
+            twTypeInto(projH2s[1], projOriginals[1], 50, cursor, function() {
+              setTimeout(function() { cursor.classList.add('tw-cursor-hidden'); }, 1000);
+            });
+          });
+        }
+      });
+    }, { threshold: 0.2 });
+    projTitleObs.observe(projTitle);
+  }
+
+  // Prep stack card names — clear text, store originals, mark untyped
+  var stackNameEls = document.querySelectorAll('.section-projects .stack-card-name');
+  var stackNameOriginals = [];
+  stackNameEls.forEach(function(n) {
+    stackNameOriginals.push(n.textContent);
+    n.textContent = '';
+    n.setAttribute('data-typed', 'false');
+  });
+
   function updateStackCards() {
     if (stackCards.length === 0 || !stackContainer) return;
     var stickyTop = 100;
@@ -2018,6 +2094,21 @@ a, button, [role="button"], input, select, textarea, label {
     stackCards.forEach(function(card, i) {
       // Skip the invisible ghost card
       if (card.classList.contains('stack-card-ghost')) return;
+
+      // Trigger card name typewriter when card hits sticky position
+      var nameEl = card.querySelector('.stack-card-name');
+      if (nameEl && nameEl.getAttribute('data-typed') === 'false' &&
+          card.getBoundingClientRect().top <= stickyTop + 10) {
+        nameEl.setAttribute('data-typed', 'true');
+        var nameIdx = Array.prototype.indexOf.call(stackNameEls, nameEl);
+        var nameText = stackNameOriginals[nameIdx] || '';
+        var nameCursor = document.createElement('span');
+        nameCursor.className = 'tw-cursor tw-cursor-sm';
+        nameEl.appendChild(nameCursor);
+        twTypeInto(nameEl, nameText, 30, nameCursor, function() {
+          setTimeout(function() { nameCursor.classList.add('tw-cursor-hidden'); }, 500);
+        });
+      }
 
       var cardsOnTop = 0;
       for (var j = i + 1; j < stackCards.length; j++) {
