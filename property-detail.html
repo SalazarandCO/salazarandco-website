@@ -583,6 +583,83 @@ img { max-width: 100%; display: block; }
 
 
 /* ═══════════════════════════════════════
+   SCROLL PROGRESS BAR
+   ═══════════════════════════════════════ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--black) 0%, var(--gray) 100%);
+  z-index: 1100;
+  will-change: width;
+  transition: none;
+}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-in.visible {
+  opacity: 1;
+}
+
+/* Sidebar cards stagger */
+.sidebar-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sidebar-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover micro-interactions */
+.sidebar-btn {
+  transition: opacity 0.25s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sidebar-btn:hover {
+  transform: translateY(-2px);
+}
+.gallery-thumb {
+  transition: border-color 0.2s, opacity 0.2s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gallery-thumb:hover {
+  transform: translateY(-2px);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { display: none; }
+  .reveal, .fade-in, .sidebar-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .sidebar-btn:hover, .gallery-thumb:hover {
+    transform: none !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════
    LOADING STATE
    ═══════════════════════════════════════ */
 .loading-page {
@@ -665,6 +742,9 @@ img { max-width: 100%; display: block; }
 <body>
 
 
+<!-- SCROLL PROGRESS BAR -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="navbar-inner">
@@ -675,7 +755,7 @@ img { max-width: 100%; display: block; }
       <a href="property-search.html" class="nav-link">Property Search</a>
     </div>
     <div class="nav-right">
-      <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="nav-link">CONTACT</a>
+      <a href="contact.html" class="nav-link">CONTACT</a>
     </div>
   </div>
 </nav>
@@ -746,24 +826,24 @@ img { max-width: 100%; display: block; }
 
       <!-- LEFT COLUMN: Gallery + Description + Details + Map -->
       <div class="main-col">
-        <div id="gallery"></div>
+        <div id="gallery" class="fade-in"></div>
 
-        <div id="descriptionSection" class="content-block">
+        <div id="descriptionSection" class="content-block reveal">
           <h3 class="section-title">About This Property</h3>
           <div class="description-text collapsed" id="descriptionText"></div>
           <button class="read-more-btn" id="readMoreBtn" onclick="toggleDescription()">Read more</button>
         </div>
 
-        <div id="agentSection" class="agent-section">
+        <div id="agentSection" class="agent-section reveal">
           <div class="agent-listed-by">
             Listed by <span id="agentName"></span> · <span id="agentOffice"></span>
           </div>
         </div>
 
-        <h3 class="section-title" id="detailsTitle">Property Details</h3>
-        <div class="details-grid" id="detailsGrid"></div>
+        <h3 class="section-title reveal" id="detailsTitle">Property Details</h3>
+        <div class="details-grid reveal" id="detailsGrid"></div>
 
-        <div class="property-map-section">
+        <div class="property-map-section reveal">
           <h3 class="section-title">Location</h3>
           <div id="detailMap"></div>
         </div>
@@ -775,11 +855,11 @@ img { max-width: 100%; display: block; }
 
       <!-- RIGHT COLUMN: Sidebar -->
       <div class="side-col">
-        <div class="quick-facts" id="quickFacts"></div>
-        <div class="agent-card">
+        <div class="quick-facts sidebar-reveal" id="quickFacts"></div>
+        <div class="agent-card sidebar-reveal">
           <div class="agent-card-title">Contact Salazar & Co</div>
-          <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="sidebar-btn sidebar-btn-primary">Schedule a Showing</a>
-          <a href="https://calendly.com/ambarorlando/listing-consultation" target="_blank" class="sidebar-btn sidebar-btn-secondary">Book a Call</a>
+          <a href="contact.html" class="sidebar-btn sidebar-btn-primary">Schedule a Showing</a>
+          <a href="contact.html" class="sidebar-btn sidebar-btn-secondary">Book a Call</a>
         </div>
       </div>
 
@@ -1054,6 +1134,9 @@ function renderProperty(listing) {
   document.getElementById('loadingPage').style.display = 'none';
   document.getElementById('propertyContent').style.display = 'block';
 
+  // Init scroll-triggered animations for newly visible content
+  initContentAnimations();
+
   // Init map AFTER content is visible (Leaflet needs a measured container)
   if (window._mapCoords) {
     setTimeout(() => {
@@ -1227,6 +1310,61 @@ function arrOrStr(val) {
   if (Array.isArray(val)) return val.join(', ');
   return val || '';
 }
+
+// ═══════════════════════════════════════
+// SCROLL ANIMATIONS
+// ═══════════════════════════════════════
+(function() {
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    document.querySelectorAll('.reveal, .fade-in, .sidebar-reveal').forEach(function(el) {
+      el.classList.add('visible');
+    });
+    return;
+  }
+
+  // Scroll progress bar
+  var scrollProgress = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', function() {
+    requestAnimationFrame(function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        scrollProgress.style.width = (scrollTop / docHeight * 100) + '%';
+      }
+    });
+  }, { passive: true });
+
+  // Intersection Observer — initialized once, re-used after dynamic content loads
+  window._detailObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        window._detailObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // Observe any elements already in the DOM
+  document.querySelectorAll('.reveal, .fade-in, .sidebar-reveal').forEach(function(el) {
+    window._detailObserver.observe(el);
+  });
+})();
+
+// Called after renderProperty makes content visible — observe newly visible elements
+function initContentAnimations() {
+  if (!window._detailObserver) return;
+  // Stagger sidebar cards
+  var sidebarEls = document.querySelectorAll('.sidebar-reveal');
+  sidebarEls.forEach(function(el, i) {
+    el.style.transitionDelay = (i * 0.12) + 's';
+  });
+  // Observe all animated elements inside #propertyContent
+  document.querySelectorAll('#propertyContent .reveal, #propertyContent .fade-in, #propertyContent .sidebar-reveal').forEach(function(el) {
+    window._detailObserver.observe(el);
+  });
+}
+
 
 function showError(debugMsg) {
   document.getElementById('loadingPage').style.display = 'none';

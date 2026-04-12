@@ -778,6 +778,33 @@ h4 {
 
 
 /* ═══════════════════════════════════════
+   SCROLL PROGRESS BAR
+   ═══════════════════════════════════════ */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #228B22, #FFD700);
+  z-index: 10000;
+  transition: none;
+  will-change: width;
+}
+
+/* ═══════════════════════════════════════
+   NAVBAR SCROLL STATE
+   ═══════════════════════════════════════ */
+.navbar {
+  transition: padding 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+}
+.navbar.scrolled {
+  padding: 14px 0;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.92);
+}
+
+/* ═══════════════════════════════════════
    SCROLL ANIMATIONS
    ═══════════════════════════════════════ */
 .reveal {
@@ -785,10 +812,148 @@ h4 {
   transform: translateY(30px);
   transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Slide from left/right for project cards */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-left.visible, .reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale up for buttons/CTAs */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hero name letter animation */
+.hero-titles h1 .letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.6s ease;
+  will-change: opacity, transform, color;
+}
+.hero-titles h1 .letter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cinematic text reveal */
+.text-reveal {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.4s ease;
+  will-change: clip-path, opacity;
+}
+.text-reveal.visible {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
+}
+
+/* Hero parallax */
+.section-hero {
+  will-change: transform;
+}
+
+/* Project card hover enhancements */
+.project-card .project-image {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+.project-card:hover .project-image {
+  transform: scale(1.03);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+/* Service card hover */
+.service-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+
+/* Testimonial card hover */
+.testimonial-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* Button hover glow */
+.btn-primary, .btn-outline {
+  transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(10,10,10,0.2);
+}
+.btn-outline:hover {
+  transform: translateY(-1px);
+}
+
+/* Stagger children */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.stagger-children.visible > *:nth-child(1) { transition-delay: 0s; }
+.stagger-children.visible > *:nth-child(2) { transition-delay: 0.15s; }
+.stagger-children.visible > *:nth-child(3) { transition-delay: 0.3s; }
+.stagger-children.visible > *:nth-child(4) { transition-delay: 0.45s; }
+.stagger-children.visible > *:nth-child(5) { transition-delay: 0.6s; }
+.stagger-children.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduced motion: disable everything */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { display: none; }
+  .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
+  .stagger-children > *, .hero-titles h1 .letter {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .navbar { transition: none !important; }
+  .section-hero { transform: none !important; }
 }
 
 
@@ -834,6 +999,7 @@ h4 {
      NAVBAR
      Logo left: 18px | Links: 14px | Center: Book A Call | Right: Cart + CONTACT
      ═══════════════════════════════════════ -->
+<div class="scroll-progress" id="scrollProgress"></div>
 <nav class="navbar">
   <div class="container">
     <div class="nav-left">
@@ -870,7 +1036,7 @@ h4 {
         <h1>Alex</h1>
         <h1>Salazar</h1>
       </div>
-      <div class="hero-tagline-wrap">
+      <div class="hero-tagline-wrap text-reveal">
         <span class="icon-star">&#x2726;</span>
         <span class="hero-tagline">Alex is a real estate entrepreneur</span>
       </div>
@@ -924,7 +1090,7 @@ h4 {
       </div>
       <!-- RIGHT COLUMN: stats top-right, large text bottom -->
       <div class="about-right">
-        <div class="about-stats-row reveal">
+        <div class="about-stats-row stagger-children">
           <div class="stat-labels">
             <span class="stat-label">Development</span>
             <span class="stat-label">Retco</span>
@@ -950,28 +1116,28 @@ h4 {
       <h2>Projects</h2>
     </div>
     <div class="projects-grid">
-      <a href="#" class="project-card reveal">
+      <a href="#" class="project-card reveal-left">
         <div class="project-image" data-label="AMBAR" style="background: linear-gradient(135deg, #4a9d8f 0%, #7bb5a8 30%, #d4c5a0 60%, #e8dcc0 80%, #87b2d4 100%);"></div>
         <div class="project-info">
           <span class="project-name">AMBAR Orlando Apartments by Marriott Bonvoy</span>
           <span class="project-tag">Development</span>
         </div>
       </a>
-      <a href="#" class="project-card reveal">
+      <a href="#" class="project-card reveal-right">
         <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #2c2c2c, #555);"></div>
         <div class="project-info">
           <span class="project-name">Art for canvas</span>
           <span class="project-tag">Design</span>
         </div>
       </a>
-      <a href="#" class="project-card reveal">
+      <a href="#" class="project-card reveal-left">
         <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #f7971e, #ffd200);"></div>
         <div class="project-info">
           <span class="project-name">Color research &amp; empliment</span>
           <span class="project-tag">Design</span>
         </div>
       </a>
-      <a href="#" class="project-card reveal">
+      <a href="#" class="project-card reveal-right">
         <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #4b6a4e, #8fa68f);"></div>
         <div class="project-info">
           <span class="project-name">Uden Branding &amp; strategy</span>
@@ -979,7 +1145,7 @@ h4 {
         </div>
       </a>
     </div>
-    <div class="projects-cta reveal">
+    <div class="projects-cta reveal-scale">
       <a href="#" class="btn-outline">
         <span>All Projects</span>
         <span class="arrow">&#8599;</span>
@@ -1050,7 +1216,7 @@ h4 {
       <h2>Feedback</h2>
     </div>
     <div class="testimonials-grid">
-      <div class="testimonial-card reveal">
+      <div class="testimonial-card reveal-left">
         <p class="testimonial-quote">
           "Alex made buying our first home in Miami feel effortless. We came in overwhelmed by the market and he broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days. I tell everyone I know to call him first."
         </p>
@@ -1062,7 +1228,7 @@ h4 {
           </div>
         </div>
       </div>
-      <div class="testimonial-card reveal">
+      <div class="testimonial-card reveal-right">
         <p class="testimonial-quote">
           "I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, brought in professional staging and photography, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched — he knew exactly who to put it in front of."
         </p>
@@ -1160,12 +1326,166 @@ h4 {
 
 <!-- Scripts -->
 <script>
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
+(function() {
+  // ─── Respect prefers-reduced-motion ───
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return;
+
+  // ─── SCROLL PROGRESS BAR ───
+  var progressBar = document.getElementById('scrollProgress');
+  var ticking = false;
+
+  function updateScroll() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+
+    // ─── NAVBAR SCROLL STATE ───
+    var navbar = document.querySelector('.navbar');
+    if (scrollTop > 60) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+    // ─── HERO PARALLAX ───
+    var hero = document.querySelector('.section-hero');
+    if (hero && scrollTop < window.innerHeight) {
+      hero.style.transform = 'translateY(' + (scrollTop * 0.3) + 'px)';
+    }
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(updateScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+
+
+  // ─── HERO NAME: Wrap each letter in <span> ───
+  var heroTitles = document.querySelectorAll('.hero-titles h1');
+  heroTitles.forEach(function(h1) {
+    var text = h1.textContent;
+    h1.textContent = '';
+    for (var i = 0; i < text.length; i++) {
+      var span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      h1.appendChild(span);
+    }
+  });
+
+  // Stagger-reveal hero letters on load
+  var allLetters = document.querySelectorAll('.hero-titles h1 .letter');
+  allLetters.forEach(function(letter, i) {
+    setTimeout(function() { letter.classList.add('visible'); }, 80 + i * 50);
+  });
+
+  // ─── HERO NAME COLOR TRANSITION on scroll ───
+  // "AL" in ALEX (indices 0,1 of first h1) → forest green
+  // "SAL" in SALAZAR (indices 0,1,2 of second h1) → gold
+  var h1Elements = document.querySelectorAll('.hero-titles h1');
+  var alexLetters = h1Elements[0] ? h1Elements[0].querySelectorAll('.letter') : [];
+  var salazarLetters = h1Elements[1] ? h1Elements[1].querySelectorAll('.letter') : [];
+
+  // Letters to colorize: AL (first 2 of ALEX), SAL (first 3 of SALAZAR)
+  var greenLetters = [];
+  for (var g = 0; g < Math.min(2, alexLetters.length); g++) greenLetters.push(alexLetters[g]);
+  var goldLetters = [];
+  for (var d = 0; d < Math.min(3, salazarLetters.length); d++) goldLetters.push(salazarLetters[d]);
+
+  function updateNameColors() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // Transition between 100px and 400px of scroll
+    var progress = Math.min(1, Math.max(0, (scrollTop - 100) / 300));
+
+    greenLetters.forEach(function(el) {
+      if (progress > 0) {
+        // Interpolate from black (#0a0a0a) to green (#228B22)
+        var r = Math.round(10 + (34 - 10) * progress);
+        var gv = Math.round(10 + (139 - 10) * progress);
+        var b = Math.round(10 + (34 - 10) * progress);
+        el.style.color = 'rgb(' + r + ',' + gv + ',' + b + ')';
+      } else {
+        el.style.color = '';
+      }
+    });
+
+    goldLetters.forEach(function(el) {
+      if (progress > 0) {
+        // Interpolate from black (#0a0a0a) to gold (#FFD700)
+        var r = Math.round(10 + (255 - 10) * progress);
+        var gv = Math.round(10 + (215 - 10) * progress);
+        var b = Math.round(10 + (0 - 10) * progress);
+        el.style.color = 'rgb(' + r + ',' + gv + ',' + b + ')';
+      } else {
+        el.style.color = '';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', function() {
+    requestAnimationFrame(updateNameColors);
+  }, { passive: true });
+
+
+  // ─── INTERSECTION OBSERVER for all reveal types ───
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal, .stagger-children').forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+
+  // ─── WORD STAGGER for section headings (h2, h3 inside .reveal) ───
+  document.querySelectorAll('.reveal h2, .reveal h3').forEach(function(heading) {
+    var words = heading.textContent.split(' ');
+    heading.textContent = '';
+    words.forEach(function(word, i) {
+      var span = document.createElement('span');
+      span.style.display = 'inline-block';
+      span.style.opacity = '0';
+      span.style.transform = 'translateY(15px)';
+      span.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (i * 0.1) + 's, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (i * 0.1) + 's';
+      span.textContent = word;
+      heading.appendChild(span);
+      if (i < words.length - 1) heading.appendChild(document.createTextNode(' '));
+    });
+  });
+
+  // When a .reveal becomes visible, also trigger its word spans
+  var wordObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        var el = mutation.target;
+        if (el.classList.contains('visible')) {
+          el.querySelectorAll('h2 span, h3 span').forEach(function(span) {
+            span.style.opacity = '1';
+            span.style.transform = 'translateY(0)';
+          });
+        }
+      }
+    });
+  });
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    wordObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  // Initial call
+  updateScroll();
+  updateNameColors();
+})();
 </script>
 
 </body>
