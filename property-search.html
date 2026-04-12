@@ -1317,8 +1317,8 @@ async function searchProperties(page) {
       filters.push("City eq '" + titleCity + "'");
     }
   }
-  if (priceMin) filters.push('ListPrice ge ' + priceMin);
-  if (priceMax) filters.push('ListPrice le ' + priceMax);
+  if (priceMin) filters.push('ListPrice ge ' + parseInt(priceMin, 10));
+  if (priceMax) filters.push('ListPrice le ' + parseInt(priceMax, 10));
   if (beds) filters.push('BedroomsTotal ge ' + beds);
   if (baths) filters.push('BathroomsTotalInteger ge ' + baths);
 
@@ -1376,6 +1376,7 @@ async function searchProperties(page) {
   }
 
   var filterStr = filters.join(' and ');
+  console.log('[S&CO Search] OData $filter:', filterStr);
 
   var fields = [
     'ListingKey', 'ListingId', 'ListPrice', 'StandardStatus',
