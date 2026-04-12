@@ -1029,32 +1029,30 @@ h4 {
   transform: scale(1);
 }
 
-/* Hero name: split animation — color portions + slide-in portions */
-.hero-titles {
-  perspective: 800px;
-}
+/* Hero name: decode + color + split/rejoin animation */
 .hero-titles h1 {
   overflow: hidden;
   display: flex;
   align-items: baseline;
 }
 
-/* Both parts: initial reveal (flip up) */
 .hero-titles h1 .name-color,
 .hero-titles h1 .name-slide {
   display: inline-block;
-  opacity: 0;
-  transform: translateY(100%);
-  animation: nameReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.hero-titles h1:first-child .name-color { animation-delay: 0ms; }
-.hero-titles h1:first-child .name-slide { animation-delay: 150ms; }
-.hero-titles h1:last-child .name-color  { animation-delay: 250ms; }
-.hero-titles h1:last-child .name-slide  { animation-delay: 400ms; }
 
-@keyframes nameReveal {
-  from { opacity: 0; transform: translateY(100%); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Individual decode characters */
+.decode-char {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.decode-char.locked {
+  animation: lockPulse 0.2s ease forwards;
+}
+@keyframes lockPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 /* Color portions: green for AL, gold for SAL */
@@ -1077,7 +1075,7 @@ h4 {
   animation: colorGlow 2.5s ease-in-out infinite;
 }
 
-/* Slide portions: EX and AZAR slide in from the right on scroll */
+/* Slide portions: EX and AZAR split/rejoin on scroll */
 .name-slide {
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.5s ease,
@@ -1092,6 +1090,14 @@ h4 {
   transform: translateX(0);
   opacity: 1;
   letter-spacing: inherit;
+}
+.name-slide.flash {
+  filter: brightness(1.8);
+  transition: filter 0.15s ease;
+}
+.name-slide.flash-done {
+  filter: brightness(1);
+  transition: filter 0.4s ease;
 }
 
 /* Cinematic text reveal */
@@ -1174,7 +1180,7 @@ h4 {
   .scroll-progress { display: none; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
   .stagger-children > *, .hero-titles h1 .name-color,
-  .hero-titles h1 .name-slide,
+  .hero-titles h1 .name-slide, .decode-char,
   .footer-stagger-col, .footer-bottom-reveal {
     opacity: 1 !important;
     transform: none !important;
@@ -1758,20 +1764,78 @@ a, button, [role="button"], input, select, textarea, label {
 
 
   // ═══════════════════════════════════════
-  // HERO NAME: Split Animation
-  // AL (green) + EX (slides in), SAL (gold) + AZAR (slides in)
+  // HERO NAME: Decode + Color + Split/Rejoin
   // ═══════════════════════════════════════
   var nameGreen = document.querySelector('.name-green');
   var nameGold  = document.querySelector('.name-gold');
   var nameSlides = document.querySelectorAll('.name-slide');
+  var scrambleChars = '!@#$%&*XVMKQZ0189';
 
-  // After initial reveal, set slides to "split" state ready for scroll-triggered join
-  setTimeout(function() {
-    nameSlides.forEach(function(el) {
-      el.classList.add('split');
+  // STAGE 1: Scramble Decode on page load
+  function runScrambleDecode(span, finalText, startDelay) {
+    var chars = finalText.split('');
+    var resolved = [];
+    var spans = [];
+
+    // Create a decode-char span for each character
+    span.textContent = '';
+    chars.forEach(function(ch) {
+      var s = document.createElement('span');
+      s.className = 'decode-char';
+      s.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+      span.appendChild(s);
+      spans.push(s);
+      resolved.push(false);
     });
-  }, 1200);
 
+    var intervalTime = 30;
+    var resolveDuration = 1500; // total time to resolve all chars
+    var perCharDelay = resolveDuration / chars.length;
+
+    // Start cycling random chars
+    var cycleInterval = setInterval(function() {
+      spans.forEach(function(s, i) {
+        if (!resolved[i]) {
+          s.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+        }
+      });
+    }, intervalTime);
+
+    // Resolve characters left to right
+    chars.forEach(function(ch, i) {
+      setTimeout(function() {
+        resolved[i] = true;
+        spans[i].textContent = ch;
+        spans[i].classList.add('locked');
+      }, startDelay + i * perCharDelay);
+    });
+
+    // Stop cycling after all resolved
+    setTimeout(function() {
+      clearInterval(cycleInterval);
+    }, startDelay + resolveDuration + 50);
+  }
+
+  // Run decode for all name spans
+  var decodeTargets = [
+    { el: nameGreen, text: 'AL', delay: 0 },
+    { el: nameSlides[0], text: 'EX', delay: 0 },
+    { el: nameGold, text: 'SAL', delay: 200 },
+    { el: nameSlides[1], text: 'AZAR', delay: 200 }
+  ];
+
+  decodeTargets.forEach(function(t) {
+    if (t.el) runScrambleDecode(t.el, t.text, t.delay);
+  });
+
+  // After decode completes, set slides to "split" state
+  setTimeout(function() {
+    if (!isMobile) {
+      nameSlides.forEach(function(el) { el.classList.add('split'); });
+    }
+  }, 1800);
+
+  // STAGE 2 & 3: Color activation + Split/Rejoin on scroll
   var nameAnimated = false;
   function updateNameColors() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -1780,32 +1844,41 @@ a, button, [role="button"], input, select, textarea, label {
     if (active && !nameAnimated) {
       nameAnimated = true;
 
-      // 1. Color the AL and SAL portions with staggered timing
+      // Stage 2: Color activation
       setTimeout(function() {
-        if (nameGreen) { nameGreen.classList.add('active'); nameGreen.classList.add('glow'); }
+        if (nameGreen) { nameGreen.classList.add('active', 'glow'); }
       }, 0);
       setTimeout(function() {
-        if (nameGold) { nameGold.classList.add('active'); nameGold.classList.add('glow'); }
+        if (nameGold) { nameGold.classList.add('active', 'glow'); }
       }, 150);
 
-      // 2. Slide EX and AZAR in from the right to join the name
-      setTimeout(function() {
-        nameSlides.forEach(function(el, i) {
-          setTimeout(function() {
-            el.classList.remove('split');
-            el.classList.add('joined');
-          }, i * 200);
-        });
-      }, 300);
+      // Stage 3: Rejoin (slide back) with brightness flash
+      if (!isMobile) {
+        setTimeout(function() {
+          nameSlides.forEach(function(el, i) {
+            setTimeout(function() {
+              el.classList.remove('split');
+              el.classList.add('joined', 'flash');
+              setTimeout(function() {
+                el.classList.remove('flash');
+                el.classList.add('flash-done');
+                setTimeout(function() { el.classList.remove('flash-done'); }, 400);
+              }, 150);
+            }, i * 200);
+          });
+        }, 300);
+      }
 
     } else if (!active && nameAnimated) {
       nameAnimated = false;
 
-      // Reverse: split the names apart and remove color
-      nameSlides.forEach(function(el) {
-        el.classList.remove('joined');
-        el.classList.add('split');
-      });
+      // Reverse stages 2 & 3
+      if (!isMobile) {
+        nameSlides.forEach(function(el) {
+          el.classList.remove('joined', 'flash', 'flash-done');
+          el.classList.add('split');
+        });
+      }
       if (nameGreen) { nameGreen.classList.remove('active', 'glow'); }
       if (nameGold)  { nameGold.classList.remove('active', 'glow'); }
     }
