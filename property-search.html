@@ -1098,7 +1098,10 @@ const BRIDGE_CONFIG = {
 let currentPage = 1;
 let totalResults = 0;
 let markers = [];
+let markerKeyMap = {}; // ListingKey → marker for hover sync
 let currentListings = [];
+let allMapListings = []; // all results for map (up to 500)
+let lastFilterStr = ''; // track filter changes to know when to refresh map
 let listingMode = 'sale'; // 'sale' or 'rent'
 let savedListings = []; // local heart/save state (array of ListingKey)
 let mapBoundsFilter = null; // { north, south, east, west } when "Search this area" used
@@ -1277,16 +1280,12 @@ function updateFilterBadge() {
 // ═══════════════════════════════════════
 // SEARCH
 // ═══════════════════════════════════════
-async function searchProperties(page) {
-  if (page === undefined) page = 1;
-  currentPage = page;
-
+function buildFilterStr() {
   var city = document.getElementById('filterCity').value.trim();
   var priceMin = document.getElementById('filterPriceMin').value.replace(/[^0-9]/g, '');
   var priceMax = document.getElementById('filterPriceMax').value.replace(/[^0-9]/g, '');
   var beds = document.getElementById('filterBeds').value;
   var baths = document.getElementById('filterBaths').value;
-  var sort = document.getElementById('sortSelect').value;
 
   // More filters
   var propTypes = getActivePills('pillsType');
@@ -1299,10 +1298,8 @@ async function searchProperties(page) {
   var hoaMax = document.getElementById('filterHOA').value.replace(/[^0-9]/g, '');
   var keyword = document.getElementById('filterKeyword').value.trim();
 
-  // Build OData $filter
   var filters = [];
 
-  // Listing mode: sale vs rent
   if (listingMode === 'rent') {
     filters.push("PropertyType eq 'Residential Lease'");
   } else {
@@ -1322,7 +1319,6 @@ async function searchProperties(page) {
   if (beds) filters.push('BedroomsTotal ge ' + beds);
   if (baths) filters.push('BathroomsTotalInteger ge ' + baths);
 
-  // Property type pills (multi-select)
   if (propTypes.length > 0) {
     var typeFilters = propTypes.map(function(t) {
       if (['Single Family Residence', 'Condominium', 'Townhouse'].indexOf(t) !== -1) {
@@ -1333,7 +1329,6 @@ async function searchProperties(page) {
     filters.push('(' + typeFilters.join(' or ') + ')');
   }
 
-  // Status pills (multi-select)
   if (statuses.length > 0) {
     var statusFilters = statuses.map(function(s) { return "StandardStatus eq '" + s + "'"; });
     filters.push('(' + statusFilters.join(' or ') + ')');
@@ -1341,24 +1336,14 @@ async function searchProperties(page) {
     filters.push("StandardStatus eq 'Active'");
   }
 
-  // Days on market
   if (dom) filters.push('DaysOnMarket le ' + dom);
-
-  // Square feet
   if (sqftMin) filters.push('LivingArea ge ' + sqftMin);
   if (sqftMax) filters.push('LivingArea le ' + sqftMax);
-
-  // Year built
   if (yearMin) filters.push('YearBuilt ge ' + yearMin);
   if (yearMax) filters.push('YearBuilt le ' + yearMax);
-
-  // HOA
   if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
-
-  // Keyword in PublicRemarks
   if (keyword) filters.push("contains(PublicRemarks, '" + keyword + "')");
 
-  // Geographic bounds from drawn polygon
   if (drawnBounds) {
     var bb = drawnBounds.bbox;
     filters.push('Latitude ge ' + bb.south);
@@ -1367,7 +1352,6 @@ async function searchProperties(page) {
     filters.push('Longitude le ' + bb.east);
   }
 
-  // Geographic bounds from "Search this area"
   if (mapBoundsFilter && !drawnBounds) {
     filters.push('Latitude ge ' + mapBoundsFilter.south);
     filters.push('Latitude le ' + mapBoundsFilter.north);
@@ -1375,8 +1359,53 @@ async function searchProperties(page) {
     filters.push('Longitude le ' + mapBoundsFilter.east);
   }
 
-  var filterStr = filters.join(' and ');
+  return filters.join(' and ');
+}
+
+async function fetchMapData(filterStr) {
+  var mapFields = 'ListingKey,ListPrice,Latitude,Longitude';
+  var mapUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+    + '?$filter=' + encodeURIComponent(filterStr)
+    + '&$select=' + mapFields
+    + '&$top=500'
+    + '&$count=true';
+
+  var response = await fetch(mapUrl, {
+    headers: {
+      'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    var errText = await response.text();
+    throw new Error('Map API ' + response.status + ': ' + errText.substring(0, 200));
+  }
+
+  var data = await response.json();
+  var mapListings = data.value || [];
+
+  // Client-side polygon filtering for map data
+  if (drawnBounds && drawnBounds.polygon && mapListings.length > 0) {
+    mapListings = mapListings.filter(function(listing) {
+      if (!listing.Latitude || !listing.Longitude) return false;
+      return pointInPolygon([listing.Latitude, listing.Longitude], drawnBounds.polygon);
+    });
+  }
+
+  return mapListings;
+}
+
+async function searchProperties(page) {
+  if (page === undefined) page = 1;
+  currentPage = page;
+
+  var sort = document.getElementById('sortSelect').value;
+  var filterStr = buildFilterStr();
   console.log('[S&CO Search] OData $filter:', filterStr);
+
+  // Determine if filters changed (need to refresh map) or just pagination
+  var filtersChanged = filterStr !== lastFilterStr;
 
   var fields = [
     'ListingKey', 'ListingId', 'ListPrice', 'StandardStatus',
@@ -1390,14 +1419,13 @@ async function searchProperties(page) {
     'YearBuilt', 'AssociationFee'
   ].join(',');
 
-  // Handle Price/sqft sort client-side
   var isClientSort = sort === 'ppsf';
   var apiSort = isClientSort ? 'ListPrice desc' : sort;
 
   var pageSize = drawnBounds ? 200 : BRIDGE_CONFIG.PAGE_SIZE;
   var skip = (page - 1) * pageSize;
 
-  var url = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+  var listingsUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
     + '?$filter=' + encodeURIComponent(filterStr)
     + '&$select=' + fields
     + '&$orderby=' + encodeURIComponent(apiSort)
@@ -1408,23 +1436,30 @@ async function searchProperties(page) {
   showState('loading');
 
   try {
-    var response = await fetch(url, {
+    // Fire both requests in parallel when filters changed; only listings request on pagination
+    var listingsPromise = fetch(listingsUrl, {
       headers: {
         'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
         'Accept': 'application/json'
       }
     });
 
-    if (!response.ok) {
-      var errText = await response.text();
-      throw new Error('API ' + response.status + ': ' + errText.substring(0, 200));
+    var mapPromise = filtersChanged ? fetchMapData(filterStr) : Promise.resolve(null);
+
+    var responses = await Promise.all([listingsPromise, mapPromise]);
+
+    // Process listings response
+    var listingsResponse = responses[0];
+    if (!listingsResponse.ok) {
+      var errText = await listingsResponse.text();
+      throw new Error('API ' + listingsResponse.status + ': ' + errText.substring(0, 200));
     }
 
-    var data = await response.json();
+    var data = await listingsResponse.json();
     totalResults = data['@odata.count'] || 0;
     currentListings = data.value || [];
 
-    // Client-side polygon filtering
+    // Client-side polygon filtering for listings
     if (drawnBounds && drawnBounds.polygon && currentListings.length > 0) {
       currentListings = currentListings.filter(function(listing) {
         if (!listing.Latitude || !listing.Longitude) return false;
@@ -1444,12 +1479,20 @@ async function searchProperties(page) {
 
     if (currentListings.length === 0) {
       clearMapMarkers();
+      allMapListings = [];
+      lastFilterStr = filterStr;
       showState('empty');
       return;
     }
 
+    // Process map response (only when filters changed)
+    if (responses[1] !== null) {
+      allMapListings = responses[1];
+      lastFilterStr = filterStr;
+      plotOnMap(allMapListings);
+    }
+
     renderListings(currentListings);
-    plotOnMap(currentListings);
     renderPagination();
     showState('results');
 
@@ -1508,10 +1551,10 @@ function renderListings(listings) {
     var card = document.createElement('a');
     card.href = detailUrl;
     card.className = 'property-card';
-    card.dataset.index = i;
+    card.dataset.listingkey = lid;
     card.target = '_blank';
-    card.addEventListener('mouseenter', function() { highlightMarker(i); });
-    card.addEventListener('mouseleave', function() { unhighlightMarker(i); });
+    card.addEventListener('mouseenter', (function(key) { return function() { highlightMarker(key); }; })(lid));
+    card.addEventListener('mouseleave', (function(key) { return function() { unhighlightMarker(key); }; })(lid));
 
     // Photo container
     var photoDiv = document.createElement('div');
@@ -1686,58 +1729,38 @@ function clearMapMarkers() {
 
 function plotOnMap(listings) {
   clearMapMarkers();
+  markerKeyMap = {};
 
   var bounds = [];
 
-  listings.forEach(function(listing, i) {
+  listings.forEach(function(listing) {
     var lat = listing.Latitude;
     var lng = listing.Longitude;
     if (!lat || !lng) return;
 
+    var lid = listing.ListingKey || '';
     bounds.push([lat, lng]);
 
     var priceLabel = formatPriceShort(listing.ListPrice);
     var icon = L.divIcon({
       className: '',
-      html: '<div class="price-marker" data-marker-index="' + i + '">' + priceLabel + '</div>',
+      html: '<div class="price-marker" data-marker-key="' + lid + '">' + priceLabel + '</div>',
       iconSize: null,
       iconAnchor: [30, 30]
     });
 
     var marker = L.marker([lat, lng], { icon: icon }).addTo(map);
 
-    var address = formatAddress(listing);
-    var beds = listing.BedroomsTotal || '–';
-    var baths = listing.BathroomsTotalInteger || '–';
-    var sqft = listing.LivingArea ? formatNumber(listing.LivingArea) + ' sqft' : '';
-    var photo = getPhotoUrl(listing);
-
-    var popupLid = listing.ListingKey || listing.ListingId || '';
-    var popupDetailUrl = 'property-detail.html?key=' + encodeURIComponent(popupLid) + '&mlsid=' + encodeURIComponent(listing.ListingId || '');
-
-    // Build popup with DOM methods
+    // Minimal popup from map-only data (price + coordinates)
+    var popupDetailUrl = 'property-detail.html?key=' + encodeURIComponent(lid);
     var popupEl = document.createElement('a');
     popupEl.href = popupDetailUrl;
     popupEl.target = '_blank';
     popupEl.style.cssText = 'color:inherit;text-decoration:none;display:block;';
-    if (photo) {
-      var popupImg = document.createElement('img');
-      popupImg.src = photo;
-      popupImg.style.cssText = 'width:220px;height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;';
-      popupEl.appendChild(popupImg);
-    }
     var popupPrice = document.createElement('div');
     popupPrice.className = 'popup-price';
-    popupPrice.textContent = formatPrice(listing.ListPrice);
+    popupPrice.textContent = formatPriceShort(listing.ListPrice);
     popupEl.appendChild(popupPrice);
-    var popupSpecs = document.createElement('div');
-    popupSpecs.className = 'popup-specs';
-    popupSpecs.textContent = beds + ' bd \u00b7 ' + baths + ' ba' + (sqft ? ' \u00b7 ' + sqft : '');
-    popupEl.appendChild(popupSpecs);
-    var popupAddr = document.createElement('div');
-    popupAddr.className = 'popup-address';
-    popupAddr.textContent = address;
-    popupEl.appendChild(popupAddr);
     var popupLink = document.createElement('div');
     popupLink.style.cssText = 'font-size:12px;color:var(--black);margin-top:6px;font-weight:500;';
     popupLink.textContent = 'View Details \u2192';
@@ -1745,20 +1768,22 @@ function plotOnMap(listings) {
 
     marker.bindPopup(popupEl, { maxWidth: 240 });
 
-    marker.on('mouseover', function() {
-      var card = document.querySelector('[data-index="' + i + '"]');
+    // Hover sync: marker → card (only if card is on current page)
+    marker.on('mouseover', (function(key) { return function() {
+      var card = document.querySelector('[data-listingkey="' + key + '"]');
       if (card) card.classList.add('highlighted');
-      var el = marker.getElement();
+      var el = this.getElement();
       if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.add('active'); }
-    });
-    marker.on('mouseout', function() {
-      var card = document.querySelector('[data-index="' + i + '"]');
+    }; })(lid));
+    marker.on('mouseout', (function(key) { return function() {
+      var card = document.querySelector('[data-listingkey="' + key + '"]');
       if (card) card.classList.remove('highlighted');
-      var el = marker.getElement();
+      var el = this.getElement();
       if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.remove('active'); }
-    });
+    }; })(lid));
 
     markers.push(marker);
+    markerKeyMap[lid] = marker;
   });
 
   // Fit map to results (skip when drawn area or map bounds search)
@@ -1768,15 +1793,15 @@ function plotOnMap(listings) {
   }
 }
 
-function highlightMarker(index) {
-  var marker = markers[index];
+function highlightMarker(listingKey) {
+  var marker = markerKeyMap[listingKey];
   if (!marker) return;
   var el = marker.getElement();
   if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.add('active'); }
 }
 
-function unhighlightMarker(index) {
-  var marker = markers[index];
+function unhighlightMarker(listingKey) {
+  var marker = markerKeyMap[listingKey];
   if (!marker) return;
   var el = marker.getElement();
   if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.remove('active'); }
@@ -1894,6 +1919,8 @@ function resetFilters() {
   document.getElementById('filterBaths').value = '';
   document.getElementById('sortSelect').value = 'ListPrice desc';
   mapBoundsFilter = null;
+  lastFilterStr = '';
+  allMapListings = [];
   resetMoreFilters();
   clearMapMarkers();
   clearDrawing();
