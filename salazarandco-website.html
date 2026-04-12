@@ -218,6 +218,24 @@ img { max-width: 100%; display: block; }
   line-height: 1.3;
   letter-spacing: -0.18px;
   color: var(--black);
+  opacity: 0;
+  transform: translateX(-100px);
+  animation: bioslideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 1.5s;
+}
+@keyframes bioslideIn {
+  from { opacity: 0; transform: translateX(-100px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.banner-bottom .btn-primary {
+  opacity: 0;
+  transform: translateX(100px);
+  animation: btnSlideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 1.8s;
+}
+@keyframes btnSlideIn {
+  from { opacity: 0; transform: translateX(100px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 /* Primary Button: width 296px, height ~40px, padding 10px 16px, radius 8px */
@@ -1200,7 +1218,8 @@ h4 {
   .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
   .stagger-children > *, .hero-titles h1 .name-color,
   .hero-titles h1 .name-slide, .decode-char,
-  .footer-stagger-col, .footer-bottom-reveal {
+  .footer-stagger-col, .footer-bottom-reveal,
+  .hero-bio, .banner-bottom .btn-primary {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
