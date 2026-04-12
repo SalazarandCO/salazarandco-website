@@ -738,15 +738,31 @@ h3 {
   width: 100%;
 }
 .testimonials-right {
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
+  position: relative;
 }
 .testimonial-item {
+  position: sticky;
+  top: 120px;
   background: var(--gray-bg);
   padding: 48px;
   border-radius: 12px;
-  position: relative;
+  margin-bottom: 80vh;
+  transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+  transform-origin: center top;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  will-change: transform;
+}
+.testimonial-item:last-child {
+  margin-bottom: 40vh;
+}
+.testimonial-ghost {
+  height: 1px;
+  min-height: 1px;
+  padding: 0;
+  margin-bottom: 20px;
+  box-shadow: none !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 .testimonial-deco {
   font-size: 80px;
@@ -1277,7 +1293,7 @@ h4 {
   }
   .service-card { flex: none; width: 100%; }
 
-  /* Testimonials: stack vertically, left not sticky */
+  /* Testimonials: stack vertically, left not sticky, no stack animation */
   .testimonials-grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -1287,7 +1303,14 @@ h4 {
     top: auto;
   }
   .testimonial-progress-bars { display: none; }
-  .testimonial-item { padding: 32px; }
+  .testimonial-item {
+    position: relative;
+    top: auto;
+    margin-bottom: 24px;
+    padding: 32px;
+  }
+  .testimonial-item:last-child { margin-bottom: 24px; }
+  .testimonial-ghost { display: none; }
   .testimonial-text { font-size: 18px; }
 }
 
@@ -1613,7 +1636,7 @@ a, button, [role="button"], input, select, textarea, label {
         </div>
       </div>
       <div class="testimonials-right">
-        <div class="testimonial-item reveal">
+        <div class="testimonial-item">
           <div class="testimonial-deco">&ldquo;</div>
           <p class="testimonial-text">"Alex made buying our first home in Miami feel effortless. He broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days."</p>
           <div class="testimonial-author-row">
@@ -1624,7 +1647,7 @@ a, button, [role="button"], input, select, textarea, label {
             </div>
           </div>
         </div>
-        <div class="testimonial-item reveal">
+        <div class="testimonial-item">
           <div class="testimonial-deco">&ldquo;</div>
           <p class="testimonial-text">"I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched."</p>
           <div class="testimonial-author-row">
@@ -1635,7 +1658,7 @@ a, button, [role="button"], input, select, textarea, label {
             </div>
           </div>
         </div>
-        <div class="testimonial-item reveal">
+        <div class="testimonial-item">
           <div class="testimonial-deco">&ldquo;</div>
           <p class="testimonial-text">"Alex identified and underwrote a 12-unit building in Brickell that every other broker passed on. He saw the value-add play before anyone else — we renovated, restabilized, and the asset appraised 35% above our all-in cost within 18 months. He thinks like an investor, not a broker."</p>
           <div class="testimonial-author-row">
@@ -1646,7 +1669,7 @@ a, button, [role="button"], input, select, textarea, label {
             </div>
           </div>
         </div>
-        <div class="testimonial-item reveal">
+        <div class="testimonial-item">
           <div class="testimonial-deco">&ldquo;</div>
           <p class="testimonial-text">"We needed seven contiguous parcels in Coral Gables for a mixed-use project. Alex quietly assembled every lot over 14 months without tipping off neighboring sellers. His discretion and negotiation strategy saved us an estimated $2M on the total land basis."</p>
           <div class="testimonial-author-row">
@@ -1657,6 +1680,7 @@ a, button, [role="button"], input, select, textarea, label {
             </div>
           </div>
         </div>
+        <div class="testimonial-item testimonial-ghost"></div>
       </div>
     </div>
   </div>
@@ -1780,6 +1804,7 @@ a, button, [role="button"], input, select, textarea, label {
       updateVideoScale();
       updateAboutTextReveal();
       updateServicesScroll();
+      updateTestimonialStack();
       updateTestimonialProgress();
     }
     ticking = false;
@@ -2036,29 +2061,64 @@ a, button, [role="button"], input, select, textarea, label {
 
 
   // ═══════════════════════════════════════
-  // 5. TESTIMONIALS — Split Screen Progress Tracking
+  // 5. TESTIMONIALS — Sticky Stacking Cards
   // ═══════════════════════════════════════
-  var testimonialItems = document.querySelectorAll('.testimonial-item');
+  var testimonialAllItems = document.querySelectorAll('.testimonials-right .testimonial-item');
+  var testimonialStackCards = document.querySelectorAll('.testimonials-right .testimonial-item:not(.testimonial-ghost)');
   var progressBars = document.querySelectorAll('.progress-bar');
   var counterCurrent = document.querySelector('.counter-current');
+  var testimonialStickyTop = 120;
+
+  function updateTestimonialStack() {
+    if (testimonialStackCards.length === 0) return;
+
+    testimonialAllItems.forEach(function(card, i) {
+      if (card.classList.contains('testimonial-ghost')) return;
+
+      var cardsOnTop = 0;
+      for (var j = i + 1; j < testimonialAllItems.length; j++) {
+        if (testimonialAllItems[j].getBoundingClientRect().top <= testimonialStickyTop + 10) cardsOnTop++;
+      }
+
+      if (cardsOnTop > 0) {
+        var scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
+        var opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
+        var translateY = -(cardsOnTop * 15);
+        card.style.transform = 'scale(' + scale + ') translateY(' + translateY + 'px)';
+        card.style.opacity = opacity;
+        card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.boxShadow = '';
+      }
+    });
+  }
 
   function updateTestimonialProgress() {
-    if (testimonialItems.length === 0) return;
-    var viewCenter = window.innerHeight * 0.5;
-    var closestIndex = 0;
-    var closestDist = Infinity;
-    testimonialItems.forEach(function(item, i) {
-      var rect = item.getBoundingClientRect();
-      var itemCenter = rect.top + rect.height / 2;
-      var dist = Math.abs(itemCenter - viewCenter);
-      if (dist < closestDist) { closestDist = dist; closestIndex = i; }
-    });
+    if (testimonialStackCards.length === 0) return;
+
+    // Active card: the topmost card that is stuck at stickyTop with no later cards
+    // also stuck on top of it (i.e. cardsOnTop === 0). Default to first.
+    var activeIndex = 0;
+    for (var i = 0; i < testimonialStackCards.length; i++) {
+      var rect = testimonialStackCards[i].getBoundingClientRect();
+      if (rect.top <= testimonialStickyTop + 10) {
+        // Count later cards already stacked
+        var laterStacked = 0;
+        for (var j = i + 1; j < testimonialAllItems.length; j++) {
+          if (testimonialAllItems[j].getBoundingClientRect().top <= testimonialStickyTop + 10) laterStacked++;
+        }
+        if (laterStacked === 0) { activeIndex = i; }
+      }
+    }
+
     progressBars.forEach(function(bar, i) {
-      if (i === closestIndex) { bar.classList.add('active'); }
+      if (i === activeIndex) { bar.classList.add('active'); }
       else { bar.classList.remove('active'); }
     });
     if (counterCurrent) {
-      counterCurrent.textContent = String(closestIndex + 1).padStart(2, '0');
+      counterCurrent.textContent = String(activeIndex + 1).padStart(2, '0');
     }
   }
 
