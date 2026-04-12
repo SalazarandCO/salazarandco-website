@@ -417,7 +417,7 @@ h2 {
   background: var(--white);
 }
 .stack-card:last-child {
-  margin-bottom: 0;
+  margin-bottom: 60vh;
 }
 .stack-card-inner {
   display: grid;
@@ -1773,18 +1773,51 @@ h4 {
   // ═══════════════════════════════════════
   var stackCards = document.querySelectorAll('.stack-card');
 
+  var stackContainer = document.getElementById('stackContainer');
+
   function updateStackCards() {
-    if (stackCards.length === 0) return;
+    if (stackCards.length === 0 || !stackContainer) return;
     var stickyTop = 100;
+    var containerRect = stackContainer.getBoundingClientRect();
+    // Calculate exit progress: how far past the last card's margin we've scrolled
+    var containerBottom = containerRect.bottom;
+    var exitZone = window.innerHeight * 0.6; // corresponds to last card's 60vh margin-bottom
+    var exitProgress = 0;
+    if (containerBottom < window.innerHeight) {
+      exitProgress = Math.min(1, Math.max(0, (window.innerHeight - containerBottom) / exitZone));
+    }
+
     stackCards.forEach(function(card, i) {
       var cardsOnTop = 0;
       for (var j = i + 1; j < stackCards.length; j++) {
         if (stackCards[j].getBoundingClientRect().top <= stickyTop + 10) cardsOnTop++;
       }
+
+      var scale = 1;
+      var opacity = 1;
+      var translateY = 0;
+      var shadow = '';
+
       if (cardsOnTop > 0) {
-        card.style.transform = 'scale(' + Math.max(0.85, 1 - cardsOnTop * 0.04) + ') translateY(' + -(cardsOnTop * 15) + 'px)';
-        card.style.opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
-        card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
+        scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
+        opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
+        translateY = -(cardsOnTop * 15);
+        shadow = '0 4px 20px rgba(0,0,0,0.04)';
+      }
+
+      // Apply exit animation to all stuck cards (including the last one)
+      if (exitProgress > 0) {
+        var exitScale = 1 - exitProgress * 0.15;
+        scale = Math.min(scale, exitScale);
+        opacity = Math.min(opacity, 1 - exitProgress * 0.6);
+        translateY = translateY - (exitProgress * 30);
+        shadow = '0 4px 20px rgba(0,0,0,' + (0.04 * (1 - exitProgress)) + ')';
+      }
+
+      if (cardsOnTop > 0 || exitProgress > 0) {
+        card.style.transform = 'scale(' + scale + ') translateY(' + translateY + 'px)';
+        card.style.opacity = opacity;
+        card.style.boxShadow = shadow;
       } else {
         card.style.transform = '';
         card.style.opacity = '';
