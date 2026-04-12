@@ -911,11 +911,11 @@ img { max-width: 100%; display: block; }
       <button class="active" id="toggleSale" onclick="setListingMode('sale')">For Sale</button>
       <button id="toggleRent" onclick="setListingMode('rent')">For Rent</button>
     </div>
-    <input type="text" class="filter-input" id="filterCity" placeholder="City or ZIP" value="Miami">
+    <input type="text" class="filter-input" id="filterCity" placeholder="City or ZIP" value="Pinecrest">
     <div class="filter-price-group">
       <input type="text" class="filter-input" id="filterPriceMin" placeholder="Min $">
       <span class="price-divider">&ndash;</span>
-      <input type="text" class="filter-input" id="filterPriceMax" placeholder="Max $">
+      <input type="text" class="filter-input" id="filterPriceMax" placeholder="Max $" value="$5,000,000">
     </div>
     <select class="filter-select" id="filterBeds">
       <option value="">Beds</option>
@@ -956,7 +956,7 @@ img { max-width: 100%; display: block; }
     <div class="filter-group">
       <label>Home Type</label>
       <div class="pill-group" id="pillsType">
-        <button class="pill" data-value="Single Family Residence" onclick="togglePill(this)">House</button>
+        <button class="pill active" data-value="Single Family Residence" onclick="togglePill(this)">House</button>
         <button class="pill" data-value="Condominium" onclick="togglePill(this)">Condo</button>
         <button class="pill" data-value="Townhouse" onclick="togglePill(this)">Townhouse</button>
         <button class="pill" data-value="Residential Income" onclick="togglePill(this)">Multi-Family</button>
@@ -1120,8 +1120,8 @@ let drawClickTimeout = null;
 // MAP INIT — Leaflet + tile layers
 // ═══════════════════════════════════════
 const map = L.map('map', {
-  center: [25.7617, -80.1918],
-  zoom: 12,
+  center: [25.6646, -80.3070],
+  zoom: 13,
   zoomControl: true
 });
 
@@ -1242,9 +1242,11 @@ function applyMoreFilters() {
 
 function resetMoreFilters() {
   document.querySelectorAll('.more-filters-panel .pill').forEach(function(p) { p.classList.remove('active'); });
-  // Re-activate "Active" status pill by default
+  // Re-activate default pills
   var activePill = document.querySelector('#pillsStatus .pill[data-value="Active"]');
   if (activePill) activePill.classList.add('active');
+  var housePill = document.querySelector('#pillsType .pill[data-value="Single Family Residence"]');
+  if (housePill) housePill.classList.add('active');
   document.getElementById('filterDOM').value = '';
   document.getElementById('filterSqftMin').value = '';
   document.getElementById('filterSqftMax').value = '';
@@ -1951,9 +1953,9 @@ function resetFilters() {
   document.getElementById('toggleRent').classList.remove('active');
   document.getElementById('filterPriceMin').placeholder = 'Min $';
   document.getElementById('filterPriceMax').placeholder = 'Max $';
-  document.getElementById('filterCity').value = 'Miami';
+  document.getElementById('filterCity').value = 'Pinecrest';
   document.getElementById('filterPriceMin').value = '';
-  document.getElementById('filterPriceMax').value = '';
+  document.getElementById('filterPriceMax').value = '$5,000,000';
   document.getElementById('filterBeds').value = '';
   document.getElementById('filterBaths').value = '';
   document.getElementById('sortSelect').value = 'ListPrice desc';
@@ -1966,7 +1968,7 @@ function resetFilters() {
   showState('initial');
   userMovedMap = false;
   document.getElementById('btnSearchArea').style.display = 'none';
-  map.setView([25.7617, -80.1918], 12);
+  map.setView([25.6646, -80.3070], 13);
 }
 
 // Price formatting on blur
@@ -2104,7 +2106,7 @@ function clearDrawing() {
 function clearDrawingAndSearch() {
   clearDrawing();
   if (!document.getElementById('filterCity').value) {
-    document.getElementById('filterCity').value = 'Miami';
+    document.getElementById('filterCity').value = 'Pinecrest';
   }
   searchProperties();
 }
