@@ -381,19 +381,102 @@ h2 {
 
 
 /* ═══════════════════════════════════════
-   PROJECTS — 2-col grid, gap 16px
+   PROJECTS — Stacking Cards
    ═══════════════════════════════════════ */
 .section-projects {
-  padding: 75px 0;
+  padding: 75px 0 0;
 }
 .section-title {
   margin-bottom: 40px;
 }
-.projects-grid {
+
+/* Stacking cards container — tall enough for all cards to scroll through */
+.stack-container {
+  position: relative;
+}
+.stack-card {
+  position: sticky;
+  top: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+  transform-origin: center top;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  will-change: transform;
+  margin-bottom: 80vh;
+  background: var(--white);
+}
+.stack-card:last-child {
+  margin-bottom: 0;
+}
+.stack-card-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  min-height: 420px;
 }
+.stack-card-image {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  position: relative;
+  overflow: hidden;
+}
+.stack-card-image::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.stack-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px;
+}
+.stack-card-tag {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+.stack-card-name {
+  font-family: var(--font);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: var(--black);
+  margin-bottom: 16px;
+}
+.stack-card-desc {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--gray);
+  max-width: 400px;
+}
+.stack-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--black);
+  transition: opacity 0.3s;
+}
+.stack-card-link:hover { opacity: 0.6; }
+
+/* Legacy grid fallback — keep for reference but hidden by default */
+.projects-grid {
+  display: none;
+}
+
 .project-card {
   display: block;
   position: relative;
@@ -852,19 +935,37 @@ h4 {
   transform: scale(1);
 }
 
-/* Hero name letter animation */
-.hero-titles h1 .letter {
+/* Hero character 3D flip-up animation */
+.hero-titles {
+  perspective: 800px;
+}
+.hero-titles h1 {
+  overflow: hidden;
+}
+.hero-titles h1 .char {
   display: inline-block;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.6s ease;
-  will-change: opacity, transform, color;
+  transform: translateY(40px) rotateX(-80deg);
+  transform-origin: center bottom;
+  animation: charReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  transition: color 0.6s ease;
 }
-.hero-titles h1 .letter.visible {
-  opacity: 1;
-  transform: translateY(0);
+.hero-titles h1 .char-space {
+  display: inline-block;
+  width: 0.3em;
+}
+@keyframes charReveal {
+  from { opacity: 0; transform: translateY(40px) rotateX(-80deg); }
+  to   { opacity: 1; transform: translateY(0) rotateX(0deg); }
+}
+@keyframes heroPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+.hero-titles.pulse {
+  animation: heroPulse 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Cinematic text reveal */
@@ -946,14 +1047,21 @@ h4 {
 @media (prefers-reduced-motion: reduce) {
   .scroll-progress { display: none; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
-  .stagger-children > *, .hero-titles h1 .letter {
+  .stagger-children > *, .hero-titles h1 .char {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
     transition: none !important;
+    animation: none !important;
   }
+  .hero-titles.pulse { animation: none !important; }
   .navbar { transition: none !important; }
   .section-hero { transform: none !important; }
+  .stack-card {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
 
 
@@ -989,6 +1097,27 @@ h4 {
   .video-wrapper { margin: 0 20px; }
   .btn-outline { width: 100%; }
   .stat-number { font-size: 32px; }
+
+  /* Disable sticky stacking on mobile — show cards as normal blocks */
+  .stack-card {
+    position: relative;
+    top: auto;
+    margin-bottom: 24px;
+  }
+  .stack-card-inner {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .stack-card-image {
+    min-height: 240px;
+  }
+  .stack-card-content {
+    padding: 28px 24px;
+  }
+  .stack-card-name {
+    font-size: 26px;
+    letter-spacing: -1px;
+  }
 }
 </style>
 </head>
@@ -1115,37 +1244,58 @@ h4 {
       <h2>Best</h2>
       <h2>Projects</h2>
     </div>
-    <div class="projects-grid">
-      <a href="#" class="project-card reveal-left">
-        <div class="project-image" data-label="AMBAR" style="background: linear-gradient(135deg, #4a9d8f 0%, #7bb5a8 30%, #d4c5a0 60%, #e8dcc0 80%, #87b2d4 100%);"></div>
-        <div class="project-info">
-          <span class="project-name">AMBAR Orlando Apartments by Marriott Bonvoy</span>
-          <span class="project-tag">Development</span>
+
+    <div class="stack-container" id="stackContainer">
+      <div class="stack-card" style="z-index: 10; background: #f8f9f7;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="AMBAR" style="background: linear-gradient(135deg, #4a9d8f 0%, #7bb5a8 30%, #d4c5a0 60%, #e8dcc0 80%, #87b2d4 100%);"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Development</span>
+            <div class="stack-card-name">AMBAR Orlando Apartments by Marriott Bonvoy</div>
+            <p class="stack-card-desc">A luxury apartment-hotel concept developed in partnership with Marriott Bonvoy — blending hospitality with long-term residential returns.</p>
+            <a href="#" class="stack-card-link">View Project <span>&#8599;</span></a>
+          </div>
         </div>
-      </a>
-      <a href="#" class="project-card reveal-right">
-        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #2c2c2c, #555);"></div>
-        <div class="project-info">
-          <span class="project-name">Art for canvas</span>
-          <span class="project-tag">Design</span>
+      </div>
+
+      <div class="stack-card" style="z-index: 20; background: #f5f5f8;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="RETCO" style="background: linear-gradient(135deg, #2c2c2c, #555);"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Acquisitions</span>
+            <div class="stack-card-name">RETCO — Distressed Asset Acquisitions</div>
+            <p class="stack-card-desc">Sourcing, underwriting, and acquiring distressed foreclosure properties across South Florida for repositioning and resale.</p>
+            <a href="#" class="stack-card-link">View Project <span>&#8599;</span></a>
+          </div>
         </div>
-      </a>
-      <a href="#" class="project-card reveal-left">
-        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #f7971e, #ffd200);"></div>
-        <div class="project-info">
-          <span class="project-name">Color research &amp; empliment</span>
-          <span class="project-tag">Design</span>
+      </div>
+
+      <div class="stack-card" style="z-index: 30; background: #faf8f5;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="MICASA" style="background: linear-gradient(135deg, #f7971e, #ffd200);"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Development</span>
+            <div class="stack-card-name">MICASA — Real Estate Development</div>
+            <p class="stack-card-desc">Ground-up residential development focused on Miami's high-demand corridors — from permitting through delivery.</p>
+            <a href="#" class="stack-card-link">View Project <span>&#8599;</span></a>
+          </div>
         </div>
-      </a>
-      <a href="#" class="project-card reveal-right">
-        <div class="project-image" data-label="Project Image" style="background: linear-gradient(135deg, #4b6a4e, #8fa68f);"></div>
-        <div class="project-info">
-          <span class="project-name">Uden Branding &amp; strategy</span>
-          <span class="project-tag">Design</span>
+      </div>
+
+      <div class="stack-card" style="z-index: 40; background: #f5f8f5;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="UBIICA" style="background: linear-gradient(135deg, #4b6a4e, #8fa68f);"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Brokerage</span>
+            <div class="stack-card-name">UBIICA — General Real Estate Brokerage</div>
+            <p class="stack-card-desc">Full-service brokerage handling buyer representation, seller listings, and investment portfolio advisory across Florida.</p>
+            <a href="#" class="stack-card-link">View Project <span>&#8599;</span></a>
+          </div>
         </div>
-      </a>
+      </div>
     </div>
-    <div class="projects-cta reveal-scale">
+
+    <div class="projects-cta reveal-scale" style="padding: 48px 0 75px;">
       <a href="#" class="btn-outline">
         <span>All Projects</span>
         <span class="arrow">&#8599;</span>
@@ -1366,46 +1516,56 @@ h4 {
   }, { passive: true });
 
 
-  // ─── HERO NAME: Wrap each letter in <span> ───
-  var heroTitles = document.querySelectorAll('.hero-titles h1');
-  heroTitles.forEach(function(h1) {
+  // ─── HERO NAME: Split each character into <span class="char"> with 3D flip-up ───
+  var heroTitlesEl = document.querySelector('.hero-titles');
+  var heroH1s = document.querySelectorAll('.hero-titles h1');
+  var charIndex = 0;
+
+  heroH1s.forEach(function(h1) {
     var text = h1.textContent;
     h1.textContent = '';
     for (var i = 0; i < text.length; i++) {
-      var span = document.createElement('span');
-      span.className = 'letter';
-      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
-      h1.appendChild(span);
+      if (text[i] === ' ') {
+        var spaceSpan = document.createElement('span');
+        spaceSpan.className = 'char char-space';
+        spaceSpan.textContent = '\u00A0';
+        h1.appendChild(spaceSpan);
+      } else {
+        var span = document.createElement('span');
+        span.className = 'char';
+        span.style.animationDelay = (charIndex * 40) + 'ms';
+        span.textContent = text[i];
+        h1.appendChild(span);
+      }
+      charIndex++;
     }
   });
 
-  // Stagger-reveal hero letters on load
-  var allLetters = document.querySelectorAll('.hero-titles h1 .letter');
-  allLetters.forEach(function(letter, i) {
-    setTimeout(function() { letter.classList.add('visible'); }, 80 + i * 50);
-  });
+  // After all chars land, do a subtle scale pulse on the whole heading
+  var totalChars = document.querySelectorAll('.hero-titles h1 .char').length;
+  var lastCharDelay = (totalChars - 1) * 40 + 800;
+  setTimeout(function() {
+    if (heroTitlesEl) heroTitlesEl.classList.add('pulse');
+  }, lastCharDelay);
 
   // ─── HERO NAME COLOR TRANSITION on scroll ───
   // "AL" in ALEX (indices 0,1 of first h1) → forest green
   // "SAL" in SALAZAR (indices 0,1,2 of second h1) → gold
   var h1Elements = document.querySelectorAll('.hero-titles h1');
-  var alexLetters = h1Elements[0] ? h1Elements[0].querySelectorAll('.letter') : [];
-  var salazarLetters = h1Elements[1] ? h1Elements[1].querySelectorAll('.letter') : [];
+  var alexChars = h1Elements[0] ? h1Elements[0].querySelectorAll('.char:not(.char-space)') : [];
+  var salazarChars = h1Elements[1] ? h1Elements[1].querySelectorAll('.char:not(.char-space)') : [];
 
-  // Letters to colorize: AL (first 2 of ALEX), SAL (first 3 of SALAZAR)
   var greenLetters = [];
-  for (var g = 0; g < Math.min(2, alexLetters.length); g++) greenLetters.push(alexLetters[g]);
+  for (var g = 0; g < Math.min(2, alexChars.length); g++) greenLetters.push(alexChars[g]);
   var goldLetters = [];
-  for (var d = 0; d < Math.min(3, salazarLetters.length); d++) goldLetters.push(salazarLetters[d]);
+  for (var d = 0; d < Math.min(3, salazarChars.length); d++) goldLetters.push(salazarChars[d]);
 
   function updateNameColors() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    // Transition between 100px and 400px of scroll
     var progress = Math.min(1, Math.max(0, (scrollTop - 100) / 300));
 
     greenLetters.forEach(function(el) {
       if (progress > 0) {
-        // Interpolate from black (#0a0a0a) to green (#228B22)
         var r = Math.round(10 + (34 - 10) * progress);
         var gv = Math.round(10 + (139 - 10) * progress);
         var b = Math.round(10 + (34 - 10) * progress);
@@ -1417,7 +1577,6 @@ h4 {
 
     goldLetters.forEach(function(el) {
       if (progress > 0) {
-        // Interpolate from black (#0a0a0a) to gold (#FFD700)
         var r = Math.round(10 + (255 - 10) * progress);
         var gv = Math.round(10 + (215 - 10) * progress);
         var b = Math.round(10 + (0 - 10) * progress);
@@ -1431,6 +1590,60 @@ h4 {
   window.addEventListener('scroll', function() {
     requestAnimationFrame(updateNameColors);
   }, { passive: true });
+
+
+  // ─── STACKING CARDS — scroll-driven depth effect ───
+  var stackCards = document.querySelectorAll('.stack-card');
+  var isMobile = window.innerWidth < 768;
+
+  function updateStackCards() {
+    if (isMobile || stackCards.length === 0) return;
+
+    var stickyTop = 100;
+
+    stackCards.forEach(function(card, i) {
+      var rect = card.getBoundingClientRect();
+
+      // Count how many cards AFTER this one have reached sticky position
+      var cardsOnTop = 0;
+      for (var j = i + 1; j < stackCards.length; j++) {
+        var nextRect = stackCards[j].getBoundingClientRect();
+        if (nextRect.top <= stickyTop + 10) {
+          cardsOnTop++;
+        }
+      }
+
+      if (cardsOnTop > 0) {
+        var scaleVal = Math.max(0.85, 1 - (cardsOnTop * 0.04));
+        var opacityVal = Math.max(0.4, 1 - (cardsOnTop * 0.2));
+        var translateVal = -(cardsOnTop * 15);
+        card.style.transform = 'scale(' + scaleVal + ') translateY(' + translateVal + 'px)';
+        card.style.opacity = opacityVal;
+        card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.boxShadow = '';
+      }
+    });
+  }
+
+  if (!isMobile) {
+    window.addEventListener('scroll', function() {
+      requestAnimationFrame(updateStackCards);
+    }, { passive: true });
+  }
+
+  window.addEventListener('resize', function() {
+    isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      stackCards.forEach(function(card) {
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.boxShadow = '';
+      });
+    }
+  });
 
 
   // ─── INTERSECTION OBSERVER for all reveal types ───
