@@ -246,8 +246,42 @@ img { max-width: 100%; display: block; }
 
 
 /* ═══════════════════════════════════════
-   VIDEO / FULL IMAGE — Flush under hero
-   Width: container width (1410px), margin 0 30px
+   MARQUEE STRIP — between hero & video
+   ═══════════════════════════════════════ */
+.marquee-strip {
+  background: var(--black);
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 14px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-track {
+  display: inline-flex;
+  animation: marqueeScroll 20s linear infinite;
+  will-change: transform;
+}
+.marquee-strip:hover .marquee-track {
+  animation-duration: 40s;
+}
+.marquee-item {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
+/* ═══════════════════════════════════════
+   VIDEO / FULL IMAGE — Scroll-Scale Reveal
    ═══════════════════════════════════════ */
 .section-video {
   padding: 0;
@@ -259,7 +293,11 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(145deg, #1a1a2e, #2d1b3d, #0f3460);
   position: relative;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 20px;
+  transform: scale(0.85);
+  opacity: 0.8;
+  transition: transform 0.1s ease-out, border-radius 0.1s ease-out, opacity 0.1s ease-out;
+  will-change: transform, border-radius, opacity;
 }
 @media (min-width: 1470px) {
   .video-wrapper { margin: 0 auto; }
@@ -370,6 +408,13 @@ h2 {
   letter-spacing: -0.96px;
   color: var(--black);
   max-width: 705px;
+}
+/* Line-by-line text reveal */
+.about-content-text .text-line {
+  display: block;
+  opacity: 0.15;
+  transition: opacity 0.4s ease;
+  will-change: opacity;
 }
 .text-large {
   font-size: 32px;
@@ -545,11 +590,26 @@ h2 {
 
 
 /* ═══════════════════════════════════════
-   SERVICES — H3: 54px, weight 500,
-   line-height 1.1, letter-spacing -2.7px
+   SERVICES — Horizontal Scroll
    ═══════════════════════════════════════ */
-.section-services {
-  padding: 75px 0;
+.services-scroll-outer {
+  position: relative;
+}
+.services-scroll-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 30px;
+}
+.services-scroll-sticky .container {
+  max-width: 1410px;
+}
+@media (min-width: 1470px) {
+  .services-scroll-sticky .container { margin: 0 auto; }
 }
 
 h3 {
@@ -573,14 +633,16 @@ h3 {
   align-items: center;
   gap: 8px;
 }
-.services-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+.services-scroll-track {
+  display: flex;
   gap: 24px;
+  will-change: transform;
 }
 .service-card {
+  flex: 0 0 380px;
   border-top: 1px solid var(--gray-light);
   padding-top: 32px;
+  min-height: 320px;
 }
 .service-title {
   font-family: var(--font);
@@ -648,31 +710,55 @@ h3 {
 
 
 /* ═══════════════════════════════════════
-   TESTIMONIALS — 2-col, gray bg cards
+   TESTIMONIALS — Scroll-Driven Carousel
    ═══════════════════════════════════════ */
-.section-testimonials {
-  padding: 75px 0;
+.testimonial-scroll-outer {
+  position: relative;
 }
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 48px;
+.testimonial-scroll-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.testimonial-viewport {
+  position: relative;
+  max-width: 800px;
+  margin: 48px auto 0;
+  min-height: 320px;
 }
 .testimonial-card {
   background: var(--gray-bg);
-  padding: 40px;
+  padding: 48px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 280px;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  will-change: opacity, transform;
+}
+.testimonial-card.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.testimonial-card.prev {
+  opacity: 0;
+  transform: translateX(-60px);
 }
 .testimonial-quote {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--black);
-  letter-spacing: -0.18px;
+  letter-spacing: -0.3px;
 }
 .testimonial-author {
   display: flex;
@@ -693,6 +779,23 @@ h3 {
 .testimonial-role {
   font-size: 14px;
   color: var(--gray);
+}
+.testimonial-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+}
+.testimonial-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gray-light);
+  transition: background 0.3s, transform 0.3s;
+}
+.testimonial-dot.active {
+  background: var(--black);
+  transform: scale(1.3);
 }
 
 
@@ -728,18 +831,39 @@ h3 {
 
 
 /* ═══════════════════════════════════════
-   CTA — READY TO BUILD
+   CTA — Zoom-In Reveal
    ═══════════════════════════════════════ */
 .section-cta {
   padding: 75px 0 0;
+}
+.cta-zoom-card {
+  border-radius: 24px;
+  overflow: hidden;
+  transform: scale(0.85);
+  opacity: 0.6;
+  transition: transform 0.1s ease-out, border-radius 0.1s ease-out, opacity 0.1s ease-out;
+  will-change: transform, border-radius, opacity;
+  background: var(--gray-bg);
 }
 .cta-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
 }
-.cta-left { padding-bottom: 75px; }
+.cta-left { padding: 75px 0 75px 48px; }
 .cta-left h2 { margin-bottom: 32px; }
+/* CTA word-by-word reveal */
+.cta-left h2 .cta-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.cta-left h2 .cta-word.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 .cta-meta {
   display: flex;
   align-items: center;
@@ -853,6 +977,24 @@ h4 {
 }
 .footer-bottom a { margin-left: 24px; transition: opacity 0.3s; }
 .footer-bottom a:hover { opacity: 0.5; }
+/* Footer stagger reveal */
+.footer-stagger-col {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.footer-stagger-col.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.footer-bottom-reveal {
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+.footer-bottom-reveal.visible {
+  opacity: 1;
+}
 .footer-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1047,7 +1189,9 @@ h4 {
 @media (prefers-reduced-motion: reduce) {
   .scroll-progress { display: none; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
-  .stagger-children > *, .hero-titles h1 .char {
+  .stagger-children > *, .hero-titles h1 .char,
+  .footer-stagger-col, .footer-bottom-reveal,
+  .cta-left h2 .cta-word {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
@@ -1055,12 +1199,33 @@ h4 {
     animation: none !important;
   }
   .hero-titles.pulse { animation: none !important; }
+  .marquee-track { animation: none !important; }
   .navbar { transition: none !important; }
   .section-hero { transform: none !important; }
-  .stack-card {
+  .stack-card, .cta-zoom-card {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;
+    border-radius: 0 !important;
+  }
+  .video-wrapper {
+    transform: none !important;
+    opacity: 1 !important;
+    border-radius: 0 !important;
+    transition: none !important;
+  }
+  .about-content-text .text-line {
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  .services-scroll-track {
+    transform: none !important;
+  }
+  .testimonial-card {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 
@@ -1085,20 +1250,20 @@ h4 {
   .nav-left .nav-link,
   .nav-center { display: none; }
   .projects-grid { grid-template-columns: 1fr; }
-  .services-grid { grid-template-columns: 1fr; }
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
   .about-left { gap: 32px; }
   .about-stats-row { justify-content: flex-start; margin-bottom: 40px; }
   .cta-layout { grid-template-columns: 1fr; }
+  .cta-left { padding: 40px 24px; }
+  .cta-zoom-card { transform: none; opacity: 1; border-radius: 12px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .award-row { grid-template-columns: 40px 1fr 100px; }
   .award-date { display: none; }
-  .testimonials-grid { grid-template-columns: 1fr; }
-  .video-wrapper { margin: 0 20px; }
+  .video-wrapper { margin: 0 20px; transform: none; opacity: 1; border-radius: 8px; }
   .btn-outline { width: 100%; }
   .stat-number { font-size: 32px; }
 
-  /* Disable sticky stacking on mobile — show cards as normal blocks */
+  /* Disable sticky stacking on mobile */
   .stack-card {
     position: relative;
     top: auto;
@@ -1108,16 +1273,44 @@ h4 {
     grid-template-columns: 1fr;
     min-height: auto;
   }
-  .stack-card-image {
-    min-height: 240px;
+  .stack-card-image { min-height: 240px; }
+  .stack-card-content { padding: 28px 24px; }
+  .stack-card-name { font-size: 26px; letter-spacing: -1px; }
+
+  /* Services: disable horizontal scroll, show stacked */
+  .services-scroll-outer { height: auto !important; }
+  .services-scroll-sticky {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: 75px 20px;
   }
-  .stack-card-content {
-    padding: 28px 24px;
+  .services-scroll-track {
+    flex-direction: column;
+    transform: none !important;
   }
-  .stack-card-name {
-    font-size: 26px;
-    letter-spacing: -1px;
+  .service-card { flex: none; width: 100%; }
+
+  /* Testimonials: disable carousel, show stacked */
+  .testimonial-scroll-outer { height: auto !important; }
+  .testimonial-scroll-sticky {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: 75px 0;
   }
+  .testimonial-viewport {
+    position: relative;
+    min-height: auto;
+  }
+  .testimonial-card {
+    position: relative;
+    opacity: 1;
+    transform: none;
+    margin-bottom: 24px;
+  }
+  .testimonial-dots { display: none; }
+  .testimonial-quote { font-size: 18px; }
 }
 </style>
 </head>
@@ -1186,9 +1379,38 @@ h4 {
 
 
 <!-- ═══════════════════════════════════════
-     VIDEO / IMAGE — margin 0 30px, full container width
+     MARQUEE STRIP
      ═══════════════════════════════════════ -->
-<section class="section-video">
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
+    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     VIDEO / IMAGE — Scroll-Scale Reveal
+     ═══════════════════════════════════════ -->
+<section class="section-video" id="sectionVideo">
   <div class="video-wrapper">
     <div class="video-overlay">
       <span class="icon-star" style="color: var(--white);">&#x2726;</span>
@@ -1226,8 +1448,8 @@ h4 {
             <span class="stat-label">Ubiica</span>
           </div>
         </div>
-        <div class="reveal">
-          <p class="about-content-text">Alex has distinguished himself as one of South Florida's most knowledgeable real estate professionals in a variety of disciplines. As the partner in RETCO — distressed foreclosure acquisitions, MICASA — real estate development, and UBIICA — general real estate brokerage.</p>
+        <div>
+          <p class="about-content-text" id="aboutText">Alex has distinguished himself as one of South Florida's most knowledgeable real estate professionals in a variety of disciplines. As the partner in RETCO — distressed foreclosure acquisitions, MICASA — real estate development, and UBIICA — general real estate brokerage.</p>
         </div>
       </div>
     </div>
@@ -1306,104 +1528,112 @@ h4 {
 
 
 <!-- ═══════════════════════════════════════
-     SERVICES
+     SERVICES — Horizontal Scroll
      ═══════════════════════════════════════ -->
-<section class="section-services">
-  <div class="container">
-    <div class="services-header reveal">
-      <h3>RE</h3>
-      <h3>Services</h3>
-      <div class="services-meta">
-        <span class="icon-star">&#x2726;</span>
-        <span>Alex is a real estate entrepreneur</span>
-      </div>
-    </div>
-    <div class="services-grid">
-      <div class="service-card reveal">
-        <div class="service-title">Buyer<br>Representation</div>
-        <p class="service-desc">Tell us what you're looking for — budget, location, property type — and we'll curate your search.</p>
-        <div class="service-cta">
-          <a href="#" class="btn-outline">
-            <span>Start Your Search</span>
-            <span class="arrow">&#8599;</span>
-          </a>
+<div class="services-scroll-outer" id="servicesScrollOuter">
+  <div class="services-scroll-sticky">
+    <div class="container">
+      <div class="services-header reveal">
+        <h3>RE</h3>
+        <h3>Services</h3>
+        <div class="services-meta">
+          <span class="icon-star">&#x2726;</span>
+          <span>Alex is a real estate entrepreneur</span>
         </div>
       </div>
-      <div class="service-card reveal">
-        <div class="service-title">Seller<br>Listings</div>
-        <p class="service-desc">Get a market analysis on your property and a strategy to maximize your sale price.</p>
-        <div class="service-cta">
-          <a href="#" class="btn-outline">
-            <span>List Your Property</span>
-            <span class="arrow">&#8599;</span>
-          </a>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-title">RE Portfolio<br>Analysis</div>
-        <p class="service-desc">Submit your holdings for a full review — valuations, repositioning opportunities, and exit strategies.</p>
-        <div class="service-cta">
-          <a href="#" class="btn-outline">
-            <span>Request Analysis</span>
-            <span class="arrow">&#8599;</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-
-<!-- ═══════════════════════════════════════
-     TESTIMONIALS
-     ═══════════════════════════════════════ -->
-<section class="section-testimonials">
-  <div class="container">
-    <div class="reveal">
-      <h2>Clients</h2>
-      <h2>Feedback</h2>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card reveal-left">
-        <p class="testimonial-quote">
-          "Alex made buying our first home in Miami feel effortless. We came in overwhelmed by the market and he broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days. I tell everyone I know to call him first."
-        </p>
-        <div class="testimonial-author">
-          <div class="testimonial-logo"></div>
-          <div>
-            <div class="testimonial-name">Carolina & David Menendez</div>
-            <div class="testimonial-role">Buyer — Coral Gables</div>
+      <div class="services-scroll-track" id="servicesTrack">
+        <div class="service-card">
+          <div class="service-title">Buyer<br>Representation</div>
+          <p class="service-desc">Tell us what you're looking for — budget, location, property type — and we'll curate your search.</p>
+          <div class="service-cta">
+            <a href="#" class="btn-outline">
+              <span>Start Your Search</span>
+              <span class="arrow">&#8599;</span>
+            </a>
           </div>
         </div>
-      </div>
-      <div class="testimonial-card reveal-right">
-        <p class="testimonial-quote">
-          "I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, brought in professional staging and photography, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched — he knew exactly who to put it in front of."
-        </p>
-        <div class="testimonial-author">
-          <div class="testimonial-logo"></div>
-          <div>
-            <div class="testimonial-name">Marco Vidal</div>
-            <div class="testimonial-role">Seller — Little Havana</div>
+        <div class="service-card">
+          <div class="service-title">Seller<br>Listings</div>
+          <p class="service-desc">Get a market analysis on your property and a strategy to maximize your sale price.</p>
+          <div class="service-cta">
+            <a href="#" class="btn-outline">
+              <span>List Your Property</span>
+              <span class="arrow">&#8599;</span>
+            </a>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-title">RE Portfolio<br>Analysis</div>
+          <p class="service-desc">Submit your holdings for a full review — valuations, repositioning opportunities, and exit strategies.</p>
+          <div class="service-cta">
+            <a href="#" class="btn-outline">
+              <span>Request Analysis</span>
+              <span class="arrow">&#8599;</span>
+            </a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 
 
 
 <!-- ═══════════════════════════════════════
-     CTA — READY TO BUILD
+     TESTIMONIALS — Scroll-Driven Carousel
      ═══════════════════════════════════════ -->
-<section class="section-cta" id="contact">
-  <div class="container">
+<div class="testimonial-scroll-outer" id="testimonialScrollOuter">
+  <div class="testimonial-scroll-sticky">
+    <div class="container">
+      <div class="reveal">
+        <h2>Clients</h2>
+        <h2>Feedback</h2>
+      </div>
+      <div class="testimonial-viewport" id="testimonialViewport">
+        <div class="testimonial-card active" data-index="0">
+          <p class="testimonial-quote">
+            "Alex made buying our first home in Miami feel effortless. He broke everything down — comps, neighborhood trends, even flood zone considerations we never would have thought of. He negotiated $40K off asking and got the seller to cover closing costs. We closed in 32 days."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-logo"></div>
+            <div>
+              <div class="testimonial-name">Carolina &amp; David Menendez</div>
+              <div class="testimonial-role">Buyer — Coral Gables</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card" data-index="1">
+          <p class="testimonial-quote">
+            "I had a duplex in Little Havana that sat on the market for five months with another agent. Alex took over, repositioned the listing, and had three offers within two weeks. We closed above asking. His knowledge of the investment buyer pool is unmatched."
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-logo"></div>
+            <div>
+              <div class="testimonial-name">Marco Vidal</div>
+              <div class="testimonial-role">Seller — Little Havana</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-dots" id="testimonialDots">
+        <div class="testimonial-dot active" data-index="0"></div>
+        <div class="testimonial-dot" data-index="1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- ═══════════════════════════════════════
+     CTA — Zoom-In Reveal
+     ═══════════════════════════════════════ -->
+<section class="section-cta" id="sectionCta">
+  <div class="cta-zoom-card" id="ctaZoomCard">
     <div class="cta-layout">
-      <div class="cta-left reveal">
+      <div class="cta-left" id="ctaLeft">
         <h2>Ready to</h2>
         <h2>start your</h2>
         <h2>home search?</h2>
@@ -1430,7 +1660,7 @@ h4 {
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <div>
+      <div class="footer-stagger-col">
         <div class="footer-logo">S&amp;CO</div>
         <div class="footer-info-grid">
           <div>
@@ -1443,19 +1673,19 @@ h4 {
           </div>
         </div>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-stagger-col">
         <div class="footer-col-title">Pages</div>
         <a href="#about">About</a>
         <a href="#projects">Projects</a>
         <a href="property-search.html">Property Search</a>
         <a href="contact.html">Contact</a>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-stagger-col">
         <div class="footer-col-title">Socials</div>
         <a href="#">Instagram</a>
         <a href="#">LinkedIn</a>
       </div>
-      <div>
+      <div class="footer-stagger-col">
         <h4 style="margin-bottom: 16px; font-size: 28px;">Mailing List</h4>
         <div class="footer-newsletter">
           <input type="email" placeholder="Email">
@@ -1463,7 +1693,7 @@ h4 {
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="footer-bottom footer-bottom-reveal">
       <span>&copy; 2026 Salazar &amp; Co. All rights reserved.</span>
       <div>
         <a href="#">Privacy Policy</a>
@@ -1481,42 +1711,47 @@ h4 {
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reducedMotion) return;
 
-  // ─── SCROLL PROGRESS BAR ───
+  var isMobile = window.innerWidth < 768;
+
+  // ─── SCROLL PROGRESS BAR + NAVBAR + PARALLAX ───
   var progressBar = document.getElementById('scrollProgress');
+  var navbar = document.querySelector('.navbar');
+  var hero = document.querySelector('.section-hero');
   var ticking = false;
 
   function updateScroll() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    progressBar.style.width = progress + '%';
-
-    // ─── NAVBAR SCROLL STATE ───
-    var navbar = document.querySelector('.navbar');
-    if (scrollTop > 60) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-
-    // ─── HERO PARALLAX ───
-    var hero = document.querySelector('.section-hero');
-    if (hero && scrollTop < window.innerHeight) {
-      hero.style.transform = 'translateY(' + (scrollTop * 0.3) + 'px)';
-    }
-
+    if (docHeight > 0) progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+    if (scrollTop > 60) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+    if (hero && scrollTop < window.innerHeight) hero.style.transform = 'translateY(' + (scrollTop * 0.3) + 'px)';
     ticking = false;
   }
 
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(updateScroll);
-      ticking = true;
+  // ─── UNIFIED SCROLL HANDLER (throttled with rAF) ───
+  function onScroll() {
+    if (!ticking) { requestAnimationFrame(masterScrollUpdate); ticking = true; }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  function masterScrollUpdate() {
+    updateScroll();
+    updateNameColors();
+    if (!isMobile) {
+      updateStackCards();
+      updateVideoScale();
+      updateAboutTextReveal();
+      updateServicesScroll();
+      updateTestimonialCarousel();
+      updateCtaZoom();
     }
-  }, { passive: true });
+    ticking = false;
+  }
 
 
-  // ─── HERO NAME: Split each character into <span class="char"> with 3D flip-up ───
+  // ═══════════════════════════════════════
+  // HERO NAME: 3D flip-up char animation
+  // ═══════════════════════════════════════
   var heroTitlesEl = document.querySelector('.hero-titles');
   var heroH1s = document.querySelectorAll('.hero-titles h1');
   var charIndex = 0;
@@ -1541,84 +1776,105 @@ h4 {
     }
   });
 
-  // After all chars land, do a subtle scale pulse on the whole heading
   var totalChars = document.querySelectorAll('.hero-titles h1 .char').length;
-  var lastCharDelay = (totalChars - 1) * 40 + 800;
-  setTimeout(function() {
-    if (heroTitlesEl) heroTitlesEl.classList.add('pulse');
-  }, lastCharDelay);
+  setTimeout(function() { if (heroTitlesEl) heroTitlesEl.classList.add('pulse'); }, (totalChars - 1) * 40 + 800);
 
-  // ─── HERO NAME COLOR TRANSITION on scroll ───
-  // "AL" in ALEX (indices 0,1 of first h1) → forest green
-  // "SAL" in SALAZAR (indices 0,1,2 of second h1) → gold
+  // ─── AL → green, SAL → gold color transition ───
   var h1Elements = document.querySelectorAll('.hero-titles h1');
   var alexChars = h1Elements[0] ? h1Elements[0].querySelectorAll('.char:not(.char-space)') : [];
   var salazarChars = h1Elements[1] ? h1Elements[1].querySelectorAll('.char:not(.char-space)') : [];
-
-  var greenLetters = [];
+  var greenLetters = [], goldLetters = [];
   for (var g = 0; g < Math.min(2, alexChars.length); g++) greenLetters.push(alexChars[g]);
-  var goldLetters = [];
   for (var d = 0; d < Math.min(3, salazarChars.length); d++) goldLetters.push(salazarChars[d]);
 
   function updateNameColors() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     var progress = Math.min(1, Math.max(0, (scrollTop - 100) / 300));
-
     greenLetters.forEach(function(el) {
-      if (progress > 0) {
-        var r = Math.round(10 + (34 - 10) * progress);
-        var gv = Math.round(10 + (139 - 10) * progress);
-        var b = Math.round(10 + (34 - 10) * progress);
-        el.style.color = 'rgb(' + r + ',' + gv + ',' + b + ')';
-      } else {
-        el.style.color = '';
-      }
+      if (progress > 0) { el.style.color = 'rgb(' + Math.round(10+(34-10)*progress) + ',' + Math.round(10+(139-10)*progress) + ',' + Math.round(10+(34-10)*progress) + ')'; }
+      else { el.style.color = ''; }
     });
-
     goldLetters.forEach(function(el) {
-      if (progress > 0) {
-        var r = Math.round(10 + (255 - 10) * progress);
-        var gv = Math.round(10 + (215 - 10) * progress);
-        var b = Math.round(10 + (0 - 10) * progress);
-        el.style.color = 'rgb(' + r + ',' + gv + ',' + b + ')';
-      } else {
-        el.style.color = '';
-      }
+      if (progress > 0) { el.style.color = 'rgb(' + Math.round(10+(255-10)*progress) + ',' + Math.round(10+(215-10)*progress) + ',' + Math.round(10+(0-10)*progress) + ')'; }
+      else { el.style.color = ''; }
     });
   }
 
-  window.addEventListener('scroll', function() {
-    requestAnimationFrame(updateNameColors);
-  }, { passive: true });
+
+  // ═══════════════════════════════════════
+  // 2. VIDEO — Scroll-Scale Reveal
+  // ═══════════════════════════════════════
+  var videoWrapper = document.querySelector('.video-wrapper');
+  var videoObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var ratio = entry.intersectionRatio;
+      var s = 0.85 + ratio * 0.15;
+      var r = 20 - ratio * 12;
+      var o = 0.8 + ratio * 0.2;
+      videoWrapper.style.transform = 'scale(' + s + ')';
+      videoWrapper.style.borderRadius = r + 'px';
+      videoWrapper.style.opacity = o;
+    });
+  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] });
+  if (videoWrapper && !isMobile) videoObserver.observe(videoWrapper);
+
+  function updateVideoScale() { /* handled by IntersectionObserver above */ }
 
 
-  // ─── STACKING CARDS — scroll-driven depth effect ───
+  // ═══════════════════════════════════════
+  // 3. ABOUT — Line-by-Line Text Reveal
+  // ═══════════════════════════════════════
+  var aboutText = document.getElementById('aboutText');
+  var aboutLines = [];
+
+  if (aboutText) {
+    // Split text into sentence fragments for line-by-line reveal
+    var rawText = aboutText.textContent.trim();
+    var sentences = rawText.split(/(?<=\.)\s+|(?<=—)\s+/);
+    aboutText.textContent = '';
+    sentences.forEach(function(sentence) {
+      var span = document.createElement('span');
+      span.className = 'text-line';
+      span.textContent = sentence + ' ';
+      aboutText.appendChild(span);
+      aboutLines.push(span);
+    });
+  }
+
+  function updateAboutTextReveal() {
+    if (aboutLines.length === 0 || !aboutText) return;
+    var section = document.getElementById('about');
+    if (!section) return;
+    var rect = section.getBoundingClientRect();
+    var sectionH = rect.height;
+    var viewH = window.innerHeight;
+    // progress: 0 when section top at bottom of viewport, 1 when section bottom at top
+    var progress = Math.min(1, Math.max(0, (viewH - rect.top) / (sectionH + viewH * 0.3)));
+
+    aboutLines.forEach(function(line, i) {
+      var lineProgress = (progress - (i / aboutLines.length) * 0.6) / 0.4;
+      lineProgress = Math.min(1, Math.max(0, lineProgress));
+      line.style.opacity = 0.15 + lineProgress * 0.85;
+    });
+  }
+
+
+  // ═══════════════════════════════════════
+  // STACKING CARDS
+  // ═══════════════════════════════════════
   var stackCards = document.querySelectorAll('.stack-card');
-  var isMobile = window.innerWidth < 768;
 
   function updateStackCards() {
-    if (isMobile || stackCards.length === 0) return;
-
+    if (stackCards.length === 0) return;
     var stickyTop = 100;
-
     stackCards.forEach(function(card, i) {
-      var rect = card.getBoundingClientRect();
-
-      // Count how many cards AFTER this one have reached sticky position
       var cardsOnTop = 0;
       for (var j = i + 1; j < stackCards.length; j++) {
-        var nextRect = stackCards[j].getBoundingClientRect();
-        if (nextRect.top <= stickyTop + 10) {
-          cardsOnTop++;
-        }
+        if (stackCards[j].getBoundingClientRect().top <= stickyTop + 10) cardsOnTop++;
       }
-
       if (cardsOnTop > 0) {
-        var scaleVal = Math.max(0.85, 1 - (cardsOnTop * 0.04));
-        var opacityVal = Math.max(0.4, 1 - (cardsOnTop * 0.2));
-        var translateVal = -(cardsOnTop * 15);
-        card.style.transform = 'scale(' + scaleVal + ') translateY(' + translateVal + 'px)';
-        card.style.opacity = opacityVal;
+        card.style.transform = 'scale(' + Math.max(0.85, 1 - cardsOnTop * 0.04) + ') translateY(' + -(cardsOnTop * 15) + 'px)';
+        card.style.opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
         card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
       } else {
         card.style.transform = '';
@@ -1628,25 +1884,161 @@ h4 {
     });
   }
 
-  if (!isMobile) {
-    window.addEventListener('scroll', function() {
-      requestAnimationFrame(updateStackCards);
-    }, { passive: true });
+
+  // ═══════════════════════════════════════
+  // 4. SERVICES — Horizontal Scroll
+  // ═══════════════════════════════════════
+  var servicesOuter = document.getElementById('servicesScrollOuter');
+  var servicesTrack = document.getElementById('servicesTrack');
+
+  if (servicesOuter && servicesTrack && !isMobile) {
+    // Set outer height to create scroll distance
+    var serviceCards = servicesTrack.querySelectorAll('.service-card');
+    var trackWidth = 0;
+    serviceCards.forEach(function(c) { trackWidth += c.offsetWidth + 24; });
+    var scrollDistance = trackWidth - window.innerWidth + 200;
+    servicesOuter.style.height = (window.innerHeight + Math.max(scrollDistance, 0)) + 'px';
   }
 
-  window.addEventListener('resize', function() {
-    isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      stackCards.forEach(function(card) {
-        card.style.transform = '';
-        card.style.opacity = '';
-        card.style.boxShadow = '';
-      });
-    }
+  function updateServicesScroll() {
+    if (!servicesOuter || !servicesTrack) return;
+    var rect = servicesOuter.getBoundingClientRect();
+    var outerH = servicesOuter.offsetHeight;
+    var viewH = window.innerHeight;
+    // progress: how far we've scrolled through the outer container
+    var scrolled = -rect.top;
+    var maxScroll = outerH - viewH;
+    if (maxScroll <= 0) return;
+    var progress = Math.min(1, Math.max(0, scrolled / maxScroll));
+
+    var serviceCards = servicesTrack.querySelectorAll('.service-card');
+    var trackWidth = 0;
+    serviceCards.forEach(function(c) { trackWidth += c.offsetWidth + 24; });
+    var maxTranslate = Math.max(0, trackWidth - window.innerWidth + 200);
+    servicesTrack.style.transform = 'translateX(' + -(progress * maxTranslate) + 'px)';
+
+    // Subtle parallax on card text
+    serviceCards.forEach(function(card) {
+      var inner = card.querySelector('.service-desc');
+      if (inner) inner.style.transform = 'translateX(' + (progress * 15) + 'px)';
+    });
+  }
+
+
+  // ═══════════════════════════════════════
+  // 5. TESTIMONIALS — Scroll-Driven Carousel
+  // ═══════════════════════════════════════
+  var testimonialOuter = document.getElementById('testimonialScrollOuter');
+  var testimonialCards = document.querySelectorAll('.testimonial-card');
+  var testimonialDots = document.querySelectorAll('.testimonial-dot');
+  var testimonialCount = testimonialCards.length;
+  var currentTestimonial = 0;
+
+  if (testimonialOuter && testimonialCount > 0 && !isMobile) {
+    // Set outer height: each testimonial gets ~70vh of scroll distance
+    testimonialOuter.style.height = (window.innerHeight + testimonialCount * window.innerHeight * 0.7) + 'px';
+  }
+
+  function updateTestimonialCarousel() {
+    if (!testimonialOuter || testimonialCount === 0) return;
+    var rect = testimonialOuter.getBoundingClientRect();
+    var outerH = testimonialOuter.offsetHeight;
+    var viewH = window.innerHeight;
+    var scrolled = -rect.top;
+    var maxScroll = outerH - viewH;
+    if (maxScroll <= 0) return;
+    var progress = Math.min(1, Math.max(0, scrolled / maxScroll));
+
+    var activeIndex = Math.min(testimonialCount - 1, Math.floor(progress * testimonialCount));
+    if (activeIndex === currentTestimonial) return;
+    currentTestimonial = activeIndex;
+
+    testimonialCards.forEach(function(card, i) {
+      card.classList.remove('active', 'prev');
+      if (i === activeIndex) {
+        card.classList.add('active');
+      } else if (i < activeIndex) {
+        card.classList.add('prev');
+      }
+    });
+    testimonialDots.forEach(function(dot, i) {
+      dot.classList.toggle('active', i === activeIndex);
+    });
+  }
+
+
+  // ═══════════════════════════════════════
+  // 6. CTA — Zoom-In Reveal
+  // ═══════════════════════════════════════
+  var ctaCard = document.getElementById('ctaZoomCard');
+  var ctaWordsReady = false;
+  var ctaWords = [];
+
+  // Wrap CTA heading words
+  var ctaH2s = document.querySelectorAll('#ctaLeft h2');
+  var wordIdx = 0;
+  ctaH2s.forEach(function(h2) {
+    var words = h2.textContent.split(' ');
+    h2.textContent = '';
+    words.forEach(function(word, i) {
+      var span = document.createElement('span');
+      span.className = 'cta-word';
+      span.textContent = word;
+      span.dataset.wordIdx = wordIdx++;
+      h2.appendChild(span);
+      if (i < words.length - 1) h2.appendChild(document.createTextNode(' '));
+      ctaWords.push(span);
+    });
   });
 
+  var ctaObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (isMobile) return;
+      var ratio = entry.intersectionRatio;
+      var s = 0.85 + ratio * 0.15;
+      var r = 24 - ratio * 24;
+      var o = 0.6 + ratio * 0.4;
+      ctaCard.style.transform = 'scale(' + s + ')';
+      ctaCard.style.borderRadius = r + 'px';
+      ctaCard.style.opacity = o;
 
-  // ─── INTERSECTION OBSERVER for all reveal types ───
+      // Trigger word reveal when sufficiently visible
+      if (ratio > 0.4 && !ctaWordsReady) {
+        ctaWordsReady = true;
+        ctaWords.forEach(function(span, i) {
+          setTimeout(function() { span.classList.add('visible'); }, i * 80);
+        });
+      }
+    });
+  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] });
+  if (ctaCard) ctaObserver.observe(ctaCard);
+
+  function updateCtaZoom() { /* handled by IntersectionObserver above */ }
+
+
+  // ═══════════════════════════════════════
+  // 7. FOOTER — Stagger Reveal
+  // ═══════════════════════════════════════
+  var footerObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        footerObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.footer-stagger-col').forEach(function(col, i) {
+    col.style.transitionDelay = (i * 0.1) + 's';
+    footerObserver.observe(col);
+  });
+  var footerBottom = document.querySelector('.footer-bottom-reveal');
+  if (footerBottom) footerObserver.observe(footerBottom);
+
+
+  // ═══════════════════════════════════════
+  // INTERSECTION OBSERVER — generic reveals
+  // ═══════════════════════════════════════
   var revealObserver = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
@@ -1661,7 +2053,7 @@ h4 {
   });
 
 
-  // ─── WORD STAGGER for section headings (h2, h3 inside .reveal) ───
+  // ─── WORD STAGGER for section headings ───
   document.querySelectorAll('.reveal h2, .reveal h3').forEach(function(heading) {
     var words = heading.textContent.split(' ');
     heading.textContent = '';
@@ -1677,7 +2069,6 @@ h4 {
     });
   });
 
-  // When a .reveal becomes visible, also trigger its word spans
   var wordObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -1695,9 +2086,25 @@ h4 {
     wordObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
   });
 
-  // Initial call
+
+  // ─── RESIZE HANDLER ───
+  window.addEventListener('resize', function() {
+    isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      stackCards.forEach(function(card) { card.style.transform = ''; card.style.opacity = ''; card.style.boxShadow = ''; });
+      if (servicesTrack) servicesTrack.style.transform = '';
+      if (ctaCard) { ctaCard.style.transform = ''; ctaCard.style.opacity = ''; ctaCard.style.borderRadius = ''; }
+      if (videoWrapper) { videoWrapper.style.transform = ''; videoWrapper.style.opacity = ''; videoWrapper.style.borderRadius = ''; }
+    }
+  });
+
+  // ─── Initial calls ───
   updateScroll();
   updateNameColors();
+  if (!isMobile) {
+    updateAboutTextReveal();
+    updateServicesScroll();
+  }
 })();
 </script>
 
