@@ -1363,37 +1363,76 @@ function buildFilterStr() {
 }
 
 async function fetchMapData(filterStr) {
+  var MAP_PAGE_SIZE = 200;
+  var MAX_PAGES = 5; // 1000 markers max
   var mapFields = 'ListingKey,ListPrice,Latitude,Longitude';
-  var mapUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
-    + '?$filter=' + encodeURIComponent(filterStr)
-    + '&$select=' + mapFields
-    + '&$top=500'
-    + '&$count=true';
+  var headers = {
+    'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
+    'Accept': 'application/json'
+  };
 
-  var response = await fetch(mapUrl, {
-    headers: {
-      'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
-      'Accept': 'application/json'
+  try {
+    // First request — get page 1 and total count
+    var firstUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+      + '?$filter=' + encodeURIComponent(filterStr)
+      + '&$select=' + mapFields
+      + '&$top=' + MAP_PAGE_SIZE
+      + '&$skip=0'
+      + '&$count=true';
+
+    var firstResponse = await fetch(firstUrl, { headers: headers });
+    if (!firstResponse.ok) {
+      console.warn('[S&CO Map] First map request failed:', firstResponse.status);
+      return [];
     }
-  });
 
-  if (!response.ok) {
-    var errText = await response.text();
-    throw new Error('Map API ' + response.status + ': ' + errText.substring(0, 200));
+    var firstData = await firstResponse.json();
+    var mapListings = firstData.value || [];
+    var totalCount = firstData['@odata.count'] || mapListings.length;
+
+    // If more results exist, fetch additional pages in parallel
+    if (totalCount > MAP_PAGE_SIZE) {
+      var remainingPages = Math.min(Math.ceil(totalCount / MAP_PAGE_SIZE), MAX_PAGES) - 1;
+      var pagePromises = [];
+
+      for (var p = 1; p <= remainingPages; p++) {
+        var pageUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+          + '?$filter=' + encodeURIComponent(filterStr)
+          + '&$select=' + mapFields
+          + '&$top=' + MAP_PAGE_SIZE
+          + '&$skip=' + (p * MAP_PAGE_SIZE);
+
+        pagePromises.push(
+          fetch(pageUrl, { headers: headers })
+            .then(function(resp) {
+              if (!resp.ok) return [];
+              return resp.json().then(function(d) { return d.value || []; });
+            })
+            .catch(function() { return []; })
+        );
+      }
+
+      var pageResults = await Promise.all(pagePromises);
+      pageResults.forEach(function(page) {
+        mapListings = mapListings.concat(page);
+      });
+    }
+
+    // Client-side polygon filtering for map data
+    if (drawnBounds && drawnBounds.polygon && mapListings.length > 0) {
+      mapListings = mapListings.filter(function(listing) {
+        if (!listing.Latitude || !listing.Longitude) return false;
+        return pointInPolygon([listing.Latitude, listing.Longitude], drawnBounds.polygon);
+      });
+    }
+
+    console.log('[S&CO Map] Loaded ' + mapListings.length + ' markers (total: ' + totalCount + ')');
+    return mapListings;
+
+  } catch (err) {
+    console.warn('[S&CO Map] Map data fetch failed:', err.message);
+    return [];
   }
-
-  var data = await response.json();
-  var mapListings = data.value || [];
-
-  // Client-side polygon filtering for map data
-  if (drawnBounds && drawnBounds.polygon && mapListings.length > 0) {
-    mapListings = mapListings.filter(function(listing) {
-      if (!listing.Latitude || !listing.Longitude) return false;
-      return pointInPolygon([listing.Latitude, listing.Longitude], drawnBounds.polygon);
-    });
-  }
-
-  return mapListings;
 }
 
 async function searchProperties(page) {
