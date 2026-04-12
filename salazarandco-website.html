@@ -416,8 +416,16 @@ h2 {
   margin-bottom: 80vh;
   background: var(--white);
 }
-.stack-card:last-child {
-  margin-bottom: 80vh;
+/* Invisible ghost card that triggers the fold on Ubiica */
+.stack-card-ghost {
+  height: 1px;
+  min-height: 1px;
+  padding: 0;
+  margin-bottom: 20px;
+  box-shadow: none !important;
+  visibility: hidden;
+  pointer-events: none;
+  border-radius: 0;
 }
 .stack-card-inner {
   display: grid;
@@ -1226,6 +1234,7 @@ h4 {
     top: auto;
     margin-bottom: 24px;
   }
+  .stack-card-ghost { display: none; }
   .stack-card-inner {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -1498,6 +1507,9 @@ a, button, [role="button"], input, select, textarea, label {
           </div>
         </div>
       </div>
+
+      <!-- Invisible trigger: scrolls into Ubiica's sticky position to fold it like the others -->
+      <div class="stack-card stack-card-ghost" style="z-index: 50;"></div>
     </div>
 
     <div class="projects-cta reveal-scale" style="padding: 48px 0 75px;">
@@ -1868,54 +1880,23 @@ a, button, [role="button"], input, select, textarea, label {
   function updateStackCards() {
     if (stackCards.length === 0 || !stackContainer) return;
     var stickyTop = 100;
-    var containerBottom = stackContainer.getBoundingClientRect().bottom;
 
     stackCards.forEach(function(card, i) {
-      var cardRect = card.getBoundingClientRect();
-      var isStuck = cardRect.top <= stickyTop + 5;
-      var cardsOnTop = 0;
-      var isLast = (i === stackCards.length - 1);
+      // Skip the invisible ghost card
+      if (card.classList.contains('stack-card-ghost')) return;
 
+      var cardsOnTop = 0;
       for (var j = i + 1; j < stackCards.length; j++) {
         if (stackCards[j].getBoundingClientRect().top <= stickyTop + 10) cardsOnTop++;
       }
 
-      var scale = 1;
-      var opacity = 1;
-      var translateY = 0;
-      var shadow = '';
-      var shouldAnimate = false;
-
-      // Cards with others stacked on top: shrink + fade
       if (cardsOnTop > 0) {
-        scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
-        opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
-        translateY = -(cardsOnTop * 15);
-        shadow = '0 4px 20px rgba(0,0,0,0.04)';
-        shouldAnimate = true;
-      }
-
-      // LAST CARD fold: measure remaining space below the card within the container
-      // As user scrolls, containerBottom moves up toward the card's bottom edge
-      if (isLast && isStuck) {
-        var cardBottomEdge = cardRect.top + cardRect.height;
-        var remaining = containerBottom - cardBottomEdge;
-        var foldDistance = window.innerHeight * 0.5;
-        var foldProgress = Math.min(1, Math.max(0, 1 - (remaining / foldDistance)));
-
-        if (foldProgress > 0.02) {
-          scale = 1 - foldProgress * 0.15;
-          opacity = 1 - foldProgress * 0.7;
-          translateY = -(foldProgress * 40);
-          shadow = '0 4px 20px rgba(0,0,0,' + (0.08 * (1 - foldProgress)) + ')';
-          shouldAnimate = true;
-        }
-      }
-
-      if (shouldAnimate) {
+        var scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
+        var opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
+        var translateY = -(cardsOnTop * 15);
         card.style.transform = 'scale(' + scale + ') translateY(' + translateY + 'px)';
         card.style.opacity = opacity;
-        card.style.boxShadow = shadow;
+        card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
       } else {
         card.style.transform = '';
         card.style.opacity = '';
