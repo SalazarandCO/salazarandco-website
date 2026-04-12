@@ -2033,19 +2033,33 @@ a, button, [role="button"], input, select, textarea, label {
   var stackContainer = document.getElementById('stackContainer');
 
   // ─── Typewriter helpers for Best Projects ───
+  // Wraps each word's letters in a nowrap span so lines break only between words.
   function twTypeInto(el, text, speed, cursor, onDone) {
     var i = 0;
+    var currentWord = null;
+    function insertBeforeCursor(node) {
+      if (cursor && cursor.parentNode === el) el.insertBefore(node, cursor);
+      else el.appendChild(node);
+    }
     function step() {
       if (i >= text.length) { onDone && onDone(); return; }
-      var span = document.createElement('span');
-      span.className = 'tw-char';
-      span.textContent = text.charAt(i);
-      if (cursor && cursor.parentNode === el) {
-        el.insertBefore(span, cursor);
+      var ch = text.charAt(i);
+      if (ch === ' ') {
+        currentWord = null;
+        insertBeforeCursor(document.createTextNode(' '));
       } else {
-        el.appendChild(span);
+        if (!currentWord) {
+          currentWord = document.createElement('span');
+          currentWord.style.whiteSpace = 'nowrap';
+          currentWord.style.display = 'inline';
+          insertBeforeCursor(currentWord);
+        }
+        var letter = document.createElement('span');
+        letter.className = 'tw-char';
+        letter.textContent = ch;
+        currentWord.appendChild(letter);
+        requestAnimationFrame(function() { letter.classList.add('tw-visible'); });
       }
-      requestAnimationFrame(function() { span.classList.add('tw-visible'); });
       i++;
       setTimeout(step, speed);
     }
