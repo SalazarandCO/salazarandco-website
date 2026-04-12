@@ -246,41 +246,6 @@ img { max-width: 100%; display: block; }
 
 
 /* ═══════════════════════════════════════
-   MARQUEE STRIP — between hero & video
-   ═══════════════════════════════════════ */
-.marquee-strip {
-  background: var(--black);
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 14px 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.marquee-track {
-  display: inline-flex;
-  animation: marqueeScroll 20s linear infinite;
-  will-change: transform;
-}
-.marquee-strip:hover .marquee-track {
-  animation-duration: 40s;
-}
-.marquee-item {
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--white);
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  padding: 0 24px;
-  flex-shrink: 0;
-}
-@keyframes marqueeScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-
-/* ═══════════════════════════════════════
    VIDEO / FULL IMAGE — Scroll-Scale Reveal
    ═══════════════════════════════════════ */
 .section-video {
@@ -831,39 +796,18 @@ h3 {
 
 
 /* ═══════════════════════════════════════
-   CTA — Zoom-In Reveal
+   CTA — READY TO BUILD
    ═══════════════════════════════════════ */
 .section-cta {
   padding: 75px 0 0;
-}
-.cta-zoom-card {
-  border-radius: 24px;
-  overflow: hidden;
-  transform: scale(0.85);
-  opacity: 0.6;
-  transition: transform 0.1s ease-out, border-radius 0.1s ease-out, opacity 0.1s ease-out;
-  will-change: transform, border-radius, opacity;
-  background: var(--gray-bg);
 }
 .cta-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
 }
-.cta-left { padding: 75px 0 75px 48px; }
+.cta-left { padding-bottom: 75px; }
 .cta-left h2 { margin-bottom: 32px; }
-/* CTA word-by-word reveal */
-.cta-left h2 .cta-word {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-.cta-left h2 .cta-word.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
 .cta-meta {
   display: flex;
   align-items: center;
@@ -1190,8 +1134,7 @@ h4 {
   .scroll-progress { display: none; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale, .text-reveal,
   .stagger-children > *, .hero-titles h1 .char,
-  .footer-stagger-col, .footer-bottom-reveal,
-  .cta-left h2 .cta-word {
+  .footer-stagger-col, .footer-bottom-reveal {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
@@ -1199,14 +1142,12 @@ h4 {
     animation: none !important;
   }
   .hero-titles.pulse { animation: none !important; }
-  .marquee-track { animation: none !important; }
   .navbar { transition: none !important; }
   .section-hero { transform: none !important; }
-  .stack-card, .cta-zoom-card {
+  .stack-card {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;
-    border-radius: 0 !important;
   }
   .video-wrapper {
     transform: none !important;
@@ -1254,8 +1195,6 @@ h4 {
   .about-left { gap: 32px; }
   .about-stats-row { justify-content: flex-start; margin-bottom: 40px; }
   .cta-layout { grid-template-columns: 1fr; }
-  .cta-left { padding: 40px 24px; }
-  .cta-zoom-card { transform: none; opacity: 1; border-radius: 12px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .award-row { grid-template-columns: 40px 1fr 100px; }
   .award-date { display: none; }
@@ -1376,35 +1315,6 @@ h4 {
     </div>
   </div>
 </section>
-
-
-<!-- ═══════════════════════════════════════
-     MARQUEE STRIP
-     ═══════════════════════════════════════ -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">DEVELOPMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ASSEMBLAGES</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">INVESTMENTS</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">BROKERAGE</span><span class="marquee-item">&middot;</span>
-    <span class="marquee-item">ACQUISITIONS</span><span class="marquee-item">&middot;</span>
-  </div>
-</div>
 
 
 <!-- ═══════════════════════════════════════
@@ -1628,12 +1538,12 @@ h4 {
 
 
 <!-- ═══════════════════════════════════════
-     CTA — Zoom-In Reveal
+     CTA — READY TO BUILD
      ═══════════════════════════════════════ -->
-<section class="section-cta" id="sectionCta">
-  <div class="cta-zoom-card" id="ctaZoomCard">
+<section class="section-cta" id="contact">
+  <div class="container">
     <div class="cta-layout">
-      <div class="cta-left" id="ctaLeft">
+      <div class="cta-left reveal">
         <h2>Ready to</h2>
         <h2>start your</h2>
         <h2>home search?</h2>
@@ -1743,7 +1653,6 @@ h4 {
       updateAboutTextReveal();
       updateServicesScroll();
       updateTestimonialCarousel();
-      updateCtaZoom();
     }
     ticking = false;
   }
@@ -1968,55 +1877,6 @@ h4 {
 
 
   // ═══════════════════════════════════════
-  // 6. CTA — Zoom-In Reveal
-  // ═══════════════════════════════════════
-  var ctaCard = document.getElementById('ctaZoomCard');
-  var ctaWordsReady = false;
-  var ctaWords = [];
-
-  // Wrap CTA heading words
-  var ctaH2s = document.querySelectorAll('#ctaLeft h2');
-  var wordIdx = 0;
-  ctaH2s.forEach(function(h2) {
-    var words = h2.textContent.split(' ');
-    h2.textContent = '';
-    words.forEach(function(word, i) {
-      var span = document.createElement('span');
-      span.className = 'cta-word';
-      span.textContent = word;
-      span.dataset.wordIdx = wordIdx++;
-      h2.appendChild(span);
-      if (i < words.length - 1) h2.appendChild(document.createTextNode(' '));
-      ctaWords.push(span);
-    });
-  });
-
-  var ctaObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (isMobile) return;
-      var ratio = entry.intersectionRatio;
-      var s = 0.85 + ratio * 0.15;
-      var r = 24 - ratio * 24;
-      var o = 0.6 + ratio * 0.4;
-      ctaCard.style.transform = 'scale(' + s + ')';
-      ctaCard.style.borderRadius = r + 'px';
-      ctaCard.style.opacity = o;
-
-      // Trigger word reveal when sufficiently visible
-      if (ratio > 0.4 && !ctaWordsReady) {
-        ctaWordsReady = true;
-        ctaWords.forEach(function(span, i) {
-          setTimeout(function() { span.classList.add('visible'); }, i * 80);
-        });
-      }
-    });
-  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] });
-  if (ctaCard) ctaObserver.observe(ctaCard);
-
-  function updateCtaZoom() { /* handled by IntersectionObserver above */ }
-
-
-  // ═══════════════════════════════════════
   // 7. FOOTER — Stagger Reveal
   // ═══════════════════════════════════════
   var footerObserver = new IntersectionObserver(function(entries) {
@@ -2093,7 +1953,6 @@ h4 {
     if (isMobile) {
       stackCards.forEach(function(card) { card.style.transform = ''; card.style.opacity = ''; card.style.boxShadow = ''; });
       if (servicesTrack) servicesTrack.style.transform = '';
-      if (ctaCard) { ctaCard.style.transform = ''; ctaCard.style.opacity = ''; ctaCard.style.borderRadius = ''; }
       if (videoWrapper) { videoWrapper.style.transform = ''; videoWrapper.style.opacity = ''; videoWrapper.style.borderRadius = ''; }
     }
   });
