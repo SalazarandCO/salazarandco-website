@@ -417,7 +417,7 @@ h2 {
   background: var(--white);
 }
 .stack-card:last-child {
-  margin-bottom: 120vh;
+  margin-bottom: 80vh;
 }
 .stack-card-inner {
   display: grid;
@@ -1865,27 +1865,17 @@ a, button, [role="button"], input, select, textarea, label {
 
   var stackContainer = document.getElementById('stackContainer');
 
-  // Pre-calculate each card's offset from container top (before scroll)
-  var cardOffsets = [];
-  function cacheCardOffsets() {
-    if (!stackContainer) return;
-    var containerTop = stackContainer.getBoundingClientRect().top + window.pageYOffset;
-    stackCards.forEach(function(card) {
-      cardOffsets.push(card.getBoundingClientRect().top + window.pageYOffset - containerTop);
-    });
-  }
-  cacheCardOffsets();
-
   function updateStackCards() {
     if (stackCards.length === 0 || !stackContainer) return;
     var stickyTop = 100;
+    var containerBottom = stackContainer.getBoundingClientRect().bottom;
 
     stackCards.forEach(function(card, i) {
       var cardRect = card.getBoundingClientRect();
       var isStuck = cardRect.top <= stickyTop + 5;
       var cardsOnTop = 0;
+      var isLast = (i === stackCards.length - 1);
 
-      // Count how many later cards have scrolled up and are also stuck
       for (var j = i + 1; j < stackCards.length; j++) {
         if (stackCards[j].getBoundingClientRect().top <= stickyTop + 10) cardsOnTop++;
       }
@@ -1894,10 +1884,9 @@ a, button, [role="button"], input, select, textarea, label {
       var opacity = 1;
       var translateY = 0;
       var shadow = '';
-      var isLast = (i === stackCards.length - 1);
       var shouldAnimate = false;
 
-      // Non-last cards: fold when cards stack on top
+      // Cards with others stacked on top: shrink + fade
       if (cardsOnTop > 0) {
         scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
         opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
@@ -1906,19 +1895,17 @@ a, button, [role="button"], input, select, textarea, label {
         shouldAnimate = true;
       }
 
-      // Last card: fold based on how far we've scrolled past where it became stuck
+      // LAST CARD fold: measure remaining space below the card within the container
+      // As user scrolls, containerBottom moves up toward the card's bottom edge
       if (isLast && isStuck) {
-        // The card sticks when scrollTop reaches: containerTop + cardOffset - stickyTop
-        var containerTop = stackContainer.getBoundingClientRect().top + window.pageYOffset;
-        var stickPoint = containerTop + (cardOffsets[i] || 0) - stickyTop;
-        var scrollPast = window.pageYOffset - stickPoint;
-        var foldZone = window.innerHeight * 0.6;
-        // Start folding after scrolling 200px past the stick point
-        var foldProgress = Math.min(1, Math.max(0, (scrollPast - 200) / foldZone));
+        var cardBottomEdge = cardRect.top + cardRect.height;
+        var remaining = containerBottom - cardBottomEdge;
+        var foldDistance = window.innerHeight * 0.5;
+        var foldProgress = Math.min(1, Math.max(0, 1 - (remaining / foldDistance)));
 
-        if (foldProgress > 0) {
-          scale = Math.max(0.85, 1 - foldProgress * 0.15);
-          opacity = Math.max(0.3, 1 - foldProgress * 0.7);
+        if (foldProgress > 0.02) {
+          scale = 1 - foldProgress * 0.15;
+          opacity = 1 - foldProgress * 0.7;
           translateY = -(foldProgress * 40);
           shadow = '0 4px 20px rgba(0,0,0,' + (0.08 * (1 - foldProgress)) + ')';
           shouldAnimate = true;
