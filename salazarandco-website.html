@@ -946,15 +946,22 @@ h3 {
 .section-press {
   padding: 120px 0 80px;
 }
-.press-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+.press-carousel-wrapper {
+  position: relative;
   margin-top: 60px;
-  justify-content: center;
+}
+.press-carousel {
+  overflow: hidden;
+  padding: 0 30px;
+}
+.press-track {
+  display: flex;
+  gap: 24px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 .press-card {
-  width: calc(33.333% - 16px);
+  flex: 0 0 calc(33.333% - 16px);
   display: flex;
   flex-direction: column;
   border-radius: 12px;
@@ -1007,6 +1014,48 @@ h3 {
   font-size: 15px;
   line-height: 1.45;
   color: var(--gray);
+}
+.press-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+.press-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: transparent;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  color: var(--black);
+  cursor: pointer;
+}
+.press-arrow:hover {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.press-dots {
+  display: flex;
+  gap: 8px;
+}
+.press-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gray-light);
+  transition: background 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.press-dot.active {
+  background: #228B22;
+  transform: scale(1.3);
 }
 
 
@@ -1423,7 +1472,7 @@ h4 {
   h3 { font-size: 42px; letter-spacing: -2px; }
 }
 @media (max-width: 1024px) {
-  .press-card { width: calc(50% - 12px); }
+  .press-card { flex: 0 0 calc(50% - 12px); }
 }
 @media (max-width: 768px) {
   .container { margin: 0 20px; padding: 0; }
@@ -1501,10 +1550,11 @@ h4 {
   .testimonial-ghost { display: none; }
   .testimonial-text { font-size: 18px; }
 
-  .press-card { width: 100%; }
+  .press-card { flex: 0 0 calc(100% - 24px); }
   .press-card-title { font-size: 18px; }
   .press-card-image { aspect-ratio: 16 / 9; }
   .section-press { padding: 80px 0 60px; }
+  .press-carousel { padding: 0 20px; }
 }
 
 /* ═══════════════════════════════════════
@@ -1894,44 +1944,79 @@ a, button, [role="button"], input, select, textarea, label {
       <h2>In The</h2>
       <h2>Press</h2>
     </div>
-    <div class="press-grid">
+  </div>
+  <div class="press-carousel-wrapper">
+    <div class="press-carousel" id="pressCarousel">
+      <div class="press-track" id="pressTrack">
 
-      <a href="https://therealdeal.com/miami/2019/08/09/amtrust-bank-building-sells-in-coral-gables/" target="_blank" class="press-card reveal">
-        <div class="press-card-image" style="background: url('images/Amtrsut.JPG') center/cover no-repeat;"></div>
-        <div class="press-card-content">
-          <div class="press-card-source">
-            <span class="press-publication">The Real Deal</span>
-            <span class="press-date">August 2019</span>
+        <a href="https://therealdeal.com/miami/2019/08/09/amtrust-bank-building-sells-in-coral-gables/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('images/Amtrsut.JPG') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">August 2019</span>
+            </div>
+            <div class="press-card-title">AmTrust Bank in Coral Gables Sells for $12M</div>
+            <p class="press-card-desc">Ubiica LLC and Maven Real Estate acquired the AmTrust Bank office building and three adjacent lots in Coral Gables — a strategic assemblage that launched one of the area's most significant development plays.</p>
           </div>
-          <div class="press-card-title">AmTrust Bank in Coral Gables Sells for $12M</div>
-          <p class="press-card-desc">Ubiica LLC and Maven Real Estate acquired the AmTrust Bank office building and three adjacent lots in Coral Gables — a strategic assemblage that launched one of the area's most significant development plays.</p>
-        </div>
-      </a>
+        </a>
 
-      <a href="https://therealdeal.com/miami/2021/04/28/ubiica-maven-plan-multifamily-project-in-coral-gables/" target="_blank" class="press-card reveal">
-        <div class="press-card-image" style="background: url('images/1200-Ubiica-Maven-plan-multifamily-project-in-Coral-Gables-768x479.jpg') center/cover no-repeat;"></div>
-        <div class="press-card-content">
-          <div class="press-card-source">
-            <span class="press-publication">The Real Deal</span>
-            <span class="press-date">April 2021</span>
+        <a href="https://therealdeal.com/miami/2021/04/28/ubiica-maven-plan-multifamily-project-in-coral-gables/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('images/1200-Ubiica-Maven-plan-multifamily-project-in-Coral-Gables-768x479.jpg') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">April 2021</span>
+            </div>
+            <div class="press-card-title">Ubiica, Maven Plan Multifamily Project in Coral Gables</div>
+            <p class="press-card-desc">The plan to develop up to 128 units on the half-acre Almeria Avenue assemblage — a multifamily or assisted-living project after demolishing the office at 152 Almeria.</p>
           </div>
-          <div class="press-card-title">Ubiica, Maven Plan Multifamily Project in Coral Gables</div>
-          <p class="press-card-desc">The plan to develop up to 128 units on the half-acre Almeria Avenue assemblage — a multifamily or assisted-living project after demolishing the office at 152 Almeria.</p>
-        </div>
-      </a>
+        </a>
 
-      <a href="https://therealdeal.com/miami/2021/06/07/ubiica-maven-buy-coral-gables-office-building-parking-lot-for-9m/" target="_blank" class="press-card reveal">
-        <div class="press-card-image" style="background: url('images/mia-coral-gables-768x479.jpg') center/cover no-repeat;"></div>
-        <div class="press-card-content">
-          <div class="press-card-source">
-            <span class="press-publication">The Real Deal</span>
-            <span class="press-date">June 2021</span>
+        <a href="https://therealdeal.com/miami/2021/06/07/ubiica-maven-buy-coral-gables-office-building-parking-lot-for-9m/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('images/mia-coral-gables-768x479.jpg') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">June 2021</span>
+            </div>
+            <div class="press-card-title">Ubiica, Maven Buy Coral Gables Office Building for $9M</div>
+            <p class="press-card-desc">Completing the Almeria Avenue assemblage with the acquisition of the office building at 152 Almeria — the final piece of a multi-year land play in Coral Gables.</p>
           </div>
-          <div class="press-card-title">Ubiica, Maven Buy Coral Gables Office Building for $9M</div>
-          <p class="press-card-desc">Completing the Almeria Avenue assemblage with the acquisition of the office building at 152 Almeria — the final piece of a multi-year land play in Coral Gables.</p>
-        </div>
-      </a>
+        </a>
 
+        <a href="https://www.travelweekly.com/Travel-News/Hotel-News/Marriott-a-partner-for-Ambar-Residences-Orlando" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('images/Marriott-to-be-affiliated-with-resort-style-reside.webp') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">Travel Weekly</span>
+              <span class="press-date">2025</span>
+            </div>
+            <div class="press-card-title">Marriott to Be Affiliated with Resort-Style Residences Near Disney World</div>
+            <p class="press-card-desc">AMBAR Residences Orlando announced as the first Apartments by Marriott Bonvoy for-sale development in the U.S. — 322 units across 11 acres near Disney World.</p>
+          </div>
+        </a>
+
+        <a href="https://www.growthspotter.com/2025/12/04/marriott-bonvoy-resort-near-disney-slated-to-open-in-2028/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('images/TGS-L-AMBAR-08.webp') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">GrowthSpotter</span>
+              <span class="press-date">December 2025</span>
+            </div>
+            <div class="press-card-title">Marriott Bonvoy Resort Near Disney Slated to Open in 2028</div>
+            <p class="press-card-desc">Orlando Sentinel's GrowthSpotter covers AMBAR Residences — three 7-story buildings with studios to penthouses, breaking ground 2026 with completion targeted for 2028.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+    <div class="container">
+      <div class="press-controls">
+        <button class="press-arrow press-arrow-left" id="pressLeft" aria-label="Previous">&#8592;</button>
+        <div class="press-dots" id="pressDots"></div>
+        <button class="press-arrow press-arrow-right" id="pressRight" aria-label="Next">&#8594;</button>
+      </div>
     </div>
   </div>
 </section>
@@ -2626,6 +2711,100 @@ a, button, [role="button"], input, select, textarea, label {
     ring.classList.add('visible');
     visible = true;
   });
+})();
+
+// ═══════════════════════════════════════
+// PRESS CAROUSEL — Auto-scroll + Manual Navigation
+// ═══════════════════════════════════════
+(function() {
+  var track = document.getElementById('pressTrack');
+  var carousel = document.querySelector('.press-carousel');
+  var leftBtn = document.getElementById('pressLeft');
+  var rightBtn = document.getElementById('pressRight');
+  var dotsContainer = document.getElementById('pressDots');
+  if (!track || !carousel) return;
+
+  var cards = track.querySelectorAll('.press-card');
+  var totalCards = cards.length;
+  var currentIndex = 0;
+  var autoplayInterval;
+  var autoplayDelay = 4000;
+
+  function getVisibleCount() {
+    if (window.innerWidth <= 768) return 1;
+    if (window.innerWidth <= 1024) return 2;
+    return 3;
+  }
+  function getMaxIndex() {
+    return Math.max(0, totalCards - getVisibleCount());
+  }
+
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    var maxIdx = getMaxIndex();
+    for (var i = 0; i <= maxIdx; i++) {
+      var dot = document.createElement('div');
+      dot.className = 'press-dot' + (i === currentIndex ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', function() {
+        goTo(parseInt(this.dataset.index));
+        resetAutoplay();
+      });
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  function goTo(index) {
+    var maxIdx = getMaxIndex();
+    currentIndex = Math.max(0, Math.min(index, maxIdx));
+    var cardWidth = cards[0].offsetWidth + 24;
+    track.style.transform = 'translateX(' + (-currentIndex * cardWidth) + 'px)';
+    var dots = dotsContainer.querySelectorAll('.press-dot');
+    dots.forEach(function(d, i) {
+      d.classList.toggle('active', i === currentIndex);
+    });
+  }
+
+  function next() {
+    if (currentIndex >= getMaxIndex()) goTo(0);
+    else goTo(currentIndex + 1);
+  }
+  function prev() {
+    if (currentIndex <= 0) goTo(getMaxIndex());
+    else goTo(currentIndex - 1);
+  }
+
+  function startAutoplay() { autoplayInterval = setInterval(next, autoplayDelay); }
+  function stopAutoplay() { clearInterval(autoplayInterval); }
+  function resetAutoplay() { stopAutoplay(); startAutoplay(); }
+
+  leftBtn.addEventListener('click', function() { prev(); resetAutoplay(); });
+  rightBtn.addEventListener('click', function() { next(); resetAutoplay(); });
+
+  carousel.addEventListener('mouseenter', stopAutoplay);
+  carousel.addEventListener('mouseleave', startAutoplay);
+
+  var touchStartX = 0, touchEndX = 0;
+  carousel.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    stopAutoplay();
+  }, { passive: true });
+  carousel.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    var diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) next(); else prev();
+    }
+    startAutoplay();
+  }, { passive: true });
+
+  window.addEventListener('resize', function() {
+    buildDots();
+    goTo(Math.min(currentIndex, getMaxIndex()));
+  });
+
+  buildDots();
+  startAutoplay();
 })();
 </script>
 
