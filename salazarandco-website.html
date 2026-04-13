@@ -941,6 +941,76 @@ h3 {
 
 
 /* ═══════════════════════════════════════
+   PRESS
+   ═══════════════════════════════════════ */
+.section-press {
+  padding: 120px 0 80px;
+}
+.press-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 60px;
+  justify-content: center;
+}
+.press-card {
+  width: calc(33.333% - 16px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--gray-bg);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.press-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+.press-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+}
+.press-card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.press-card-source {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.press-publication {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #228B22;
+}
+.press-date {
+  font-size: 12px;
+  color: var(--gray);
+  letter-spacing: 0.5px;
+}
+.press-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  color: var(--black);
+}
+.press-card-desc {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--gray);
+}
+
+
+/* ═══════════════════════════════════════
    CTA — READY TO BUILD
    ═══════════════════════════════════════ */
 .section-cta {
@@ -1352,6 +1422,9 @@ h4 {
   h2 { font-size: 64px; line-height: 64px; letter-spacing: -2.5px; }
   h3 { font-size: 42px; letter-spacing: -2px; }
 }
+@media (max-width: 1024px) {
+  .press-card { width: calc(50% - 12px); }
+}
 @media (max-width: 768px) {
   .container { margin: 0 20px; padding: 0; }
   .hero-titles h1 { font-size: 64px; line-height: 58px; letter-spacing: -4px; }
@@ -1427,6 +1500,11 @@ h4 {
   .testimonial-item:last-child { margin-bottom: 24px; }
   .testimonial-ghost { display: none; }
   .testimonial-text { font-size: 18px; }
+
+  .press-card { width: 100%; }
+  .press-card-title { font-size: 18px; }
+  .press-card-image { aspect-ratio: 16 / 9; }
+  .section-press { padding: 80px 0 60px; }
 }
 
 /* ═══════════════════════════════════════
@@ -1805,6 +1883,82 @@ a, button, [role="button"], input, select, textarea, label {
 </section>
 
 
+
+
+<!-- ═══════════════════════════════════════
+     PRESS
+     ═══════════════════════════════════════ -->
+<section class="section-press" id="press">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>In The</h2>
+      <h2>Press</h2>
+    </div>
+    <div class="press-grid">
+
+      <a href="https://therealdeal.com/miami/2019/08/09/amtrust-bank-building-sells-in-coral-gables/" target="_blank" class="press-card reveal">
+        <div class="press-card-image" style="background: url('images/press-amtrust.jpg') center/cover no-repeat;"></div>
+        <div class="press-card-content">
+          <div class="press-card-source">
+            <span class="press-publication">The Real Deal</span>
+            <span class="press-date">August 2019</span>
+          </div>
+          <div class="press-card-title">AmTrust Bank in Coral Gables Sells for $12M</div>
+          <p class="press-card-desc">Ubiica LLC and Maven Real Estate acquired the AmTrust Bank office building and three adjacent lots in Coral Gables — a strategic assemblage that launched one of the area's most significant development plays.</p>
+        </div>
+      </a>
+
+      <a href="https://therealdeal.com/miami/2020/11/03/investors-pay-13m-for-multifamily-portfolio-in-fort-lauderdale-wilton-manors/" target="_blank" class="press-card reveal">
+        <div class="press-card-image" style="background: url('images/press-portfolio.jpg') center/cover no-repeat;"></div>
+        <div class="press-card-content">
+          <div class="press-card-source">
+            <span class="press-publication">The Real Deal</span>
+            <span class="press-date">November 2020</span>
+          </div>
+          <div class="press-card-title">Investors Pay $13M for Multifamily Portfolio in Fort Lauderdale</div>
+          <p class="press-card-desc">A 94-unit multifamily portfolio across Fort Lauderdale and Wilton Manors traded for $13.1 million — highlighting the Ubiica and Maven Real Estate partnership's reach across South Florida.</p>
+        </div>
+      </a>
+
+      <a href="https://therealdeal.com/miami/2021/04/28/ubiica-maven-plan-multifamily-project-in-coral-gables/" target="_blank" class="press-card reveal">
+        <div class="press-card-image" style="background: url('images/press-almeria-plan.jpg') center/cover no-repeat;"></div>
+        <div class="press-card-content">
+          <div class="press-card-source">
+            <span class="press-publication">The Real Deal</span>
+            <span class="press-date">April 2021</span>
+          </div>
+          <div class="press-card-title">Ubiica, Maven Plan Multifamily Project in Coral Gables</div>
+          <p class="press-card-desc">The plan to develop up to 128 units on the half-acre Almeria Avenue assemblage — a multifamily or assisted-living project after demolishing the office at 152 Almeria.</p>
+        </div>
+      </a>
+
+      <a href="https://therealdeal.com/miami/2021/06/07/ubiica-maven-buy-coral-gables-office-building-parking-lot-for-9m/" target="_blank" class="press-card reveal">
+        <div class="press-card-image" style="background: url('images/press-almeria-buy.jpg') center/cover no-repeat;"></div>
+        <div class="press-card-content">
+          <div class="press-card-source">
+            <span class="press-publication">The Real Deal</span>
+            <span class="press-date">June 2021</span>
+          </div>
+          <div class="press-card-title">Ubiica, Maven Buy Coral Gables Office Building for $9M</div>
+          <p class="press-card-desc">Completing the Almeria Avenue assemblage with the $4.1M acquisition of the office building at 152 Almeria — the final piece of a multi-year land play in Coral Gables.</p>
+        </div>
+      </a>
+
+      <a href="https://therealdeal.com/miami/2023/10/02/cade-capital-buys-coral-gables-dev-site-for-11m/" target="_blank" class="press-card reveal">
+        <div class="press-card-image" style="background: url('images/press-cade-sale.jpg') center/cover no-repeat;"></div>
+        <div class="press-card-content">
+          <div class="press-card-source">
+            <span class="press-publication">The Real Deal</span>
+            <span class="press-date">October 2023</span>
+          </div>
+          <div class="press-card-title">Cade Capital Buys Coral Gables Dev Site for Multifamily Project</div>
+          <p class="press-card-desc">The Ubiica/Maven joint venture successfully exited their 0.8-acre assemblage at 130, 152, and 160 Almeria Avenue — a profitable conclusion to a multi-year Coral Gables development strategy.</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
 
 
 <!-- ═══════════════════════════════════════
