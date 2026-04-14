@@ -963,8 +963,257 @@ img { max-width: 100%; display: block; }
   .mobile-bottom-sheet { display: block; }
   .listings-panel { display: none !important; }
   .map-panel { height: auto !important; }
-  #map { position: fixed; top: 60px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100vh - 60px); }
+  #map { position: fixed; top: 112px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100vh - 112px); }
+  .mobile-filter-bar { display: block; }
+  .filters-bar { display: none !important; }
+  .more-filters-panel { display: none !important; }
 }
+
+/* Mobile filter chip bar */
+.mobile-filter-bar {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: #fff;
+  z-index: 800;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 10px 0;
+}
+.filter-chips-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-chips-scroll::-webkit-scrollbar { display: none; }
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #0a0a0a;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.filter-chip.active {
+  background: #0a0a0a;
+  color: #fff;
+  border-color: #0a0a0a;
+}
+.filter-chip-more { font-weight: 600; }
+.chip-arrow { font-size: 10px; opacity: 0.6; }
+.chip-badge {
+  background: #228B22;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* Mini sheet */
+.filter-mini-sheet { display: none; position: fixed; inset: 0; z-index: 1100; }
+.filter-mini-sheet.active { display: block; }
+.filter-mini-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  animation: fadeIn 0.2s ease;
+}
+.filter-mini-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.filter-mini-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-mini-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+.filter-mini-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 16px;
+}
+.filter-mini-body { padding: 20px; overflow-y: auto; flex: 1; }
+.filter-mini-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.filter-mini-reset {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #0a0a0a;
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-mini-apply {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-option-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 4px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+}
+.filter-option-row:active { background: rgba(0,0,0,0.03); }
+.filter-check { color: #228B22; font-weight: 700; }
+
+/* Full-screen modal */
+.filter-full-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 1200;
+  flex-direction: column;
+}
+.filter-full-modal.active {
+  display: flex;
+  animation: slideUpFull 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.filter-full-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-full-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+.filter-full-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 16px;
+}
+.filter-full-reset {
+  border: none;
+  background: transparent;
+  color: #228B22;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-full-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-full-section { margin-bottom: 32px; }
+.filter-full-section-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a0a0a;
+  margin-bottom: 14px;
+  letter-spacing: -0.3px;
+}
+.filter-full-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  background: #fff;
+}
+.filter-full-range { display: flex; gap: 10px; align-items: center; }
+.filter-full-range .filter-full-input { flex: 1; }
+.filter-full-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-full-pill {
+  padding: 8px 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 20px;
+  background: #fff;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  color: #0a0a0a;
+  cursor: pointer;
+}
+.filter-full-pill.active { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
+.filter-full-footer {
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+}
+.filter-full-apply {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: 12px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes slideUp { from {transform:translateY(100%);} to {transform:translateY(0);} }
+@keyframes slideUpFull { from {transform:translateY(100%);} to {transform:translateY(0);} }
 </style>
 </head>
 <body>
@@ -984,6 +1233,36 @@ img { max-width: 100%; display: block; }
     </div>
   </div>
 </nav>
+
+<!-- MOBILE FILTER CHIP BAR -->
+<div class="mobile-filter-bar" id="mobileFilterBar">
+  <div class="filter-chips-scroll">
+    <button class="filter-chip" data-filter="saleRent" onclick="openFilterSheet('saleRent')">
+      <span class="chip-label" id="chipSaleRent">For Sale</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="price" onclick="openFilterSheet('price')">
+      <span class="chip-label" id="chipPrice">Price</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="beds" onclick="openFilterSheet('beds')">
+      <span class="chip-label" id="chipBeds">Beds</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="baths" onclick="openFilterSheet('baths')">
+      <span class="chip-label" id="chipBaths">Baths</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="type" onclick="openFilterSheet('type')">
+      <span class="chip-label" id="chipType">Type</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip filter-chip-more" onclick="openFullFilterModal()">
+      <span>More Filters</span>
+      <span class="chip-badge" id="moreFiltersBadge" style="display:none">0</span>
+    </button>
+  </div>
+</div>
 
 
 <!-- FILTERS BAR -->
@@ -1173,6 +1452,37 @@ img { max-width: 100%; display: block; }
   </div>
   <div class="sheet-content" id="sheetContent">
     <!-- #propertyGrid is moved here on mobile -->
+  </div>
+</div>
+
+<!-- MINI FILTER SHEET -->
+<div class="filter-mini-sheet" id="filterMiniSheet">
+  <div class="filter-mini-backdrop" onclick="closeFilterSheet()"></div>
+  <div class="filter-mini-content">
+    <div class="filter-mini-header">
+      <div class="filter-mini-title" id="filterMiniTitle">Price</div>
+      <button class="filter-mini-close" onclick="closeFilterSheet()">✕</button>
+    </div>
+    <div class="filter-mini-body" id="filterMiniBody"></div>
+    <div class="filter-mini-footer">
+      <button class="filter-mini-reset" onclick="resetMiniFilter()">Reset</button>
+      <button class="filter-mini-apply" onclick="applyMiniFilter()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN FILTER MODAL -->
+<div class="filter-full-modal" id="filterFullModal">
+  <div class="filter-full-header">
+    <button class="filter-full-close" onclick="closeFullFilterModal()">✕</button>
+    <div class="filter-full-title">Filters</div>
+    <button class="filter-full-reset" onclick="resetAllFilters()">Reset</button>
+  </div>
+  <div class="filter-full-body" id="filterFullBody"></div>
+  <div class="filter-full-footer">
+    <button class="filter-full-apply" onclick="applyAllFilters()">
+      Show <span id="filterResultCount">0</span> Homes
+    </button>
   </div>
 </div>
 
@@ -2305,6 +2615,257 @@ function pointInPolygon(point, polygon) {
   return inside;
 }
 
+
+// ═══════════════════════════════════════
+// MOBILE FILTER CHIPS + MINI SHEET + FULL MODAL
+// ═══════════════════════════════════════
+var activeMiniFilter = null;
+var pendingFilters = {};
+
+function readCurrentFilters() {
+  return {
+    mode: listingMode,
+    priceMin: document.getElementById('filterPriceMin').value.replace(/[^0-9]/g, ''),
+    priceMax: document.getElementById('filterPriceMax').value.replace(/[^0-9]/g, ''),
+    beds: document.getElementById('filterBeds').value || 'Any',
+    baths: document.getElementById('filterBaths').value || 'Any',
+    types: Array.prototype.slice.call(document.querySelectorAll('#pillsType .pill.active')).map(function(p) { return p.dataset.value; })
+  };
+}
+
+function formatPriceShortMobile(n) {
+  n = parseInt(n, 10);
+  if (!n) return '';
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(n >= 10e6 ? 1 : 2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1e3) return '$' + Math.round(n / 1e3) + 'K';
+  return '$' + n;
+}
+
+function openFilterSheet(filterType) {
+  activeMiniFilter = filterType;
+  pendingFilters = {};
+  var sheet = document.getElementById('filterMiniSheet');
+  var title = document.getElementById('filterMiniTitle');
+  var body = document.getElementById('filterMiniBody');
+  var cf = readCurrentFilters();
+  var html = '';
+  var titleText = '';
+
+  if (filterType === 'saleRent') {
+    titleText = 'Listing Type';
+    var current = pendingFilters.mode || cf.mode;
+    ['sale', 'rent'].forEach(function(v) {
+      var label = v === 'sale' ? 'For Sale' : 'For Rent';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'mode\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (current === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'price') {
+    titleText = 'Price Range';
+    var pmin = pendingFilters.priceMin !== undefined ? pendingFilters.priceMin : cf.priceMin;
+    var pmax = pendingFilters.priceMax !== undefined ? pendingFilters.priceMax : cf.priceMax;
+    html = '<div style="margin-bottom:16px"><label style="font-size:13px;color:#666">Minimum</label>' +
+      '<input type="text" id="miniPriceMin" placeholder="No min" value="' + (pmin || '') + '" oninput="pendingFilters.priceMin=this.value.replace(/[^0-9]/g,\'\')" class="filter-full-input" style="margin-top:6px" /></div>' +
+      '<div><label style="font-size:13px;color:#666">Maximum</label>' +
+      '<input type="text" id="miniPriceMax" placeholder="No max" value="' + (pmax || '') + '" oninput="pendingFilters.priceMax=this.value.replace(/[^0-9]/g,\'\')" class="filter-full-input" style="margin-top:6px" /></div>';
+  } else if (filterType === 'beds') {
+    titleText = 'Bedrooms';
+    var bedsVal = pendingFilters.beds !== undefined ? pendingFilters.beds : cf.beds;
+    ['Any', '1', '2', '3', '4', '5'].forEach(function(v) {
+      var label = v === 'Any' ? 'Any' : v + '+';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'beds\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (bedsVal === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'baths') {
+    titleText = 'Bathrooms';
+    var bathsVal = pendingFilters.baths !== undefined ? pendingFilters.baths : cf.baths;
+    ['Any', '1', '2', '3', '4'].forEach(function(v) {
+      var label = v === 'Any' ? 'Any' : v + '+';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'baths\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (bathsVal === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'type') {
+    titleText = 'Property Type';
+    var typesVal = pendingFilters.types !== undefined ? pendingFilters.types : cf.types.slice();
+    pendingFilters.types = typesVal;
+    var opts = [
+      { v: 'Single Family Residence', l: 'House' },
+      { v: 'Condominium', l: 'Condo' },
+      { v: 'Townhouse', l: 'Townhouse' },
+      { v: 'Residential Income', l: 'Multi-Family' },
+      { v: 'Commercial Sale', l: 'Commercial' },
+      { v: 'Land', l: 'Land' }
+    ];
+    opts.forEach(function(o) {
+      html += '<div class="filter-option-row" onclick="toggleMiniMulti(\'types\',\'' + o.v + '\')"><span>' + o.l + '</span><span class="filter-check">' + (typesVal.indexOf(o.v) >= 0 ? '✓' : '') + '</span></div>';
+    });
+  }
+
+  title.textContent = titleText;
+  body['inner' + 'HTML'] = html;
+  sheet.classList.add('active');
+}
+
+function closeFilterSheet() {
+  document.getElementById('filterMiniSheet').classList.remove('active');
+  activeMiniFilter = null;
+  pendingFilters = {};
+}
+
+function setMiniValue(filter, val) {
+  pendingFilters[filter] = val;
+  openFilterSheet(activeMiniFilter);
+}
+
+function toggleMiniMulti(filter, val) {
+  if (!pendingFilters[filter]) pendingFilters[filter] = [];
+  var idx = pendingFilters[filter].indexOf(val);
+  if (idx >= 0) pendingFilters[filter].splice(idx, 1);
+  else pendingFilters[filter].push(val);
+  openFilterSheet(activeMiniFilter);
+}
+
+function applyMiniFilter() {
+  if (pendingFilters.mode) setListingMode(pendingFilters.mode);
+  if (pendingFilters.priceMin !== undefined) document.getElementById('filterPriceMin').value = pendingFilters.priceMin;
+  if (pendingFilters.priceMax !== undefined) document.getElementById('filterPriceMax').value = pendingFilters.priceMax;
+  if (pendingFilters.beds !== undefined) document.getElementById('filterBeds').value = pendingFilters.beds === 'Any' ? '' : pendingFilters.beds;
+  if (pendingFilters.baths !== undefined) document.getElementById('filterBaths').value = pendingFilters.baths === 'Any' ? '' : pendingFilters.baths;
+  if (pendingFilters.types !== undefined) {
+    document.querySelectorAll('#pillsType .pill').forEach(function(p) {
+      p.classList.toggle('active', pendingFilters.types.indexOf(p.dataset.value) >= 0);
+    });
+  }
+  pendingFilters = {};
+  closeFilterSheet();
+  updateChipLabels();
+  searchProperties();
+}
+
+function resetMiniFilter() {
+  if (activeMiniFilter === 'price') {
+    document.getElementById('filterPriceMin').value = '';
+    document.getElementById('filterPriceMax').value = '';
+  } else if (activeMiniFilter === 'beds') {
+    document.getElementById('filterBeds').value = '';
+  } else if (activeMiniFilter === 'baths') {
+    document.getElementById('filterBaths').value = '';
+  } else if (activeMiniFilter === 'type') {
+    document.querySelectorAll('#pillsType .pill').forEach(function(p) { p.classList.remove('active'); });
+  } else if (activeMiniFilter === 'saleRent') {
+    setListingMode('sale');
+  }
+  pendingFilters = {};
+  closeFilterSheet();
+  updateChipLabels();
+  searchProperties();
+}
+
+function updateChipLabels() {
+  if (!document.getElementById('chipSaleRent')) return;
+  var cf = readCurrentFilters();
+  document.getElementById('chipSaleRent').textContent = cf.mode === 'rent' ? 'For Rent' : 'For Sale';
+  var priceLabel = 'Price';
+  if (cf.priceMin || cf.priceMax) {
+    var minLbl = cf.priceMin ? formatPriceShortMobile(cf.priceMin) : '$0';
+    var maxLbl = cf.priceMax ? formatPriceShortMobile(cf.priceMax) : 'Any';
+    priceLabel = minLbl + ' – ' + maxLbl;
+  }
+  document.getElementById('chipPrice').textContent = priceLabel;
+  document.getElementById('chipBeds').textContent = (cf.beds && cf.beds !== 'Any') ? cf.beds + '+ beds' : 'Beds';
+  document.getElementById('chipBaths').textContent = (cf.baths && cf.baths !== 'Any') ? cf.baths + '+ baths' : 'Baths';
+  document.getElementById('chipType').textContent = cf.types.length > 0
+    ? (cf.types.length === 1 ? cf.types[0].replace('Single Family Residence', 'House').replace('Condominium', 'Condo').replace('Residential Income', 'Multi-Family').replace('Commercial Sale', 'Commercial') : cf.types.length + ' types')
+    : 'Type';
+
+  document.querySelectorAll('.filter-chip').forEach(function(c) {
+    var f = c.dataset.filter;
+    var active = false;
+    if (f === 'saleRent' && cf.mode === 'rent') active = true;
+    else if (f === 'price' && (cf.priceMin || cf.priceMax)) active = true;
+    else if (f === 'beds' && cf.beds && cf.beds !== 'Any') active = true;
+    else if (f === 'baths' && cf.baths && cf.baths !== 'Any') active = true;
+    else if (f === 'type' && cf.types.length > 0) active = true;
+    c.classList.toggle('active', active);
+  });
+}
+
+function openFullFilterModal() {
+  var modal = document.getElementById('filterFullModal');
+  var body = document.getElementById('filterFullBody');
+  var statusVals = Array.prototype.slice.call(document.querySelectorAll('#pillsStatus .pill'));
+  var statusHTML = statusVals.map(function(p) {
+    return '<button type="button" class="filter-full-pill' + (p.classList.contains('active') ? ' active' : '') + '" data-status="' + p.dataset.value + '" onclick="this.classList.toggle(\'active\')">' + p.textContent + '</button>';
+  }).join('');
+
+  var html = '';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">City or ZIP</div>';
+  html += '<input type="text" class="filter-full-input" id="modalCity" value="' + (document.getElementById('filterCity').value || '') + '" placeholder="City or ZIP" /></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Status</div><div class="filter-full-pills">' + statusHTML + '</div></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Square Feet</div><div class="filter-full-range">' +
+    '<input type="text" class="filter-full-input" id="modalSqftMin" placeholder="Min" value="' + (document.getElementById('filterSqftMin').value || '') + '" />' +
+    '<span>–</span>' +
+    '<input type="text" class="filter-full-input" id="modalSqftMax" placeholder="Max" value="' + (document.getElementById('filterSqftMax').value || '') + '" />' +
+    '</div></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Year Built</div><div class="filter-full-range">' +
+    '<input type="text" class="filter-full-input" id="modalYearMin" placeholder="Min" value="' + (document.getElementById('filterYearMin').value || '') + '" />' +
+    '<span>–</span>' +
+    '<input type="text" class="filter-full-input" id="modalYearMax" placeholder="Max" value="' + (document.getElementById('filterYearMax').value || '') + '" />' +
+    '</div></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA/Condo Fee</div>' +
+    '<input type="text" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + (document.getElementById('filterHOA').value || '') + '" /></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Days on Market</div>' +
+    '<select class="filter-full-input" id="modalDOM"><option value="">Any</option><option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Keywords</div>' +
+    '<input type="text" class="filter-full-input" id="modalKeyword" placeholder="e.g. pool, waterfront" value="' + (document.getElementById('filterKeyword').value || '') + '" /></div>';
+
+  body['inner' + 'HTML'] = html;
+  var modalDOM = document.getElementById('modalDOM');
+  if (modalDOM) modalDOM.value = document.getElementById('filterDOM').value || '';
+  var countEl = document.getElementById('filterResultCount');
+  if (countEl) countEl.textContent = (typeof totalResults !== 'undefined' ? totalResults : 0);
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFullFilterModal() {
+  document.getElementById('filterFullModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function applyAllFilters() {
+  var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+  document.getElementById('filterCity').value = get('modalCity');
+  document.getElementById('filterSqftMin').value = get('modalSqftMin');
+  document.getElementById('filterSqftMax').value = get('modalSqftMax');
+  document.getElementById('filterYearMin').value = get('modalYearMin');
+  document.getElementById('filterYearMax').value = get('modalYearMax');
+  document.getElementById('filterHOA').value = get('modalHOA');
+  document.getElementById('filterKeyword').value = get('modalKeyword');
+  document.getElementById('filterDOM').value = get('modalDOM');
+
+  var modalStatusActive = Array.prototype.slice.call(document.querySelectorAll('#filterFullBody .filter-full-pill.active')).map(function(p) { return p.dataset.status; });
+  document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
+    p.classList.toggle('active', modalStatusActive.indexOf(p.dataset.value) >= 0);
+  });
+
+  closeFullFilterModal();
+  updateChipLabels();
+  searchProperties();
+}
+
+function resetAllFilters() {
+  document.getElementById('filterCity').value = '';
+  document.getElementById('filterSqftMin').value = '';
+  document.getElementById('filterSqftMax').value = '';
+  document.getElementById('filterYearMin').value = '';
+  document.getElementById('filterYearMax').value = '';
+  document.getElementById('filterHOA').value = '';
+  document.getElementById('filterKeyword').value = '';
+  document.getElementById('filterDOM').value = '';
+  document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.value === 'Active');
+  });
+  closeFullFilterModal();
+  updateChipLabels();
+  searchProperties();
+}
 
 // ═══════════════════════════════════════
 // MOBILE BOTTOM SHEET
