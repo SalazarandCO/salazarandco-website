@@ -1483,8 +1483,12 @@ h4 {
   .banner-bottom { flex-direction: column; align-items: flex-start; gap: 32px; }
   .hero-bio { max-width: 100%; }
   .btn-primary { width: 100%; }
-  .nav-left .nav-link,
+  .nav-left .nav-link { display: none; }
+  .nav-left .nav-link[href="property-search.html"] { display: inline-block; font-size: 13px; }
+  .nav-left .nav-menu-bracket { display: none; }
   .nav-center { display: none; }
+  .nav-logo { font-size: 16px; }
+  .nav-left { gap: 14px; }
   .projects-grid { grid-template-columns: 1fr; }
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
   .about-left { gap: 32px; }
@@ -1493,7 +1497,7 @@ h4 {
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .award-row { grid-template-columns: 40px 1fr 100px; }
   .award-date { display: none; }
-  .video-wrapper { margin: 0 20px; transform: none; opacity: 1; border-radius: 8px; }
+  .video-wrapper { margin: 0 20px; border-radius: 8px; }
   .btn-outline { width: 100%; }
   .stat-number { font-size: 32px; }
 
@@ -2132,10 +2136,10 @@ a, button, [role="button"], input, select, textarea, label {
   function masterScrollUpdate() {
     updateScroll();
     updateNameColors();
+    updateVideoScale();
+    updateAboutTextReveal();
     if (!isMobile) {
       updateStackCards();
-      updateVideoScale();
-      updateAboutTextReveal();
       updateServicesScroll();
       updateTestimonialStack();
       updateTestimonialProgress();
