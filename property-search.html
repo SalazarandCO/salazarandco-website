@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -883,6 +886,85 @@ img { max-width: 100%; display: block; }
 @media (max-width: 480px) {
   .property-grid { grid-template-columns: 1fr; }
 }
+
+/* Marker cluster */
+.price-cluster { background: transparent; border: none; }
+.price-cluster-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #228B22;
+  color: white;
+  border-radius: 50%;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(34,139,34,0.4), 0 0 0 4px rgba(34,139,34,0.2);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.marker-cluster { background: transparent !important; }
+.marker-cluster div { background: transparent !important; }
+
+/* Mobile bottom sheet */
+.mobile-bottom-sheet {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90vh;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 900;
+  transform: translateY(calc(100% - 72px));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  will-change: transform;
+}
+.mobile-bottom-sheet.half { transform: translateY(50vh); }
+.mobile-bottom-sheet.full { transform: translateY(10vh); }
+.mobile-bottom-sheet.dragging { transition: none; }
+
+.sheet-handle {
+  padding: 10px 16px 14px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.sheet-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+  margin: 0 auto 10px;
+}
+.sheet-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0a0a0a;
+  text-align: center;
+}
+.sheet-content {
+  overflow-y: auto;
+  height: calc(90vh - 72px);
+  padding: 12px 16px calc(20px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+.sheet-content .property-grid { grid-template-columns: 1fr; }
+
+@media (max-width: 768px) {
+  .mobile-bottom-sheet { display: block; }
+  .listings-panel { display: none !important; }
+  .map-panel { height: auto !important; }
+  #map { position: fixed; top: 60px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100vh - 60px); }
+}
 </style>
 </head>
 <body>
@@ -1083,6 +1165,17 @@ img { max-width: 100%; display: block; }
 
 </div>
 
+<!-- MOBILE BOTTOM SHEET -->
+<div class="mobile-bottom-sheet" id="mobileBottomSheet">
+  <div class="sheet-handle" id="sheetHandle">
+    <div class="sheet-handle-bar"></div>
+    <div class="sheet-title" id="sheetTitle">0 homes</div>
+  </div>
+  <div class="sheet-content" id="sheetContent">
+    <!-- #propertyGrid is moved here on mobile -->
+  </div>
+</div>
+
 
 <script>
 // ═══════════════════════════════════════
@@ -1138,6 +1231,23 @@ const tileSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
 
 let currentTileLayer = tileMap;
 tileMap.addTo(map);
+
+// Marker cluster group
+var markerCluster = L.markerClusterGroup({
+  maxClusterRadius: 60,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  iconCreateFunction: function(cluster) {
+    var count = cluster.getChildCount();
+    return L.divIcon({
+      className: 'price-cluster',
+      html: '<div class="price-cluster-inner">' + count + '</div>',
+      iconSize: null,
+      iconAnchor: [0, 0]
+    });
+  }
+});
+map.addLayer(markerCluster);
 
 function setMapStyle(style) {
   map.removeLayer(currentTileLayer);
@@ -1726,6 +1836,11 @@ function renderListings(listings) {
   strong.textContent = formatNumber(totalResults);
   resultsCountEl.appendChild(strong);
   resultsCountEl.appendChild(document.createTextNode(' properties'));
+
+  var sheetTitleEl = document.getElementById('sheetTitle');
+  if (sheetTitleEl) {
+    sheetTitleEl.textContent = formatNumber(totalResults) + ' home' + (totalResults === 1 ? '' : 's');
+  }
 }
 
 
@@ -1764,7 +1879,7 @@ function saveSearch() {
 // MAP PLOTTING
 // ═══════════════════════════════════════
 function clearMapMarkers() {
-  markers.forEach(function(m) { map.removeLayer(m); });
+  if (markerCluster) markerCluster.clearLayers();
   markers = [];
 }
 
@@ -1790,7 +1905,8 @@ function plotOnMap(listings) {
       iconAnchor: [30, 30]
     });
 
-    var marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+    var marker = L.marker([lat, lng], { icon: icon });
+    markerCluster.addLayer(marker);
 
     // Minimal popup from map-only data (price + coordinates)
     var popupDetailUrl = 'property-detail.html?key=' + encodeURIComponent(lid);
@@ -2189,6 +2305,90 @@ function pointInPolygon(point, polygon) {
   return inside;
 }
 
+
+// ═══════════════════════════════════════
+// MOBILE BOTTOM SHEET
+// ═══════════════════════════════════════
+(function() {
+  var sheet = document.getElementById('mobileBottomSheet');
+  var handle = document.getElementById('sheetHandle');
+  if (!sheet || !handle) return;
+
+  // On mobile, move propertyGrid into the sheet so listings render there
+  function maybeMoveGrid() {
+    if (window.innerWidth <= 768) {
+      var grid = document.getElementById('propertyGrid');
+      var sheetContent = document.getElementById('sheetContent');
+      if (grid && sheetContent && grid.parentNode !== sheetContent) {
+        sheetContent.appendChild(grid);
+      }
+    }
+  }
+  maybeMoveGrid();
+  window.addEventListener('resize', maybeMoveGrid);
+
+  var startY = 0, startTransform = 0, currentY = 0, dragging = false;
+
+  function getCurrentTranslate() {
+    var m = window.getComputedStyle(sheet).transform;
+    if (m === 'none') return 0;
+    var values = m.match(/matrix.*\((.+)\)/)[1].split(', ');
+    return parseFloat(values[5]);
+  }
+
+  function setTranslate(y) {
+    sheet.style.transform = 'translateY(' + y + 'px)';
+  }
+
+  function snapTo(position) {
+    sheet.classList.remove('dragging', 'half', 'full');
+    if (position === 'peek') sheet.style.transform = '';
+    else if (position === 'half') { sheet.classList.add('half'); sheet.style.transform = ''; }
+    else if (position === 'full') { sheet.classList.add('full'); sheet.style.transform = ''; }
+  }
+
+  function onStart(e) {
+    dragging = true;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    startTransform = getCurrentTranslate();
+    sheet.classList.add('dragging');
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    var delta = currentY - startY;
+    var newY = Math.max(window.innerHeight * 0.1, startTransform + delta);
+    setTranslate(newY);
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    var finalY = getCurrentTranslate();
+    var percentage = finalY / window.innerHeight;
+    if (percentage < 0.3) snapTo('full');
+    else if (percentage < 0.7) snapTo('half');
+    else snapTo('peek');
+  }
+
+  handle.addEventListener('touchstart', onStart, { passive: true });
+  handle.addEventListener('touchmove', onMove, { passive: true });
+  handle.addEventListener('touchend', onEnd);
+  handle.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+
+  var tapStart = 0;
+  handle.addEventListener('touchstart', function() { tapStart = Date.now(); });
+  handle.addEventListener('touchend', function() {
+    if (Date.now() - tapStart < 200 && Math.abs(currentY - startY) < 10) {
+      var p = getCurrentTranslate() / window.innerHeight;
+      if (p > 0.7) snapTo('half');
+      else snapTo('peek');
+    }
+  });
+})();
 
 // Auto-search on page load
 searchProperties();
