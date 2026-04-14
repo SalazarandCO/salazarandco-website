@@ -499,7 +499,7 @@ h2 {
   max-width: 400px;
 }
 
-/* Typewriter effect for Best Projects section */
+/* Typewriter effect for Current Projects section */
 .tw-char {
   display: inline-block;
   opacity: 0;
@@ -1772,7 +1772,7 @@ a, button, [role="button"], input, select, textarea, label {
 <section class="section-projects" id="projects">
   <div class="container">
     <div class="section-title reveal">
-      <h2>Best</h2>
+      <h2>Current</h2>
       <h2>Projects</h2>
     </div>
 
@@ -2363,7 +2363,7 @@ a, button, [role="button"], input, select, textarea, label {
 
   var stackContainer = document.getElementById('stackContainer');
 
-  // ─── Typewriter helpers for Best Projects ───
+  // ─── Typewriter helpers for Current Projects ───
   // Wraps each word's letters in a nowrap span so lines break only between words.
   function twTypeInto(el, text, speed, cursor, onDone) {
     var i = 0;
@@ -2397,7 +2397,7 @@ a, button, [role="button"], input, select, textarea, label {
     step();
   }
 
-  // Section title "Best Projects" typewriter via Intersection Observer
+  // Section title "Current Projects" typewriter via Intersection Observer
   var projTitle = document.querySelector('.section-projects .section-title');
   if (projTitle) {
     var projH2s = projTitle.querySelectorAll('h2');
