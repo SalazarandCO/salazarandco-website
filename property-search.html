@@ -1169,14 +1169,34 @@ img { max-width: 100%; display: block; }
   padding: 20px;
   -webkit-overflow-scrolling: touch;
 }
-.filter-full-section { margin-bottom: 32px; }
+.filter-full-group {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-full-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.filter-full-group-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
+}
+.filter-full-section { margin-bottom: 20px; }
+.filter-full-section:last-child { margin-bottom: 0; }
 .filter-full-section-title {
   font-family: 'Inter Tight', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: #0a0a0a;
-  margin-bottom: 14px;
-  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
 }
 .filter-full-input {
   width: 100%;
@@ -1218,6 +1238,11 @@ img { max-width: 100%; display: block; }
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.filter-full-apply.counting,
+.filter-mini-apply.counting {
+  opacity: 0.7;
 }
 
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
@@ -1260,6 +1285,10 @@ img { max-width: 100%; display: block; }
     </button>
     <button class="filter-chip" data-filter="baths" onclick="openFilterSheet('baths')">
       <span class="chip-label" id="chipBaths">Baths</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="sqft" onclick="openFilterSheet('sqft')">
+      <span class="chip-label" id="chipSqft">Sqft</span>
       <span class="chip-arrow">▾</span>
     </button>
     <button class="filter-chip" data-filter="type" onclick="openFilterSheet('type')">
@@ -1490,7 +1519,7 @@ img { max-width: 100%; display: block; }
   <div class="filter-full-body" id="filterFullBody"></div>
   <div class="filter-full-footer">
     <button class="filter-full-apply" onclick="applyAllFilters()">
-      Show <span id="filterResultCount">0</span> Homes
+      <span id="filterResultBtnText">Show <span id="filterResultCount">0</span> homes</span>
     </button>
   </div>
 </div>
@@ -2680,9 +2709,9 @@ function openFilterSheet(filterType) {
     var pmin = pendingFilters.priceMin !== undefined ? pendingFilters.priceMin : cf.priceMin;
     var pmax = pendingFilters.priceMax !== undefined ? pendingFilters.priceMax : cf.priceMax;
     html = '<div style="margin-bottom:16px"><label style="font-size:13px;color:#666">Minimum</label>' +
-      '<input type="text" id="miniPriceMin" placeholder="No min" value="' + (pmin || '') + '" oninput="pendingFilters.priceMin=this.value.replace(/[^0-9]/g,\'\')" class="filter-full-input" style="margin-top:6px" /></div>' +
+      '<input type="text" inputmode="numeric" id="miniPriceMin" placeholder="No min" value="' + (pmin || '') + '" oninput="pendingFilters.priceMin=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>' +
       '<div><label style="font-size:13px;color:#666">Maximum</label>' +
-      '<input type="text" id="miniPriceMax" placeholder="No max" value="' + (pmax || '') + '" oninput="pendingFilters.priceMax=this.value.replace(/[^0-9]/g,\'\')" class="filter-full-input" style="margin-top:6px" /></div>';
+      '<input type="text" inputmode="numeric" id="miniPriceMax" placeholder="No max" value="' + (pmax || '') + '" oninput="pendingFilters.priceMax=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>';
   } else if (filterType === 'beds') {
     titleText = 'Bedrooms';
     var bedsVal = pendingFilters.beds !== undefined ? pendingFilters.beds : cf.beds;
@@ -2697,6 +2726,14 @@ function openFilterSheet(filterType) {
       var label = v === 'Any' ? 'Any' : v + '+';
       html += '<div class="filter-option-row" onclick="setMiniValue(\'baths\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (bathsVal === v ? '✓' : '') + '</span></div>';
     });
+  } else if (filterType === 'sqft') {
+    titleText = 'Square Feet';
+    var sqMin = pendingFilters.sqftMin !== undefined ? pendingFilters.sqftMin : (document.getElementById('filterSqftMin').value || '');
+    var sqMax = pendingFilters.sqftMax !== undefined ? pendingFilters.sqftMax : (document.getElementById('filterSqftMax').value || '');
+    html = '<div style="margin-bottom:16px"><label style="font-size:13px;color:#666">Minimum</label>' +
+      '<input type="text" inputmode="numeric" id="miniSqftMin" placeholder="No min" value="' + sqMin + '" oninput="pendingFilters.sqftMin=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>' +
+      '<div><label style="font-size:13px;color:#666">Maximum</label>' +
+      '<input type="text" inputmode="numeric" id="miniSqftMax" placeholder="No max" value="' + sqMax + '" oninput="pendingFilters.sqftMax=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>';
   } else if (filterType === 'type') {
     titleText = 'Property Type';
     var typesVal = pendingFilters.types !== undefined ? pendingFilters.types : cf.types.slice();
@@ -2717,6 +2754,12 @@ function openFilterSheet(filterType) {
   title.textContent = titleText;
   body['inner' + 'HTML'] = html;
   sheet.classList.add('active');
+  // Initialize Apply button with current total, then live-preview will update it on input
+  var miniBtn = document.querySelector('.filter-mini-apply');
+  if (miniBtn && typeof totalResults !== 'undefined') {
+    miniBtn.textContent = 'Show ' + formatNumber(totalResults) + (totalResults === 1 ? ' home' : ' homes');
+  }
+  previewMiniCount();
 }
 
 function closeFilterSheet() {
@@ -2728,6 +2771,7 @@ function closeFilterSheet() {
 function setMiniValue(filter, val) {
   pendingFilters[filter] = val;
   openFilterSheet(activeMiniFilter);
+  previewMiniCount();
 }
 
 function toggleMiniMulti(filter, val) {
@@ -2736,6 +2780,7 @@ function toggleMiniMulti(filter, val) {
   if (idx >= 0) pendingFilters[filter].splice(idx, 1);
   else pendingFilters[filter].push(val);
   openFilterSheet(activeMiniFilter);
+  previewMiniCount();
 }
 
 function applyMiniFilter() {
@@ -2744,6 +2789,8 @@ function applyMiniFilter() {
   if (pendingFilters.priceMax !== undefined) document.getElementById('filterPriceMax').value = pendingFilters.priceMax;
   if (pendingFilters.beds !== undefined) document.getElementById('filterBeds').value = pendingFilters.beds === 'Any' ? '' : pendingFilters.beds;
   if (pendingFilters.baths !== undefined) document.getElementById('filterBaths').value = pendingFilters.baths === 'Any' ? '' : pendingFilters.baths;
+  if (pendingFilters.sqftMin !== undefined) document.getElementById('filterSqftMin').value = pendingFilters.sqftMin;
+  if (pendingFilters.sqftMax !== undefined) document.getElementById('filterSqftMax').value = pendingFilters.sqftMax;
   if (pendingFilters.types !== undefined) {
     document.querySelectorAll('#pillsType .pill').forEach(function(p) {
       p.classList.toggle('active', pendingFilters.types.indexOf(p.dataset.value) >= 0);
@@ -2763,6 +2810,9 @@ function resetMiniFilter() {
     document.getElementById('filterBeds').value = '';
   } else if (activeMiniFilter === 'baths') {
     document.getElementById('filterBaths').value = '';
+  } else if (activeMiniFilter === 'sqft') {
+    document.getElementById('filterSqftMin').value = '';
+    document.getElementById('filterSqftMax').value = '';
   } else if (activeMiniFilter === 'type') {
     document.querySelectorAll('#pillsType .pill').forEach(function(p) { p.classList.remove('active'); });
   } else if (activeMiniFilter === 'saleRent') {
@@ -2787,6 +2837,21 @@ function updateChipLabels() {
   document.getElementById('chipPrice').textContent = priceLabel;
   document.getElementById('chipBeds').textContent = (cf.beds && cf.beds !== 'Any') ? cf.beds + '+ beds' : 'Beds';
   document.getElementById('chipBaths').textContent = (cf.baths && cf.baths !== 'Any') ? cf.baths + '+ baths' : 'Baths';
+
+  // Sqft chip label
+  var sqMin = (document.getElementById('filterSqftMin') || {}).value || '';
+  var sqMax = (document.getElementById('filterSqftMax') || {}).value || '';
+  var sqftEl = document.getElementById('chipSqft');
+  if (sqftEl) {
+    if (sqMin || sqMax) {
+      var sqMinLbl = sqMin ? Number(sqMin).toLocaleString('en-US') : '0';
+      var sqMaxLbl = sqMax ? Number(sqMax).toLocaleString('en-US') : 'Any';
+      sqftEl.textContent = sqMinLbl + '–' + sqMaxLbl + ' sqft';
+    } else {
+      sqftEl.textContent = 'Sqft';
+    }
+  }
+
   document.getElementById('chipType').textContent = cf.types.length > 0
     ? (cf.types.length === 1 ? cf.types[0].replace('Single Family Residence', 'House').replace('Condominium', 'Condo').replace('Residential Income', 'Multi-Family').replace('Commercial Sale', 'Commercial') : cf.types.length + ' types')
     : 'Type';
@@ -2798,9 +2863,157 @@ function updateChipLabels() {
     else if (f === 'price' && (cf.priceMin || cf.priceMax)) active = true;
     else if (f === 'beds' && cf.beds && cf.beds !== 'Any') active = true;
     else if (f === 'baths' && cf.baths && cf.baths !== 'Any') active = true;
+    else if (f === 'sqft' && (sqMin || sqMax)) active = true;
     else if (f === 'type' && cf.types.length > 0) active = true;
     c.classList.toggle('active', active);
   });
+
+  // Mobile "More Filters" badge — count of advanced filters (sqft, year, hoa, dom, status, keyword)
+  var moreBadge = document.getElementById('moreFiltersBadge');
+  if (moreBadge) {
+    var moreCount = 0;
+    if (document.getElementById('filterYearMin').value || document.getElementById('filterYearMax').value) moreCount++;
+    if (document.getElementById('filterHOA').value) moreCount++;
+    if (document.getElementById('filterDOM').value) moreCount++;
+    if (document.getElementById('filterKeyword').value.trim()) moreCount++;
+    var modalStatuses = (function() {
+      var arr = [];
+      document.querySelectorAll('#pillsStatus .pill.active').forEach(function(p) { arr.push(p.dataset.value); });
+      return arr;
+    })();
+    if (!(modalStatuses.length === 1 && modalStatuses[0] === 'Active')) moreCount++;
+    if ((document.getElementById('filterCity').value || '').trim() && (document.getElementById('filterCity').value || '').trim() !== 'Pinecrest') moreCount++;
+    if (moreCount > 0) {
+      moreBadge.textContent = moreCount;
+      moreBadge.style.display = '';
+    } else {
+      moreBadge.style.display = 'none';
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// LIVE RESULT COUNT — preview count for modal & mini sheet
+// ═══════════════════════════════════════
+var _previewTimer = null;
+var _miniPreviewTimer = null;
+
+function buildFilterStrFromModal() {
+  // Build OData filter using committed chip values + uncommitted modal values.
+  // Modal values override the hidden inputs for: city, year, hoa, keyword, dom, status.
+  var v = function(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; };
+  var city = (v('modalCity') || '').trim();
+  var yearMin = v('modalYearMin').replace(/[^0-9]/g, '');
+  var yearMax = v('modalYearMax').replace(/[^0-9]/g, '');
+  var hoaMax = v('modalHOA').replace(/[^0-9]/g, '');
+  var keyword = (v('modalKeyword') || '').trim();
+  var dom = v('modalDOM');
+  var modalStatuses = [];
+  document.querySelectorAll('#filterFullBody .filter-full-pill.active').forEach(function(p) { modalStatuses.push(p.dataset.status); });
+
+  // Chip-controlled (already committed to hidden inputs)
+  var priceMin = (document.getElementById('filterPriceMin').value || '').replace(/[^0-9]/g, '');
+  var priceMax = (document.getElementById('filterPriceMax').value || '').replace(/[^0-9]/g, '');
+  var beds = document.getElementById('filterBeds').value;
+  var baths = document.getElementById('filterBaths').value;
+  var sqftMin = (document.getElementById('filterSqftMin').value || '').replace(/[^0-9]/g, '');
+  var sqftMax = (document.getElementById('filterSqftMax').value || '').replace(/[^0-9]/g, '');
+  var propTypes = getActivePills('pillsType');
+
+  var filters = [];
+  filters.push(listingMode === 'rent' ? "PropertyType eq 'Residential Lease'" : "PropertyType ne 'Residential Lease'");
+  if (city) {
+    if (/^\d{5}$/.test(city)) filters.push("PostalCode eq '" + city + "'");
+    else {
+      var titleCity = city.replace(/\w\S*/g, function(w) { return w.charAt(0).toUpperCase() + w.substring(1).toLowerCase(); });
+      filters.push("City eq '" + titleCity + "'");
+    }
+  }
+  if (priceMin) filters.push('ListPrice ge ' + parseInt(priceMin, 10));
+  if (priceMax) filters.push('ListPrice le ' + parseInt(priceMax, 10));
+  if (beds) filters.push('BedroomsTotal ge ' + beds);
+  if (baths) filters.push('BathroomsTotalInteger ge ' + baths);
+  if (sqftMin) filters.push('LivingArea ge ' + sqftMin);
+  if (sqftMax) filters.push('LivingArea le ' + sqftMax);
+  if (yearMin) filters.push('YearBuilt ge ' + yearMin);
+  if (yearMax) filters.push('YearBuilt le ' + yearMax);
+  if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
+  if (keyword) filters.push("contains(PublicRemarks, '" + keyword.replace(/'/g, "''") + "')");
+  if (dom) filters.push('DaysOnMarket le ' + dom);
+
+  if (propTypes.length > 0) {
+    var typeFilters = propTypes.map(function(t) {
+      if (['Single Family Residence', 'Condominium', 'Townhouse'].indexOf(t) !== -1) return "PropertySubType eq '" + t + "'";
+      return "PropertyType eq '" + t + "'";
+    });
+    filters.push('(' + typeFilters.join(' or ') + ')');
+  }
+  if (modalStatuses.length > 0) {
+    filters.push('(' + modalStatuses.map(function(s) { return "StandardStatus eq '" + s + "'"; }).join(' or ') + ')');
+  } else {
+    filters.push("StandardStatus eq 'Active'");
+  }
+  return filters.join(' and ');
+}
+
+async function fetchCount(filterStr) {
+  var url = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+    + '?$filter=' + encodeURIComponent(filterStr)
+    + '&$top=0&$count=true';
+  try {
+    var r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY, 'Accept': 'application/json' } });
+    if (!r.ok) return null;
+    var d = await r.json();
+    return d['@odata.count'] || 0;
+  } catch (e) { return null; }
+}
+
+function previewModalCount() {
+  if (_previewTimer) clearTimeout(_previewTimer);
+  var btn = document.querySelector('.filter-full-apply');
+  var countEl = document.getElementById('filterResultCount');
+  if (btn) btn.classList.add('counting');
+  _previewTimer = setTimeout(async function() {
+    var fs = buildFilterStrFromModal();
+    var n = await fetchCount(fs);
+    var btnTextEl = document.getElementById('filterResultBtnText');
+    if (btnTextEl) {
+      if (n === null) {
+        btnTextEl.textContent = 'Apply Filters';
+      } else {
+        btnTextEl.innerHTML = 'Show <span id="filterResultCount">' + formatNumber(n) + '</span> ' + (n === 1 ? 'home' : 'homes');
+      }
+    } else if (countEl) {
+      countEl.textContent = (n === null ? '—' : formatNumber(n));
+    }
+    if (btn) btn.classList.remove('counting');
+  }, 350);
+}
+
+function previewMiniCount() {
+  if (_miniPreviewTimer) clearTimeout(_miniPreviewTimer);
+  var btn = document.querySelector('.filter-mini-apply');
+  if (!btn) return;
+  btn.classList.add('counting');
+  _miniPreviewTimer = setTimeout(async function() {
+    // Temporarily commit pendingFilters to hidden inputs, build filter string, fetch count, then revert.
+    var saved = {};
+    var commitTemp = function(id, val) {
+      saved[id] = document.getElementById(id).value;
+      document.getElementById(id).value = val;
+    };
+    if (pendingFilters.priceMin !== undefined) commitTemp('filterPriceMin', pendingFilters.priceMin);
+    if (pendingFilters.priceMax !== undefined) commitTemp('filterPriceMax', pendingFilters.priceMax);
+    if (pendingFilters.beds !== undefined) commitTemp('filterBeds', pendingFilters.beds === 'Any' ? '' : pendingFilters.beds);
+    if (pendingFilters.baths !== undefined) commitTemp('filterBaths', pendingFilters.baths === 'Any' ? '' : pendingFilters.baths);
+    if (pendingFilters.sqftMin !== undefined) commitTemp('filterSqftMin', pendingFilters.sqftMin);
+    if (pendingFilters.sqftMax !== undefined) commitTemp('filterSqftMax', pendingFilters.sqftMax);
+    var fs = buildFilterStr();
+    Object.keys(saved).forEach(function(k) { document.getElementById(k).value = saved[k]; });
+    var n = await fetchCount(fs);
+    btn.textContent = n === null ? 'Apply' : 'Show ' + formatNumber(n) + (n === 1 ? ' home' : ' homes');
+    btn.classList.remove('counting');
+  }, 300);
 }
 
 function openFullFilterModal() {
@@ -2808,35 +3021,54 @@ function openFullFilterModal() {
   var body = document.getElementById('filterFullBody');
   var statusVals = Array.prototype.slice.call(document.querySelectorAll('#pillsStatus .pill'));
   var statusHTML = statusVals.map(function(p) {
-    return '<button type="button" class="filter-full-pill' + (p.classList.contains('active') ? ' active' : '') + '" data-status="' + p.dataset.value + '" onclick="this.classList.toggle(\'active\')">' + p.textContent + '</button>';
+    return '<button type="button" class="filter-full-pill' + (p.classList.contains('active') ? ' active' : '') + '" data-status="' + p.dataset.value + '" onclick="this.classList.toggle(\'active\'); previewModalCount();">' + p.textContent + '</button>';
   }).join('');
 
+  var v = function(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; };
+
   var html = '';
+
+  // ── LOCATION ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Location</div>';
   html += '<div class="filter-full-section"><div class="filter-full-section-title">City or ZIP</div>';
-  html += '<input type="text" class="filter-full-input" id="modalCity" value="' + (document.getElementById('filterCity').value || '') + '" placeholder="City or ZIP" /></div>';
-  html += '<div class="filter-full-section"><div class="filter-full-section-title">Status</div><div class="filter-full-pills">' + statusHTML + '</div></div>';
-  html += '<div class="filter-full-section"><div class="filter-full-section-title">Square Feet</div><div class="filter-full-range">' +
-    '<input type="text" class="filter-full-input" id="modalSqftMin" placeholder="Min" value="' + (document.getElementById('filterSqftMin').value || '') + '" />' +
-    '<span>–</span>' +
-    '<input type="text" class="filter-full-input" id="modalSqftMax" placeholder="Max" value="' + (document.getElementById('filterSqftMax').value || '') + '" />' +
-    '</div></div>';
+  html += '<input type="text" class="filter-full-input" id="modalCity" value="' + v('filterCity') + '" placeholder="City or ZIP" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
+  // ── HOME ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Home</div>';
   html += '<div class="filter-full-section"><div class="filter-full-section-title">Year Built</div><div class="filter-full-range">' +
-    '<input type="text" class="filter-full-input" id="modalYearMin" placeholder="Min" value="' + (document.getElementById('filterYearMin').value || '') + '" />' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMin" placeholder="Min" value="' + v('filterYearMin') + '" oninput="previewModalCount()" />' +
     '<span>–</span>' +
-    '<input type="text" class="filter-full-input" id="modalYearMax" placeholder="Max" value="' + (document.getElementById('filterYearMax').value || '') + '" />' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMax" placeholder="Max" value="' + v('filterYearMax') + '" oninput="previewModalCount()" />' +
     '</div></div>';
-  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA/Condo Fee</div>' +
-    '<input type="text" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + (document.getElementById('filterHOA').value || '') + '" /></div>';
+  html += '</div>';
+
+  // ── PRICE & FEES ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Price &amp; Fees</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA / Condo Fee</div>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + v('filterHOA') + '" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
+  // ── LISTING STATUS ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Listing</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Status</div><div class="filter-full-pills">' + statusHTML + '</div></div>';
   html += '<div class="filter-full-section"><div class="filter-full-section-title">Days on Market</div>' +
-    '<select class="filter-full-input" id="modalDOM"><option value="">Any</option><option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>';
-  html += '<div class="filter-full-section"><div class="filter-full-section-title">Keywords</div>' +
-    '<input type="text" class="filter-full-input" id="modalKeyword" placeholder="e.g. pool, waterfront" value="' + (document.getElementById('filterKeyword').value || '') + '" /></div>';
+    '<select class="filter-full-input" id="modalDOM" onchange="previewModalCount()"><option value="">Any</option><option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>';
+  html += '</div>';
+
+  // ── KEYWORDS ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Keywords</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Description contains</div>' +
+    '<input type="text" class="filter-full-input" id="modalKeyword" placeholder="e.g. pool, waterfront, ocean view" value="' + v('filterKeyword') + '" oninput="previewModalCount()" /></div>';
+  html += '</div>';
 
   body['inner' + 'HTML'] = html;
   var modalDOM = document.getElementById('modalDOM');
   if (modalDOM) modalDOM.value = document.getElementById('filterDOM').value || '';
   var countEl = document.getElementById('filterResultCount');
-  if (countEl) countEl.textContent = (typeof totalResults !== 'undefined' ? totalResults : 0);
+  if (countEl) countEl.textContent = formatNumber(typeof totalResults !== 'undefined' ? totalResults : 0);
+  // Fire an initial count preview based on current modal state
+  previewModalCount();
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -2849,8 +3081,6 @@ function closeFullFilterModal() {
 function applyAllFilters() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   document.getElementById('filterCity').value = get('modalCity');
-  document.getElementById('filterSqftMin').value = get('modalSqftMin');
-  document.getElementById('filterSqftMax').value = get('modalSqftMax');
   document.getElementById('filterYearMin').value = get('modalYearMin');
   document.getElementById('filterYearMax').value = get('modalYearMax');
   document.getElementById('filterHOA').value = get('modalHOA');
