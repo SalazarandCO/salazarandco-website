@@ -61,9 +61,12 @@ img { max-width: 100%; display: block; }
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 1000;
+  z-index: 9999;
   background: var(--white);
   padding: 24px 0;
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: transform;
 }
 .navbar .container {
   display: flex;
@@ -77,6 +80,9 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 20px;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 .nav-logo {
   font-size: 18px;
@@ -109,6 +115,8 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
+  z-index: 3;
+  pointer-events: auto;
 }
 .nav-globe {
   width: 20px; height: 20px;
@@ -145,6 +153,9 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 20px;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 .nav-contact {
   font-size: 14px;
@@ -287,6 +298,8 @@ img { max-width: 100%; display: block; }
    ═══════════════════════════════════════ */
 .section-video {
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 .video-wrapper {
   margin: 0 30px;
@@ -1273,8 +1286,7 @@ h4 {
 .navbar.scrolled {
   padding: 14px 0;
   box-shadow: 0 2px 20px rgba(0,0,0,0.06);
-  backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.92);
+  background: var(--white);
 }
 
 /* ═══════════════════════════════════════
@@ -1579,13 +1591,12 @@ h4 {
   .btn-outline { width: 100%; }
   .stat-number { font-size: 32px; }
 
-  /* Disable sticky stacking on mobile */
+  /* Sticky stacking enabled on mobile (folding cards like desktop) */
   .stack-card {
-    position: relative;
-    top: auto;
-    margin-bottom: 24px;
+    top: 80px;
+    margin-bottom: 30vh;
   }
-  .stack-card-ghost { display: none; }
+  .stack-container > .stack-card:nth-last-child(2) { margin-bottom: 15vh; }
   .stack-card-inner {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -1608,7 +1619,7 @@ h4 {
   }
   .service-card { flex: none; width: 100%; }
 
-  /* Testimonials: stack vertically, left not sticky, no stack animation */
+  /* Testimonials: stack vertically, fold cards like desktop */
   .testimonials-grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -1623,13 +1634,11 @@ h4 {
   }
   .testimonial-progress-bars { display: none; }
   .testimonial-item {
-    position: relative;
-    top: auto;
-    margin-bottom: 24px;
+    top: 80px;
+    margin-bottom: 40vh;
     padding: 32px;
   }
-  .testimonial-item:last-child { margin-bottom: 24px; }
-  .testimonial-ghost { display: none; }
+  .testimonial-item:last-child { margin-bottom: 25vh; }
   .testimonial-text { font-size: 18px; }
 
   .press-card { flex: 0 0 calc(100% - 24px); }
