@@ -597,6 +597,15 @@ img { max-width: 100%; display: block; }
   color: var(--gray-light);
   margin-top: 4px;
 }
+.property-courtesy {
+  font-size: 11px;
+  color: var(--gray-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
 .property-mls {
   font-size: 11px;
   color: var(--gray-light);
@@ -2134,6 +2143,14 @@ function renderListings(listings) {
       domEl.className = 'property-dom';
       domEl.textContent = domText;
       details.appendChild(domEl);
+    }
+
+    var officeName = listing.ListOfficeName || '';
+    if (officeName) {
+      var courtesyEl = document.createElement('div');
+      courtesyEl.className = 'property-courtesy';
+      courtesyEl.textContent = 'Courtesy of ' + officeName;
+      details.appendChild(courtesyEl);
     }
 
     card.appendChild(details);
