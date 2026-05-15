@@ -1,0 +1,3250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Search — UBIICA Realty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: rgb(88, 88, 88);
+  --gray-light: rgb(200, 200, 200);
+  --gray-bg: #f5f5f5;
+  --font: 'Inter Tight', sans-serif;
+  --navbar-h: 71px;
+  --filters-h: 60px;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+
+/* ═══════════════════════════════════════
+   NAVBAR — fixed top
+   ═══════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  padding: 24px 30px;
+  border-bottom: 1px solid var(--gray-light);
+  height: var(--navbar-h);
+  display: flex;
+  align-items: center;
+}
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav-logo {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+.nav-link {
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+  letter-spacing: normal;
+  transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+.nav-link.active { font-weight: 500; }
+.nav-arms {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid rgb(200, 200, 200);
+  border-radius: 6px;
+  padding: 2px;
+  margin: 0 8px 0 0;
+}
+.nav-arm {
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgb(88, 88, 88);
+  padding: 5px 12px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.nav-arm.active { background: #0a0a0a; color: #fff; }
+.nav-arm:not(.active):hover { color: #0a0a0a; }
+@media (max-width: 768px) {
+  .nav-arms { display: none; }
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+
+/* ═══════════════════════════════════════
+   FILTERS BAR — fixed below navbar
+   ═══════════════════════════════════════ */
+.filters-bar {
+  position: fixed;
+  top: var(--navbar-h);
+  left: 0; right: 0;
+  z-index: 999;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 12px 30px;
+  height: var(--filters-h);
+  display: flex;
+  align-items: center;
+}
+.filters-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+/* For Sale / For Rent toggle */
+.listing-toggle {
+  display: flex;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.listing-toggle button {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.listing-toggle button.active {
+  background: var(--black);
+  color: var(--white);
+}
+.listing-toggle button:not(.active) {
+  background: var(--white);
+  color: var(--gray);
+}
+.listing-toggle button:not(.active):hover {
+  background: var(--gray-bg);
+}
+
+.filter-input {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--black);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  padding: 8px 14px;
+  outline: none;
+  transition: border-color 0.25s;
+  letter-spacing: -0.15px;
+  min-width: 120px;
+}
+.filter-input:focus { border-color: var(--black); }
+.filter-input::placeholder { color: var(--gray); }
+.filter-select {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--black);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  padding: 8px 30px 8px 14px;
+  outline: none;
+  transition: border-color 0.25s;
+  letter-spacing: -0.15px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23585858' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  white-space: nowrap;
+}
+.filter-select:focus { border-color: var(--black); }
+.filter-price-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.filter-price-group .filter-input {
+  width: 110px;
+  border-radius: 8px 0 0 8px;
+}
+.filter-price-group .filter-input:last-child {
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+.filter-price-group .price-divider {
+  padding: 8px 6px;
+  border-top: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  font-size: 12px;
+  color: var(--gray);
+  background: var(--white);
+}
+.btn-search {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  background: var(--black);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: opacity 0.25s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-search:hover { opacity: 0.85; }
+.btn-reset {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.25s;
+  padding: 8px 4px;
+  white-space: nowrap;
+}
+.btn-reset:hover { color: var(--black); }
+
+/* More Filters button */
+.btn-more-filters {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+.btn-more-filters:hover { border-color: var(--black); color: var(--black); }
+.btn-more-filters.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.filter-count-badge {
+  background: var(--black);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.btn-more-filters.active .filter-count-badge {
+  background: var(--white);
+  color: var(--black);
+}
+
+/* ═══════════════════════════════════════
+   MORE FILTERS PANEL
+   ═══════════════════════════════════════ */
+.more-filters-panel {
+  position: fixed;
+  top: calc(var(--navbar-h) + var(--filters-h));
+  left: 0; right: 0;
+  z-index: 998;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-light);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+  opacity: 0;
+}
+.more-filters-panel.open {
+  max-height: 500px;
+  opacity: 1;
+}
+.more-filters-inner {
+  padding: 24px 30px 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 32px;
+}
+.filter-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.filter-group .range-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-group .range-row input {
+  flex: 1;
+  min-width: 0;
+}
+.filter-group .range-row span {
+  color: var(--gray-light);
+  font-size: 13px;
+}
+
+/* Pill chips for multi-select */
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pill {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.pill:hover { border-color: var(--black); color: var(--black); }
+.pill.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+.more-filters-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-bg);
+}
+.btn-apply-filters {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  background: var(--black);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 24px;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.btn-apply-filters:hover { opacity: 0.85; }
+.btn-reset-filters {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+.btn-reset-filters:hover { color: var(--black); }
+
+
+/* ═══════════════════════════════════════
+   SPLIT LAYOUT — Compass style
+   Left: scrollable listings
+   Right: sticky map
+   ═══════════════════════════════════════ */
+.split-layout {
+  position: fixed;
+  top: calc(var(--navbar-h) + var(--filters-h));
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+}
+
+/* Listings panel */
+.listings-panel {
+  width: 55%;
+  min-width: 480px;
+  overflow-y: auto;
+  background: var(--white);
+  border-right: 1px solid var(--gray-light);
+}
+.listings-inner {
+  padding: 0 24px 40px;
+}
+
+/* Results bar */
+.results-bar {
+  padding: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--gray-light);
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 10;
+}
+.results-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.results-count {
+  font-size: 14px;
+  color: var(--gray);
+}
+.results-count strong {
+  color: var(--black);
+  font-weight: 500;
+}
+.btn-save-search {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: 1px solid var(--gray-light);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-save-search:hover { border-color: var(--black); color: var(--black); }
+.sort-select {
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Property grid — 2 cols in listing panel */
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Property card */
+.property-card {
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: block;
+  border-radius: 8px;
+}
+.property-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.property-card.highlighted {
+  box-shadow: 0 0 0 2px var(--black);
+  border-radius: 8px;
+}
+.property-photo {
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  background: var(--gray-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.property-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.property-card:hover .property-photo img {
+  transform: scale(1.03);
+}
+.property-photo .no-photo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-light);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.property-status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 8px;
+  background: var(--white);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--black);
+}
+
+/* Heart / save icon */
+.card-heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 2;
+  border: none;
+}
+.property-card:hover .card-heart { opacity: 1; }
+.card-heart:hover { transform: scale(1.1); }
+.card-heart.saved { opacity: 1; }
+.card-heart svg { width: 18px; height: 18px; }
+
+.property-details {
+  padding: 12px 4px 0;
+}
+.property-price {
+  font-family: var(--font);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.4px;
+  line-height: 1;
+}
+.property-specs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--gray);
+}
+.property-specs .dot {
+  width: 3px;
+  height: 3px;
+  background: var(--gray-light);
+  border-radius: 50%;
+  margin: 0 3px;
+}
+.property-ppsf {
+  font-size: 13px;
+  color: var(--gray);
+  margin-top: 3px;
+}
+.property-address {
+  font-size: 14px;
+  color: var(--gray);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.property-dom {
+  font-size: 12px;
+  color: var(--gray-light);
+  margin-top: 4px;
+}
+.property-courtesy {
+  font-size: 11px;
+  color: var(--gray-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-style: italic;
+  letter-spacing: 0.2px;
+}
+.property-mls {
+  font-size: 11px;
+  color: var(--gray-light);
+  margin-top: 4px;
+}
+
+
+/* Map panel */
+.map-panel {
+  flex: 1;
+  position: relative;
+}
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Search this area button */
+.btn-search-area {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 20px;
+  padding: 8px 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.2s;
+  display: none;
+}
+.btn-search-area:hover { background: var(--gray-bg); }
+
+/* Map style toggle */
+.map-style-toggle {
+  position: absolute;
+  bottom: 24px;
+  left: 12px;
+  z-index: 800;
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--gray-light);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.map-style-toggle button {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.map-style-toggle button.active {
+  background: var(--black);
+  color: var(--white);
+}
+.map-style-toggle button:not(.active) {
+  background: var(--white);
+  color: var(--gray);
+}
+
+/* Custom map markers */
+.price-marker {
+  background: var(--white);
+  border: 1.5px solid var(--black);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--black);
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.2;
+}
+.price-marker:hover,
+.price-marker.active {
+  background: var(--black);
+  color: var(--white);
+  transform: scale(1.1);
+  z-index: 999 !important;
+}
+.price-marker::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--black);
+}
+
+/* Leaflet overrides */
+.leaflet-control-zoom a {
+  font-family: var(--font) !important;
+  color: var(--black) !important;
+  border-color: var(--gray-light) !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  font-family: var(--font) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+.popup-price {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+.popup-address {
+  font-size: 13px;
+  color: var(--gray);
+}
+.popup-specs {
+  font-size: 13px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+
+/* ═══════════════════════════════════════
+   LOADING / EMPTY / ERROR STATES
+   ═══════════════════════════════════════ */
+.loading-state, .empty-state, .error-state {
+  padding: 80px 24px;
+  text-align: center;
+}
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--gray-bg);
+  border-top-color: var(--black);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 15px; color: var(--gray); }
+.empty-state h3 {
+  font-family: var(--font);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.5px;
+  text-transform: none;
+}
+.empty-state p { font-size: 16px; color: var(--gray); margin-top: 8px; }
+.error-state { color: #c0392b; font-size: 15px; }
+
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 0 40px;
+  border-top: 1px solid var(--gray-light);
+  margin-top: 24px;
+}
+.page-btn {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: 1px solid var(--gray-light);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.page-btn:hover { border-color: var(--black); color: var(--black); }
+.page-btn.active { background: var(--black); border-color: var(--black); color: var(--white); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+
+/* ═══════════════════════════════════════
+   DRAW ON MAP
+   ═══════════════════════════════════════ */
+.btn-draw {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  background: none;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn-draw:hover { border-color: var(--black); color: var(--black); }
+.btn-draw.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.btn-clear-draw {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: #c0392b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  white-space: nowrap;
+  display: none;
+  transition: opacity 0.2s;
+}
+.btn-clear-draw:hover { opacity: 0.7; }
+.draw-vertex {
+  width: 10px;
+  height: 10px;
+  background: var(--black);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.draw-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 10, 10, 0.85);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 8px 16px;
+  border-radius: 8px;
+  z-index: 800;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  display: none;
+}
+
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .listings-panel { width: 50%; min-width: 400px; }
+  .property-grid { grid-template-columns: 1fr; }
+  .more-filters-inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .split-layout { flex-direction: column; }
+  .listings-panel { width: 100%; min-width: 100%; height: 60%; border-right: none; border-bottom: 1px solid var(--gray-light); }
+  .map-panel { height: 40%; }
+  .property-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-left .nav-link { display: none; }
+  .filters-row { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .filters-bar { padding: 10px 16px; }
+  .navbar { padding: 24px 16px; }
+  .listings-inner { padding: 0 16px 40px; }
+  .more-filters-inner {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+  .more-filters-inner .pill { padding: 5px 12px; font-size: 12px; }
+}
+@media (max-width: 480px) {
+  .property-grid { grid-template-columns: 1fr; }
+}
+
+/* Marker cluster */
+.price-cluster { background: transparent; border: none; }
+.price-cluster-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #228B22;
+  color: white;
+  border-radius: 50%;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(34,139,34,0.4), 0 0 0 4px rgba(34,139,34,0.2);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.marker-cluster { background: transparent !important; }
+.marker-cluster div { background: transparent !important; }
+
+/* Mobile bottom sheet */
+.mobile-bottom-sheet {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90vh;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 900;
+  transform: translateY(calc(100% - 72px));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  will-change: transform;
+}
+.mobile-bottom-sheet.half { transform: translateY(50vh); }
+.mobile-bottom-sheet.full { transform: translateY(10vh); }
+.mobile-bottom-sheet.dragging { transition: none; }
+
+.sheet-handle {
+  padding: 10px 16px 14px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.sheet-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+  margin: 0 auto 10px;
+}
+.sheet-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0a0a0a;
+  text-align: center;
+}
+.sheet-content {
+  overflow-y: auto;
+  height: calc(90vh - 72px);
+  padding: 12px 16px calc(20px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+.sheet-content .property-grid { grid-template-columns: 1fr; }
+
+@media (max-width: 768px) {
+  .mobile-bottom-sheet { display: block; }
+  .listings-panel { display: none !important; }
+  .map-panel { height: auto !important; }
+  #map { position: fixed; top: 112px; left: 0; right: 0; bottom: 0; width: 100%; height: calc(100vh - 112px); }
+  .mobile-filter-bar { display: block; }
+  .filters-bar { display: none !important; }
+  .more-filters-panel { display: none !important; }
+}
+
+/* Mobile filter chip bar */
+.mobile-filter-bar {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: #fff;
+  z-index: 800;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 10px 0;
+}
+.filter-chips-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-chips-scroll::-webkit-scrollbar { display: none; }
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #0a0a0a;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.filter-chip.active {
+  background: #0a0a0a;
+  color: #fff;
+  border-color: #0a0a0a;
+}
+.filter-chip-more { font-weight: 600; }
+.chip-arrow { font-size: 10px; opacity: 0.6; }
+.chip-badge {
+  background: #228B22;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* Mini sheet */
+.filter-mini-sheet { display: none; position: fixed; inset: 0; z-index: 1100; }
+.filter-mini-sheet.active { display: block; }
+.filter-mini-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  animation: fadeIn 0.2s ease;
+}
+.filter-mini-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.filter-mini-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-mini-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+.filter-mini-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 16px;
+}
+.filter-mini-body { padding: 20px; overflow-y: auto; flex: 1; }
+.filter-mini-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.filter-mini-reset {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #0a0a0a;
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-mini-apply {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-option-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 4px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+}
+.filter-option-row:active { background: rgba(0,0,0,0.03); }
+.filter-check { color: #228B22; font-weight: 700; }
+
+/* Full-screen modal */
+.filter-full-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 1200;
+  flex-direction: column;
+}
+.filter-full-modal.active {
+  display: flex;
+  animation: slideUpFull 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.filter-full-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-full-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a0a0a;
+}
+.filter-full-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 16px;
+}
+.filter-full-reset {
+  border: none;
+  background: transparent;
+  color: #228B22;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-full-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-full-group {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.filter-full-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.filter-full-group-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
+}
+.filter-full-section { margin-bottom: 20px; }
+.filter-full-section:last-child { margin-bottom: 0; }
+.filter-full-section-title {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
+}
+.filter-full-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 15px;
+  background: #fff;
+}
+.filter-full-range { display: flex; gap: 10px; align-items: center; }
+.filter-full-range .filter-full-input { flex: 1; }
+.filter-full-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-full-pill {
+  padding: 8px 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 20px;
+  background: #fff;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  color: #0a0a0a;
+  cursor: pointer;
+}
+.filter-full-pill.active { background: #0a0a0a; color: #fff; border-color: #0a0a0a; }
+.filter-full-footer {
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+}
+.filter-full-apply {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: 12px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.filter-full-apply.counting,
+.filter-mini-apply.counting {
+  opacity: 0.7;
+}
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes slideUp { from {transform:translateY(100%);} to {transform:translateY(0);} }
+@keyframes slideUpFull { from {transform:translateY(100%);} to {transform:translateY(0);} }
+</style>
+</head>
+<body>
+
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="nav-left">
+      <a href="../../" class="nav-logo">UBIICA</a>
+      <div class="nav-arms">
+        <a href="../../development/" class="nav-arm">Development</a>
+        <a href="../" class="nav-arm active">Realty</a>
+      </div>
+      <a href="../#communities" class="nav-link">Communities</a>
+      <a href="#" class="nav-link active">Search</a>
+    </div>
+    <div class="nav-right">
+      <a href="../../contact.html" class="nav-link">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE FILTER CHIP BAR -->
+<div class="mobile-filter-bar" id="mobileFilterBar">
+  <div class="filter-chips-scroll">
+    <button class="filter-chip" data-filter="saleRent" onclick="openFilterSheet('saleRent')">
+      <span class="chip-label" id="chipSaleRent">For Sale</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="price" onclick="openFilterSheet('price')">
+      <span class="chip-label" id="chipPrice">Price</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="beds" onclick="openFilterSheet('beds')">
+      <span class="chip-label" id="chipBeds">Beds</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="baths" onclick="openFilterSheet('baths')">
+      <span class="chip-label" id="chipBaths">Baths</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="sqft" onclick="openFilterSheet('sqft')">
+      <span class="chip-label" id="chipSqft">Sqft</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip" data-filter="type" onclick="openFilterSheet('type')">
+      <span class="chip-label" id="chipType">Type</span>
+      <span class="chip-arrow">▾</span>
+    </button>
+    <button class="filter-chip filter-chip-more" onclick="openFullFilterModal()">
+      <span>More Filters</span>
+      <span class="chip-badge" id="moreFiltersBadge" style="display:none">0</span>
+    </button>
+  </div>
+</div>
+
+
+<!-- FILTERS BAR -->
+<div class="filters-bar">
+  <div class="filters-row">
+    <div class="listing-toggle">
+      <button class="active" id="toggleSale" onclick="setListingMode('sale')">For Sale</button>
+      <button id="toggleRent" onclick="setListingMode('rent')">For Rent</button>
+    </div>
+    <input type="text" class="filter-input" id="filterCity" placeholder="City or ZIP" value="Pinecrest">
+    <div class="filter-price-group">
+      <input type="text" class="filter-input" id="filterPriceMin" placeholder="Min $">
+      <span class="price-divider">&ndash;</span>
+      <input type="text" class="filter-input" id="filterPriceMax" placeholder="Max $" value="$5,000,000">
+    </div>
+    <select class="filter-select" id="filterBeds">
+      <option value="">Beds</option>
+      <option value="1">1+ Bed</option>
+      <option value="2">2+ Beds</option>
+      <option value="3">3+ Beds</option>
+      <option value="4">4+ Beds</option>
+      <option value="5">5+ Beds</option>
+    </select>
+    <select class="filter-select" id="filterBaths">
+      <option value="">Baths</option>
+      <option value="1">1+ Bath</option>
+      <option value="2">2+ Baths</option>
+      <option value="3">3+ Baths</option>
+      <option value="4">4+ Baths</option>
+    </select>
+    <button class="btn-more-filters" id="btnMoreFilters" onclick="toggleMoreFilters()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      More Filters
+      <span class="filter-count-badge" id="filterCountBadge" style="display:none;">0</span>
+    </button>
+    <button class="btn-search" onclick="searchProperties()">Search</button>
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    <span style="width:1px;height:24px;background:var(--gray-light);margin:0 4px;flex-shrink:0;"></span>
+    <button class="btn-draw" id="btnDraw" onclick="toggleDrawMode()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+      Draw
+    </button>
+    <button class="btn-clear-draw" id="btnClearDraw" onclick="clearDrawingAndSearch()">Clear area</button>
+  </div>
+</div>
+
+
+<!-- MORE FILTERS PANEL -->
+<div class="more-filters-panel" id="moreFiltersPanel">
+  <div class="more-filters-inner">
+
+    <div class="filter-group">
+      <label>Home Type</label>
+      <div class="pill-group" id="pillsType">
+        <button class="pill active" data-value="Single Family Residence" onclick="togglePill(this)">House</button>
+        <button class="pill" data-value="Condominium" onclick="togglePill(this)">Condo</button>
+        <button class="pill" data-value="Townhouse" onclick="togglePill(this)">Townhouse</button>
+        <button class="pill" data-value="Residential Income" onclick="togglePill(this)">Multi-Family</button>
+        <button class="pill" data-value="Commercial Sale" onclick="togglePill(this)">Commercial</button>
+        <button class="pill" data-value="Land" onclick="togglePill(this)">Land</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Status</label>
+      <div class="pill-group" id="pillsStatus">
+        <button class="pill active" data-value="Active" onclick="togglePill(this)">Active</button>
+        <button class="pill" data-value="Pending" onclick="togglePill(this)">Pending</button>
+        <button class="pill" data-value="Active Under Contract" onclick="togglePill(this)">Under Contract</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Days on Market</label>
+      <select class="filter-select" id="filterDOM" style="width:100%;">
+        <option value="">Any</option>
+        <option value="1">1 day</option>
+        <option value="7">7 days</option>
+        <option value="14">14 days</option>
+        <option value="30">30 days</option>
+        <option value="90">90 days</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Square Feet</label>
+      <div class="range-row">
+        <input type="text" class="filter-input" id="filterSqftMin" placeholder="Min" style="width:100%;">
+        <span>&ndash;</span>
+        <input type="text" class="filter-input" id="filterSqftMax" placeholder="Max" style="width:100%;">
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Year Built</label>
+      <div class="range-row">
+        <input type="text" class="filter-input" id="filterYearMin" placeholder="Min" style="width:100%;">
+        <span>&ndash;</span>
+        <input type="text" class="filter-input" id="filterYearMax" placeholder="Max" style="width:100%;">
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Max HOA/Condo Fee</label>
+      <input type="text" class="filter-input" id="filterHOA" placeholder="$/mo" style="width:100%;">
+    </div>
+
+    <div class="filter-group" style="grid-column: 1 / -1;">
+      <label>Keyword</label>
+      <input type="text" class="filter-input" id="filterKeyword" placeholder="e.g. pool, waterfront, ocean view" style="width:100%;max-width:400px;">
+    </div>
+
+    <div class="more-filters-actions">
+      <button class="btn-apply-filters" onclick="applyMoreFilters()">Apply Filters</button>
+      <button class="btn-reset-filters" onclick="resetMoreFilters()">Reset</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SPLIT LAYOUT -->
+<div class="split-layout">
+
+  <!-- LEFT: Listings -->
+  <div class="listings-panel" id="listingsPanel">
+    <div class="listings-inner">
+
+      <div class="results-bar" id="resultsBar" style="display: none;">
+        <div class="results-left">
+          <div class="results-count" id="resultsCount"></div>
+          <button class="btn-save-search" onclick="saveSearch()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            Save Search
+          </button>
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="searchProperties()">
+          <option value="ListPrice desc">Price: High to Low</option>
+          <option value="ListPrice asc">Price: Low to High</option>
+          <option value="ModificationTimestamp desc">Newest</option>
+          <option value="LivingArea desc">Largest</option>
+          <option value="ppsf">Price/sqft</option>
+        </select>
+      </div>
+
+      <div id="propertyGrid" class="property-grid"></div>
+
+      <div id="loadingState" class="loading-state" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching properties...</div>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <h3>No properties found</h3>
+        <p>Try adjusting your filters or search area.</p>
+      </div>
+
+      <div id="errorState" class="error-state" style="display: none;"></div>
+
+      <div id="initialState" class="empty-state">
+        <h3>Find Your Next Move</h3>
+        <p>Set your filters and hit Search to browse South Florida listings.</p>
+      </div>
+
+      <div id="pagination" class="pagination" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Map -->
+  <div class="map-panel">
+    <div id="map"></div>
+    <button class="btn-search-area" id="btnSearchArea" onclick="searchThisArea()">Search this area</button>
+    <div class="map-style-toggle">
+      <button class="active" id="btnMapStyle" onclick="setMapStyle('map')">Map</button>
+      <button id="btnSatStyle" onclick="setMapStyle('satellite')">Satellite</button>
+    </div>
+    <div class="draw-hint" id="drawHint">Click to place points. Double-click to finish.</div>
+  </div>
+
+</div>
+
+<!-- MOBILE BOTTOM SHEET -->
+<div class="mobile-bottom-sheet" id="mobileBottomSheet">
+  <div class="sheet-handle" id="sheetHandle">
+    <div class="sheet-handle-bar"></div>
+    <div class="sheet-title" id="sheetTitle">0 homes</div>
+  </div>
+  <div class="sheet-content" id="sheetContent">
+    <!-- #propertyGrid is moved here on mobile -->
+  </div>
+</div>
+
+<!-- MINI FILTER SHEET -->
+<div class="filter-mini-sheet" id="filterMiniSheet">
+  <div class="filter-mini-backdrop" onclick="closeFilterSheet()"></div>
+  <div class="filter-mini-content">
+    <div class="filter-mini-header">
+      <div class="filter-mini-title" id="filterMiniTitle">Price</div>
+      <button class="filter-mini-close" onclick="closeFilterSheet()">✕</button>
+    </div>
+    <div class="filter-mini-body" id="filterMiniBody"></div>
+    <div class="filter-mini-footer">
+      <button class="filter-mini-reset" onclick="resetMiniFilter()">Reset</button>
+      <button class="filter-mini-apply" onclick="applyMiniFilter()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN FILTER MODAL -->
+<div class="filter-full-modal" id="filterFullModal">
+  <div class="filter-full-header">
+    <button class="filter-full-close" onclick="closeFullFilterModal()">✕</button>
+    <div class="filter-full-title">Filters</div>
+    <button class="filter-full-reset" onclick="resetAllFilters()">Reset</button>
+  </div>
+  <div class="filter-full-body" id="filterFullBody"></div>
+  <div class="filter-full-footer">
+    <button class="filter-full-apply" onclick="applyAllFilters()">
+      <span id="filterResultBtnText">Show <span id="filterResultCount">0</span> homes</span>
+    </button>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const BRIDGE_CONFIG = {
+  API_KEY: 'de50709fb6d81c3dc56501e76d9b41e0',
+  DATASET: 'miamire',
+  BASE_URL: 'https://api.bridgedataoutput.com/api/v2/OData',
+  PAGE_SIZE: 24
+};
+
+let currentPage = 1;
+let totalResults = 0;
+let markers = [];
+let markerKeyMap = {}; // ListingKey → marker for hover sync
+let currentListings = [];
+let allMapListings = []; // all results for map (up to 500)
+let lastFilterStr = ''; // track filter changes to know when to refresh map
+let listingMode = 'sale'; // 'sale' or 'rent'
+let savedListings = []; // local heart/save state (array of ListingKey)
+let mapBoundsFilter = null; // { north, south, east, west } when "Search this area" used
+let moreFiltersOpen = false;
+
+// Draw-on-map state
+let drawMode = false;
+let drawPoints = [];
+let drawPolygon = null;
+let drawPolyline = null;
+let drawVertexMarkers = [];
+let drawnBounds = null;
+let drawClickTimeout = null;
+
+// ═══════════════════════════════════════
+// MAP INIT — Leaflet + tile layers
+// ═══════════════════════════════════════
+const map = L.map('map', {
+  center: [25.6646, -80.3070],
+  zoom: 13,
+  zoomControl: true
+});
+
+const tileMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+});
+
+const tileSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri',
+  maxZoom: 19
+});
+
+let currentTileLayer = tileMap;
+tileMap.addTo(map);
+
+// Marker cluster group
+var markerCluster = L.markerClusterGroup({
+  maxClusterRadius: 60,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: false,
+  iconCreateFunction: function(cluster) {
+    var count = cluster.getChildCount();
+    return L.divIcon({
+      className: 'price-cluster',
+      html: '<div class="price-cluster-inner">' + count + '</div>',
+      iconSize: null,
+      iconAnchor: [0, 0]
+    });
+  }
+});
+map.addLayer(markerCluster);
+
+function setMapStyle(style) {
+  map.removeLayer(currentTileLayer);
+  if (style === 'satellite') {
+    currentTileLayer = tileSatellite;
+    document.getElementById('btnMapStyle').classList.remove('active');
+    document.getElementById('btnSatStyle').classList.add('active');
+  } else {
+    currentTileLayer = tileMap;
+    document.getElementById('btnMapStyle').classList.add('active');
+    document.getElementById('btnSatStyle').classList.remove('active');
+  }
+  currentTileLayer.addTo(map);
+}
+
+// Show "Search this area" button when user pans/zooms
+let userMovedMap = false;
+map.on('moveend', function() {
+  if (userMovedMap && !drawMode) {
+    document.getElementById('btnSearchArea').style.display = 'block';
+  }
+});
+map.on('movestart', function() {
+  // Only flag as user-initiated if listings have already been loaded
+  if (currentListings.length > 0) {
+    userMovedMap = true;
+  }
+});
+
+function searchThisArea() {
+  const bounds = map.getBounds();
+  mapBoundsFilter = {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest()
+  };
+  document.getElementById('btnSearchArea').style.display = 'none';
+  document.getElementById('filterCity').value = '';
+  userMovedMap = false;
+  searchProperties();
+}
+
+
+// ═══════════════════════════════════════
+// FOR SALE / FOR RENT TOGGLE
+// ═══════════════════════════════════════
+function setListingMode(mode) {
+  listingMode = mode;
+  var saleBtn = document.getElementById('toggleSale');
+  var rentBtn = document.getElementById('toggleRent');
+
+  if (mode === 'rent') {
+    saleBtn.classList.remove('active');
+    rentBtn.classList.add('active');
+    document.getElementById('filterPriceMin').placeholder = 'Min $/mo';
+    document.getElementById('filterPriceMax').placeholder = 'Max $/mo';
+  } else {
+    saleBtn.classList.add('active');
+    rentBtn.classList.remove('active');
+    document.getElementById('filterPriceMin').placeholder = 'Min $';
+    document.getElementById('filterPriceMax').placeholder = 'Max $';
+  }
+
+  // Reset prices — sale vs rent ranges are very different
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+
+  searchProperties();
+}
+
+
+// ═══════════════════════════════════════
+// MORE FILTERS PANEL
+// ═══════════════════════════════════════
+function toggleMoreFilters() {
+  moreFiltersOpen = !moreFiltersOpen;
+  var panel = document.getElementById('moreFiltersPanel');
+  var btn = document.getElementById('btnMoreFilters');
+  if (moreFiltersOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+  } else {
+    panel.classList.remove('open');
+    btn.classList.remove('active');
+  }
+}
+
+function togglePill(el) {
+  el.classList.toggle('active');
+  updateFilterBadge();
+}
+
+function getActivePills(containerId) {
+  return Array.from(document.querySelectorAll('#' + containerId + ' .pill.active')).map(function(p) { return p.dataset.value; });
+}
+
+function applyMoreFilters() {
+  toggleMoreFilters();
+  searchProperties();
+}
+
+function resetMoreFilters() {
+  document.querySelectorAll('.more-filters-panel .pill').forEach(function(p) { p.classList.remove('active'); });
+  // Re-activate default pills
+  var activePill = document.querySelector('#pillsStatus .pill[data-value="Active"]');
+  if (activePill) activePill.classList.add('active');
+  var housePill = document.querySelector('#pillsType .pill[data-value="Single Family Residence"]');
+  if (housePill) housePill.classList.add('active');
+  document.getElementById('filterDOM').value = '';
+  document.getElementById('filterSqftMin').value = '';
+  document.getElementById('filterSqftMax').value = '';
+  document.getElementById('filterYearMin').value = '';
+  document.getElementById('filterYearMax').value = '';
+  document.getElementById('filterHOA').value = '';
+  document.getElementById('filterKeyword').value = '';
+  updateFilterBadge();
+}
+
+function updateFilterBadge() {
+  var count = 0;
+  if (getActivePills('pillsType').length > 0) count++;
+  // Don't count default "Active" as a filter
+  var statuses = getActivePills('pillsStatus');
+  if (!(statuses.length === 1 && statuses[0] === 'Active')) count++;
+  if (document.getElementById('filterDOM').value) count++;
+  if (document.getElementById('filterSqftMin').value || document.getElementById('filterSqftMax').value) count++;
+  if (document.getElementById('filterYearMin').value || document.getElementById('filterYearMax').value) count++;
+  if (document.getElementById('filterHOA').value) count++;
+  if (document.getElementById('filterKeyword').value.trim()) count++;
+
+  var badge = document.getElementById('filterCountBadge');
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+
+// ═══════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════
+function buildFilterStr() {
+  var city = document.getElementById('filterCity').value.trim();
+  var priceMin = document.getElementById('filterPriceMin').value.replace(/[^0-9]/g, '');
+  var priceMax = document.getElementById('filterPriceMax').value.replace(/[^0-9]/g, '');
+  var beds = document.getElementById('filterBeds').value;
+  var baths = document.getElementById('filterBaths').value;
+
+  // More filters
+  var propTypes = getActivePills('pillsType');
+  var statuses = getActivePills('pillsStatus');
+  var dom = document.getElementById('filterDOM').value;
+  var sqftMin = document.getElementById('filterSqftMin').value.replace(/[^0-9]/g, '');
+  var sqftMax = document.getElementById('filterSqftMax').value.replace(/[^0-9]/g, '');
+  var yearMin = document.getElementById('filterYearMin').value.replace(/[^0-9]/g, '');
+  var yearMax = document.getElementById('filterYearMax').value.replace(/[^0-9]/g, '');
+  var hoaMax = document.getElementById('filterHOA').value.replace(/[^0-9]/g, '');
+  var keyword = document.getElementById('filterKeyword').value.trim();
+
+  var filters = [];
+
+  if (listingMode === 'rent') {
+    filters.push("PropertyType eq 'Residential Lease'");
+  } else {
+    filters.push("PropertyType ne 'Residential Lease'");
+  }
+
+  if (city) {
+    if (/^\d{5}$/.test(city)) {
+      filters.push("PostalCode eq '" + city + "'");
+    } else {
+      var titleCity = city.replace(/\w\S*/g, function(w) { return w.charAt(0).toUpperCase() + w.substring(1).toLowerCase(); });
+      filters.push("City eq '" + titleCity + "'");
+    }
+  }
+  if (priceMin) filters.push('ListPrice ge ' + parseInt(priceMin, 10));
+  if (priceMax) filters.push('ListPrice le ' + parseInt(priceMax, 10));
+  if (beds) filters.push('BedroomsTotal ge ' + beds);
+  if (baths) filters.push('BathroomsTotalInteger ge ' + baths);
+
+  if (propTypes.length > 0) {
+    var typeFilters = propTypes.map(function(t) {
+      if (['Single Family Residence', 'Condominium', 'Townhouse'].indexOf(t) !== -1) {
+        return "PropertySubType eq '" + t + "'";
+      }
+      return "PropertyType eq '" + t + "'";
+    });
+    filters.push('(' + typeFilters.join(' or ') + ')');
+  }
+
+  if (statuses.length > 0) {
+    var statusFilters = statuses.map(function(s) { return "StandardStatus eq '" + s + "'"; });
+    filters.push('(' + statusFilters.join(' or ') + ')');
+  } else {
+    filters.push("StandardStatus eq 'Active'");
+  }
+
+  if (dom) filters.push('DaysOnMarket le ' + dom);
+  if (sqftMin) filters.push('LivingArea ge ' + sqftMin);
+  if (sqftMax) filters.push('LivingArea le ' + sqftMax);
+  if (yearMin) filters.push('YearBuilt ge ' + yearMin);
+  if (yearMax) filters.push('YearBuilt le ' + yearMax);
+  if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
+  if (keyword) filters.push("contains(PublicRemarks, '" + keyword + "')");
+
+  if (drawnBounds) {
+    var bb = drawnBounds.bbox;
+    filters.push('Latitude ge ' + bb.south);
+    filters.push('Latitude le ' + bb.north);
+    filters.push('Longitude ge ' + bb.west);
+    filters.push('Longitude le ' + bb.east);
+  }
+
+  if (mapBoundsFilter && !drawnBounds) {
+    filters.push('Latitude ge ' + mapBoundsFilter.south);
+    filters.push('Latitude le ' + mapBoundsFilter.north);
+    filters.push('Longitude ge ' + mapBoundsFilter.west);
+    filters.push('Longitude le ' + mapBoundsFilter.east);
+  }
+
+  return filters.join(' and ');
+}
+
+async function fetchMapData(filterStr) {
+  var MAP_PAGE_SIZE = 200;
+  var MAX_PAGES = 5; // 1000 markers max
+  var mapFields = 'ListingKey,ListPrice,Latitude,Longitude';
+  var headers = {
+    'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
+    'Accept': 'application/json'
+  };
+
+  try {
+    // First request — get page 1 and total count
+    var firstUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+      + '?$filter=' + encodeURIComponent(filterStr)
+      + '&$select=' + mapFields
+      + '&$top=' + MAP_PAGE_SIZE
+      + '&$skip=0'
+      + '&$count=true';
+
+    var firstResponse = await fetch(firstUrl, { headers: headers });
+    if (!firstResponse.ok) {
+      console.warn('[UBIICA Map] First map request failed:', firstResponse.status);
+      return [];
+    }
+
+    var firstData = await firstResponse.json();
+    var mapListings = firstData.value || [];
+    var totalCount = firstData['@odata.count'] || mapListings.length;
+
+    // If more results exist, fetch additional pages in parallel
+    if (totalCount > MAP_PAGE_SIZE) {
+      var remainingPages = Math.min(Math.ceil(totalCount / MAP_PAGE_SIZE), MAX_PAGES) - 1;
+      var pagePromises = [];
+
+      for (var p = 1; p <= remainingPages; p++) {
+        var pageUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+          + '?$filter=' + encodeURIComponent(filterStr)
+          + '&$select=' + mapFields
+          + '&$top=' + MAP_PAGE_SIZE
+          + '&$skip=' + (p * MAP_PAGE_SIZE);
+
+        pagePromises.push(
+          fetch(pageUrl, { headers: headers })
+            .then(function(resp) {
+              if (!resp.ok) return [];
+              return resp.json().then(function(d) { return d.value || []; });
+            })
+            .catch(function() { return []; })
+        );
+      }
+
+      var pageResults = await Promise.all(pagePromises);
+      pageResults.forEach(function(page) {
+        mapListings = mapListings.concat(page);
+      });
+    }
+
+    // Client-side polygon filtering for map data
+    if (drawnBounds && drawnBounds.polygon && mapListings.length > 0) {
+      mapListings = mapListings.filter(function(listing) {
+        if (!listing.Latitude || !listing.Longitude) return false;
+        return pointInPolygon([listing.Latitude, listing.Longitude], drawnBounds.polygon);
+      });
+    }
+
+    console.log('[UBIICA Map] Loaded ' + mapListings.length + ' markers (total: ' + totalCount + ')');
+    return mapListings;
+
+  } catch (err) {
+    console.warn('[UBIICA Map] Map data fetch failed:', err.message);
+    return [];
+  }
+}
+
+async function searchProperties(page) {
+  if (page === undefined) page = 1;
+  currentPage = page;
+
+  var sort = document.getElementById('sortSelect').value;
+  var filterStr = buildFilterStr();
+  console.log('[UBIICA Search] OData $filter:', filterStr);
+
+  // Determine if filters changed (need to refresh map) or just pagination
+  var filtersChanged = filterStr !== lastFilterStr;
+
+  var fields = [
+    'ListingKey', 'ListingId', 'ListPrice', 'StandardStatus',
+    'BedroomsTotal', 'BathroomsTotalInteger', 'LivingArea',
+    'StreetNumber', 'StreetDirPrefix', 'StreetName', 'StreetSuffix', 'StreetDirSuffix', 'UnitNumber',
+    'City', 'StateOrProvince', 'PostalCode',
+    'PropertyType', 'PropertySubType',
+    'Media', 'ListOfficeName',
+    'Latitude', 'Longitude',
+    'ModificationTimestamp', 'DaysOnMarket',
+    'YearBuilt', 'AssociationFee'
+  ].join(',');
+
+  var isClientSort = sort === 'ppsf';
+  var apiSort = isClientSort ? 'ListPrice desc' : sort;
+
+  var pageSize = drawnBounds ? 200 : BRIDGE_CONFIG.PAGE_SIZE;
+  var skip = (page - 1) * pageSize;
+
+  var listingsUrl = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+    + '?$filter=' + encodeURIComponent(filterStr)
+    + '&$select=' + fields
+    + '&$orderby=' + encodeURIComponent(apiSort)
+    + '&$top=' + pageSize
+    + '&$skip=' + skip
+    + '&$count=true';
+
+  showState('loading');
+
+  try {
+    // Fire both requests in parallel when filters changed; only listings request on pagination
+    var listingsPromise = fetch(listingsUrl, {
+      headers: {
+        'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY,
+        'Accept': 'application/json'
+      }
+    });
+
+    var mapPromise = filtersChanged ? fetchMapData(filterStr) : Promise.resolve(null);
+
+    var responses = await Promise.all([listingsPromise, mapPromise]);
+
+    // Process listings response
+    var listingsResponse = responses[0];
+    if (!listingsResponse.ok) {
+      var errText = await listingsResponse.text();
+      throw new Error('API ' + listingsResponse.status + ': ' + errText.substring(0, 200));
+    }
+
+    var data = await listingsResponse.json();
+    totalResults = data['@odata.count'] || 0;
+    currentListings = data.value || [];
+
+    // Client-side polygon filtering for listings
+    if (drawnBounds && drawnBounds.polygon && currentListings.length > 0) {
+      currentListings = currentListings.filter(function(listing) {
+        if (!listing.Latitude || !listing.Longitude) return false;
+        return pointInPolygon([listing.Latitude, listing.Longitude], drawnBounds.polygon);
+      });
+      totalResults = currentListings.length;
+    }
+
+    // Client-side Price/sqft sort
+    if (isClientSort) {
+      currentListings.sort(function(a, b) {
+        var aPpsf = (a.ListPrice && a.LivingArea) ? a.ListPrice / a.LivingArea : 0;
+        var bPpsf = (b.ListPrice && b.LivingArea) ? b.ListPrice / b.LivingArea : 0;
+        return aPpsf - bPpsf;
+      });
+    }
+
+    if (currentListings.length === 0) {
+      clearMapMarkers();
+      allMapListings = [];
+      lastFilterStr = filterStr;
+      showState('empty');
+      return;
+    }
+
+    // Process map response (only when filters changed)
+    if (responses[1] !== null) {
+      allMapListings = responses[1];
+      lastFilterStr = filterStr;
+      plotOnMap(allMapListings);
+    }
+
+    renderListings(currentListings);
+    renderPagination();
+    showState('results');
+
+    document.getElementById('listingsPanel').scrollTop = 0;
+
+  } catch (err) {
+    console.error('Search error:', err);
+    var errorEl = document.getElementById('errorState');
+    errorEl.textContent = '';
+    var p1 = document.createElement('p');
+    p1.style.fontSize = '15px';
+    p1.textContent = 'Something went wrong';
+    var p2 = document.createElement('p');
+    p2.style.cssText = 'margin-top:8px;font-size:13px;color:var(--gray);';
+    p2.textContent = err.message;
+    var p3 = document.createElement('p');
+    p3.style.cssText = 'margin-top:8px;font-size:13px;color:var(--gray);';
+    p3.textContent = 'Check your API key and dataset ID.';
+    errorEl.appendChild(p1);
+    errorEl.appendChild(p2);
+    errorEl.appendChild(p3);
+    showState('error');
+  }
+}
+
+
+// ═══════════════════════════════════════
+// RENDER LISTINGS
+// ═══════════════════════════════════════
+function renderListings(listings) {
+  var grid = document.getElementById('propertyGrid');
+  grid.textContent = '';
+
+  listings.forEach(function(listing, i) {
+    var price = formatPrice(listing.ListPrice);
+    var beds = listing.BedroomsTotal || '–';
+    var baths = listing.BathroomsTotalInteger || '–';
+    var sqft = listing.LivingArea ? formatNumber(listing.LivingArea) + ' sqft' : '';
+    var address = formatAddress(listing);
+    var cityLine = (listing.City || '') + ', ' + (listing.StateOrProvince || 'FL') + ' ' + (listing.PostalCode || '');
+    var photo = getPhotoUrl(listing);
+    var status = listing.StandardStatus || '';
+    var dom = listing.DaysOnMarket;
+    var ppsf = (listing.ListPrice && listing.LivingArea) ? Math.round(listing.ListPrice / listing.LivingArea) : null;
+    var lid = listing.ListingKey || listing.ListingId || '';
+    var isSaved = savedListings.indexOf(lid) !== -1;
+    var detailUrl = 'property-detail.html?key=' + encodeURIComponent(lid) + '&mlsid=' + encodeURIComponent(listing.ListingId || '');
+
+    // Days on market text
+    var domText = '';
+    if (dom !== null && dom !== undefined) {
+      domText = dom + ' day' + (dom !== 1 ? 's' : '') + ' on UBIICA';
+    }
+
+    // Build card
+    var card = document.createElement('a');
+    card.href = detailUrl;
+    card.className = 'property-card';
+    card.dataset.listingkey = lid;
+    card.target = '_blank';
+    card.addEventListener('mouseenter', (function(key) { return function() { highlightMarker(key); }; })(lid));
+    card.addEventListener('mouseleave', (function(key) { return function() { unhighlightMarker(key); }; })(lid));
+
+    // Photo container
+    var photoDiv = document.createElement('div');
+    photoDiv.className = 'property-photo';
+
+    if (photo) {
+      var img = document.createElement('img');
+      img.src = photo;
+      img.alt = address;
+      img.loading = 'lazy';
+      img.onerror = function() {
+        var noPhoto = document.createElement('div');
+        noPhoto.className = 'no-photo';
+        noPhoto.textContent = 'No Photo';
+        photoDiv.textContent = '';
+        photoDiv.appendChild(noPhoto);
+      };
+      photoDiv.appendChild(img);
+    } else {
+      var noPhoto = document.createElement('div');
+      noPhoto.className = 'no-photo';
+      noPhoto.textContent = 'No Photo';
+      photoDiv.appendChild(noPhoto);
+    }
+
+    // Status badge
+    if (status && status !== 'Active') {
+      var statusBadge = document.createElement('span');
+      statusBadge.className = 'property-status';
+      statusBadge.textContent = status;
+      photoDiv.appendChild(statusBadge);
+    } else if (dom !== null && dom !== undefined && dom <= 3) {
+      var newBadge = document.createElement('span');
+      newBadge.className = 'property-status';
+      newBadge.style.cssText = 'background:var(--black);color:var(--white);';
+      newBadge.textContent = 'New';
+      photoDiv.appendChild(newBadge);
+    }
+
+    // Heart button
+    var heartBtn = document.createElement('button');
+    heartBtn.className = 'card-heart' + (isSaved ? ' saved' : '');
+    heartBtn.dataset.key = lid;
+    heartBtn.addEventListener('click', function(e) { toggleSave(e, lid); });
+    var heartSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    heartSvg.setAttribute('viewBox', '0 0 24 24');
+    heartSvg.setAttribute('fill', isSaved ? 'var(--black)' : 'none');
+    heartSvg.setAttribute('stroke', 'var(--black)');
+    heartSvg.setAttribute('stroke-width', '2');
+    heartSvg.setAttribute('stroke-linecap', 'round');
+    heartSvg.setAttribute('stroke-linejoin', 'round');
+    var heartPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    heartPath.setAttribute('d', 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z');
+    heartSvg.appendChild(heartPath);
+    heartBtn.appendChild(heartSvg);
+    photoDiv.appendChild(heartBtn);
+
+    card.appendChild(photoDiv);
+
+    // Details
+    var details = document.createElement('div');
+    details.className = 'property-details';
+
+    var priceEl = document.createElement('div');
+    priceEl.className = 'property-price';
+    priceEl.textContent = price;
+    if (listingMode === 'rent') {
+      var moSpan = document.createElement('span');
+      moSpan.style.cssText = 'font-size:14px;font-weight:400;color:var(--gray);';
+      moSpan.textContent = '/mo';
+      priceEl.appendChild(moSpan);
+    }
+    details.appendChild(priceEl);
+
+    var specsEl = document.createElement('div');
+    specsEl.className = 'property-specs';
+    var bedsSpan = document.createElement('span');
+    bedsSpan.textContent = beds + ' bd';
+    specsEl.appendChild(bedsSpan);
+    var dot1 = document.createElement('span');
+    dot1.className = 'dot';
+    specsEl.appendChild(dot1);
+    var bathsSpan = document.createElement('span');
+    bathsSpan.textContent = baths + ' ba';
+    specsEl.appendChild(bathsSpan);
+    if (sqft) {
+      var dot2 = document.createElement('span');
+      dot2.className = 'dot';
+      specsEl.appendChild(dot2);
+      var sqftSpan = document.createElement('span');
+      sqftSpan.textContent = sqft;
+      specsEl.appendChild(sqftSpan);
+    }
+    details.appendChild(specsEl);
+
+    if (ppsf) {
+      var ppsfEl = document.createElement('div');
+      ppsfEl.className = 'property-ppsf';
+      ppsfEl.textContent = '$' + ppsf.toLocaleString('en-US') + '/sqft';
+      details.appendChild(ppsfEl);
+    }
+
+    var addrEl = document.createElement('div');
+    addrEl.className = 'property-address';
+    addrEl.textContent = address;
+    details.appendChild(addrEl);
+
+    var cityEl = document.createElement('div');
+    cityEl.className = 'property-address';
+    cityEl.style.fontSize = '13px';
+    cityEl.textContent = cityLine;
+    details.appendChild(cityEl);
+
+    if (domText) {
+      var domEl = document.createElement('div');
+      domEl.className = 'property-dom';
+      domEl.textContent = domText;
+      details.appendChild(domEl);
+    }
+
+    var officeName = listing.ListOfficeName || '';
+    if (officeName) {
+      var courtesyEl = document.createElement('div');
+      courtesyEl.className = 'property-courtesy';
+      courtesyEl.textContent = 'Courtesy of ' + officeName;
+      details.appendChild(courtesyEl);
+    }
+
+    card.appendChild(details);
+    grid.appendChild(card);
+  });
+
+  var resultsCountEl = document.getElementById('resultsCount');
+  resultsCountEl.textContent = '';
+  var strong = document.createElement('strong');
+  strong.textContent = formatNumber(totalResults);
+  resultsCountEl.appendChild(strong);
+  resultsCountEl.appendChild(document.createTextNode(' properties'));
+
+  var sheetTitleEl = document.getElementById('sheetTitle');
+  if (sheetTitleEl) {
+    sheetTitleEl.textContent = formatNumber(totalResults) + ' home' + (totalResults === 1 ? '' : 's');
+  }
+}
+
+
+// ═══════════════════════════════════════
+// SAVE / HEART
+// ═══════════════════════════════════════
+function toggleSave(event, listingKey) {
+  event.preventDefault();
+  event.stopPropagation();
+  var idx = savedListings.indexOf(listingKey);
+  if (idx > -1) {
+    savedListings.splice(idx, 1);
+  } else {
+    savedListings.push(listingKey);
+  }
+  // Update heart icon in-place
+  var btn = event.currentTarget;
+  var svg = btn.querySelector('svg');
+  if (savedListings.indexOf(listingKey) !== -1) {
+    btn.classList.add('saved');
+    svg.setAttribute('fill', 'var(--black)');
+  } else {
+    btn.classList.remove('saved');
+    svg.setAttribute('fill', 'none');
+  }
+}
+
+function saveSearch() {
+  var city = document.getElementById('filterCity').value || 'All areas';
+  console.log('Search saved:', { mode: listingMode, city: city, totalResults: totalResults });
+  alert('Search saved: ' + (listingMode === 'rent' ? 'Rentals' : 'For Sale') + ' in ' + city + ' (' + totalResults + ' results)');
+}
+
+
+// ═══════════════════════════════════════
+// MAP PLOTTING
+// ═══════════════════════════════════════
+function clearMapMarkers() {
+  if (markerCluster) markerCluster.clearLayers();
+  markers = [];
+}
+
+function plotOnMap(listings) {
+  clearMapMarkers();
+  markerKeyMap = {};
+
+  var bounds = [];
+
+  listings.forEach(function(listing) {
+    var lat = listing.Latitude;
+    var lng = listing.Longitude;
+    if (!lat || !lng) return;
+
+    var lid = listing.ListingKey || '';
+    bounds.push([lat, lng]);
+
+    var priceLabel = formatPriceShort(listing.ListPrice);
+    var icon = L.divIcon({
+      className: '',
+      html: '<div class="price-marker" data-marker-key="' + lid + '">' + priceLabel + '</div>',
+      iconSize: null,
+      iconAnchor: [30, 30]
+    });
+
+    var marker = L.marker([lat, lng], { icon: icon });
+    markerCluster.addLayer(marker);
+
+    // Minimal popup from map-only data (price + coordinates)
+    var popupDetailUrl = 'property-detail.html?key=' + encodeURIComponent(lid);
+    var popupEl = document.createElement('a');
+    popupEl.href = popupDetailUrl;
+    popupEl.target = '_blank';
+    popupEl.style.cssText = 'color:inherit;text-decoration:none;display:block;';
+    var popupPrice = document.createElement('div');
+    popupPrice.className = 'popup-price';
+    popupPrice.textContent = formatPriceShort(listing.ListPrice);
+    popupEl.appendChild(popupPrice);
+    var popupLink = document.createElement('div');
+    popupLink.style.cssText = 'font-size:12px;color:var(--black);margin-top:6px;font-weight:500;';
+    popupLink.textContent = 'View Details \u2192';
+    popupEl.appendChild(popupLink);
+
+    marker.bindPopup(popupEl, { maxWidth: 240 });
+
+    // Hover sync: marker → card (only if card is on current page)
+    marker.on('mouseover', (function(key) { return function() {
+      var card = document.querySelector('[data-listingkey="' + key + '"]');
+      if (card) card.classList.add('highlighted');
+      var el = this.getElement();
+      if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.add('active'); }
+    }; })(lid));
+    marker.on('mouseout', (function(key) { return function() {
+      var card = document.querySelector('[data-listingkey="' + key + '"]');
+      if (card) card.classList.remove('highlighted');
+      var el = this.getElement();
+      if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.remove('active'); }
+    }; })(lid));
+
+    markers.push(marker);
+    markerKeyMap[lid] = marker;
+  });
+
+  // Fit map to results (skip when drawn area or map bounds search)
+  if (bounds.length > 0 && !drawnBounds && !mapBoundsFilter) {
+    userMovedMap = false;
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+  }
+}
+
+function highlightMarker(listingKey) {
+  var marker = markerKeyMap[listingKey];
+  if (!marker) return;
+  var el = marker.getElement();
+  if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.add('active'); }
+}
+
+function unhighlightMarker(listingKey) {
+  var marker = markerKeyMap[listingKey];
+  if (!marker) return;
+  var el = marker.getElement();
+  if (el) { var pm = el.querySelector('.price-marker'); if (pm) pm.classList.remove('active'); }
+}
+
+
+// ═══════════════════════════════════════
+// PAGINATION
+// ═══════════════════════════════════════
+function renderPagination() {
+  var totalPages = Math.ceil(totalResults / BRIDGE_CONFIG.PAGE_SIZE);
+  if (totalPages <= 1) {
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  var pag = document.getElementById('pagination');
+  pag.style.display = 'flex';
+  pag.textContent = '';
+
+  function makePageBtn(label, page, disabled, isActive) {
+    var btn = document.createElement('button');
+    btn.className = 'page-btn' + (isActive ? ' active' : '');
+    btn.textContent = label;
+    btn.disabled = !!disabled;
+    if (!disabled) btn.addEventListener('click', function() { searchProperties(page); });
+    return btn;
+  }
+
+  function makeEllipsis() {
+    var span = document.createElement('span');
+    span.style.cssText = 'padding:0 2px;color:var(--gray);';
+    span.textContent = '\u2026';
+    return span;
+  }
+
+  pag.appendChild(makePageBtn('\u2190', currentPage - 1, currentPage === 1));
+
+  var maxVisible = 5;
+  var start = Math.max(1, currentPage - 2);
+  var end = Math.min(totalPages, start + maxVisible - 1);
+  if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+
+  if (start > 1) {
+    pag.appendChild(makePageBtn('1', 1));
+    if (start > 2) pag.appendChild(makeEllipsis());
+  }
+  for (var p = start; p <= end; p++) {
+    pag.appendChild(makePageBtn(String(p), p, false, p === currentPage));
+  }
+  if (end < totalPages) {
+    if (end < totalPages - 1) pag.appendChild(makeEllipsis());
+    pag.appendChild(makePageBtn(String(totalPages), totalPages));
+  }
+
+  pag.appendChild(makePageBtn('\u2192', currentPage + 1, currentPage === totalPages));
+}
+
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function formatPrice(price) {
+  if (!price) return '$–';
+  return '$' + price.toLocaleString('en-US');
+}
+
+function formatPriceShort(price) {
+  if (!price) return '$–';
+  if (price >= 1000000) return '$' + (price / 1000000).toFixed(1).replace('.0', '') + 'M';
+  if (price >= 1000) return '$' + Math.round(price / 1000) + 'K';
+  return '$' + price;
+}
+
+function formatNumber(num) {
+  if (!num) return '';
+  return num.toLocaleString('en-US');
+}
+
+function formatAddress(listing) {
+  var parts = [listing.StreetNumber, listing.StreetDirPrefix, listing.StreetName, listing.StreetSuffix, listing.StreetDirSuffix].filter(Boolean);
+  var addr = parts.join(' ');
+  if (listing.UnitNumber) addr += ' #' + listing.UnitNumber;
+  return addr || 'Address Unavailable';
+}
+
+function getPhotoUrl(listing) {
+  if (listing.Media && listing.Media.length > 0) {
+    return listing.Media[0].MediaURL || null;
+  }
+  return null;
+}
+
+function showState(state) {
+  document.getElementById('loadingState').style.display = state === 'loading' ? 'block' : 'none';
+  document.getElementById('emptyState').style.display = state === 'empty' ? 'block' : 'none';
+  document.getElementById('errorState').style.display = state === 'error' ? 'block' : 'none';
+  document.getElementById('initialState').style.display = state === 'initial' ? 'block' : 'none';
+  document.getElementById('propertyGrid').style.display = state === 'results' ? 'grid' : 'none';
+  document.getElementById('resultsBar').style.display = state === 'results' ? 'flex' : 'none';
+  document.getElementById('pagination').style.display =
+    (state === 'results' && totalResults > BRIDGE_CONFIG.PAGE_SIZE) ? 'flex' : 'none';
+}
+
+function resetFilters() {
+  listingMode = 'sale';
+  document.getElementById('toggleSale').classList.add('active');
+  document.getElementById('toggleRent').classList.remove('active');
+  document.getElementById('filterPriceMin').placeholder = 'Min $';
+  document.getElementById('filterPriceMax').placeholder = 'Max $';
+  document.getElementById('filterCity').value = 'Pinecrest';
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '$5,000,000';
+  document.getElementById('filterBeds').value = '';
+  document.getElementById('filterBaths').value = '';
+  document.getElementById('sortSelect').value = 'ListPrice desc';
+  mapBoundsFilter = null;
+  lastFilterStr = '';
+  allMapListings = [];
+  resetMoreFilters();
+  clearMapMarkers();
+  clearDrawing();
+  showState('initial');
+  userMovedMap = false;
+  document.getElementById('btnSearchArea').style.display = 'none';
+  map.setView([25.6646, -80.3070], 13);
+}
+
+// Price formatting on blur
+['filterPriceMin', 'filterPriceMax'].forEach(function(id) {
+  document.getElementById(id).addEventListener('blur', function() {
+    var val = this.value.replace(/[^0-9]/g, '');
+    this.value = val ? '$' + parseInt(val).toLocaleString('en-US') : '';
+  });
+  document.getElementById(id).addEventListener('focus', function() {
+    var val = this.value.replace(/[^0-9]/g, '');
+    this.value = val || '';
+  });
+});
+
+// Enter key triggers search
+document.querySelectorAll('.filter-input, .filter-select').forEach(function(el) {
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') searchProperties();
+  });
+});
+
+// ═══════════════════════════════════════
+// DRAW ON MAP — polygon area filter
+// ═══════════════════════════════════════
+var drawIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>';
+var cancelIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+function toggleDrawMode() {
+  if (drawMode) {
+    cancelDraw();
+  } else {
+    startDraw();
+  }
+}
+
+function startDraw() {
+  if (drawPolygon) { map.removeLayer(drawPolygon); drawPolygon = null; drawnBounds = null; }
+
+  drawMode = true;
+  drawPoints = [];
+  clearDrawVertices();
+
+  map.doubleClickZoom.disable();
+
+  document.getElementById('map').style.cursor = 'crosshair';
+  var btn = document.getElementById('btnDraw');
+  btn.classList.add('active');
+  btn.innerHTML = cancelIcon + ' Cancel';
+  document.getElementById('btnClearDraw').style.display = 'none';
+  document.getElementById('drawHint').style.display = 'block';
+  document.getElementById('btnSearchArea').style.display = 'none';
+}
+
+function cancelDraw() {
+  drawMode = false;
+  drawPoints = [];
+  clearDrawVertices();
+  if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
+  if (drawClickTimeout) { clearTimeout(drawClickTimeout); drawClickTimeout = null; }
+
+  map.doubleClickZoom.enable();
+  document.getElementById('map').style.cursor = '';
+  document.getElementById('drawHint').style.display = 'none';
+
+  var btn = document.getElementById('btnDraw');
+  btn.classList.remove('active');
+  btn.innerHTML = drawIcon + ' Draw';
+
+  if (drawPolygon) {
+    document.getElementById('btnClearDraw').style.display = 'inline-block';
+  }
+}
+
+function finishDraw() {
+  if (drawPoints.length < 3) { cancelDraw(); return; }
+
+  drawMode = false;
+  clearDrawVertices();
+  if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
+  if (drawClickTimeout) { clearTimeout(drawClickTimeout); drawClickTimeout = null; }
+
+  map.doubleClickZoom.enable();
+  document.getElementById('map').style.cursor = '';
+  document.getElementById('drawHint').style.display = 'none';
+
+  drawPolygon = L.polygon(drawPoints, {
+    color: '#0a0a0a',
+    weight: 2,
+    fillColor: '#0a0a0a',
+    fillOpacity: 0.06,
+    dashArray: '6,4'
+  }).addTo(map);
+
+  var bounds = drawPolygon.getBounds();
+  drawnBounds = {
+    polygon: drawPoints.slice(),
+    bbox: {
+      north: bounds.getNorth(),
+      south: bounds.getSouth(),
+      east: bounds.getEast(),
+      west: bounds.getWest()
+    }
+  };
+
+  var btn = document.getElementById('btnDraw');
+  btn.classList.remove('active');
+  btn.innerHTML = drawIcon + ' Redraw';
+  document.getElementById('btnClearDraw').style.display = 'inline-block';
+
+  document.getElementById('filterCity').value = '';
+  mapBoundsFilter = null;
+
+  searchProperties();
+}
+
+function clearDrawing() {
+  drawMode = false;
+  drawPoints = [];
+  drawnBounds = null;
+  clearDrawVertices();
+  if (drawClickTimeout) { clearTimeout(drawClickTimeout); drawClickTimeout = null; }
+  if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
+  if (drawPolygon) { map.removeLayer(drawPolygon); drawPolygon = null; }
+
+  map.doubleClickZoom.enable();
+  document.getElementById('map').style.cursor = '';
+  document.getElementById('drawHint').style.display = 'none';
+
+  var btn = document.getElementById('btnDraw');
+  btn.classList.remove('active');
+  btn.innerHTML = drawIcon + ' Draw';
+  document.getElementById('btnClearDraw').style.display = 'none';
+}
+
+function clearDrawingAndSearch() {
+  clearDrawing();
+  if (!document.getElementById('filterCity').value) {
+    document.getElementById('filterCity').value = 'Pinecrest';
+  }
+  searchProperties();
+}
+
+function clearDrawVertices() {
+  drawVertexMarkers.forEach(function(m) { map.removeLayer(m); });
+  drawVertexMarkers = [];
+}
+
+// Map click: place polygon vertices
+map.on('click', function(e) {
+  if (!drawMode) return;
+
+  if (drawClickTimeout) clearTimeout(drawClickTimeout);
+
+  drawClickTimeout = setTimeout(function() {
+    addDrawPoint(e.latlng);
+  }, 180);
+});
+
+// Map dblclick: finish polygon
+map.on('dblclick', function(e) {
+  if (!drawMode || drawPoints.length < 3) return;
+  if (drawClickTimeout) { clearTimeout(drawClickTimeout); drawClickTimeout = null; }
+  finishDraw();
+});
+
+function addDrawPoint(latlng) {
+  var pt = [latlng.lat, latlng.lng];
+
+  if (drawPoints.length >= 3) {
+    var firstPt = map.latLngToContainerPoint(L.latLng(drawPoints[0][0], drawPoints[0][1]));
+    var clickPt = map.latLngToContainerPoint(latlng);
+    if (firstPt.distanceTo(clickPt) < 20) {
+      finishDraw();
+      return;
+    }
+  }
+
+  drawPoints.push(pt);
+
+  var vertexIcon = L.divIcon({
+    className: '',
+    html: '<div class="draw-vertex"></div>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5]
+  });
+  drawVertexMarkers.push(L.marker(pt, { icon: vertexIcon, interactive: false }).addTo(map));
+
+  if (drawPolyline) map.removeLayer(drawPolyline);
+  if (drawPoints.length > 1) {
+    var previewPts = drawPoints.concat([drawPoints[0]]);
+    drawPolyline = L.polyline(previewPts, {
+      color: '#0a0a0a',
+      weight: 2,
+      dashArray: '6,4',
+      opacity: 0.6
+    }).addTo(map);
+  }
+
+  if (drawPoints.length >= 3) {
+    document.getElementById('drawHint').textContent = 'Double-click or click first point to finish.';
+  } else {
+    document.getElementById('drawHint').textContent = 'Click to place points. (' + drawPoints.length + '/3 min)';
+  }
+}
+
+
+// Ray-casting point-in-polygon
+function pointInPolygon(point, polygon) {
+  var x = point[0], y = point[1];
+  var inside = false;
+  for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    var xi = polygon[i][0], yi = polygon[i][1];
+    var xj = polygon[j][0], yj = polygon[j][1];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+
+// ═══════════════════════════════════════
+// MOBILE FILTER CHIPS + MINI SHEET + FULL MODAL
+// ═══════════════════════════════════════
+var activeMiniFilter = null;
+var pendingFilters = {};
+
+function readCurrentFilters() {
+  return {
+    mode: listingMode,
+    priceMin: document.getElementById('filterPriceMin').value.replace(/[^0-9]/g, ''),
+    priceMax: document.getElementById('filterPriceMax').value.replace(/[^0-9]/g, ''),
+    beds: document.getElementById('filterBeds').value || 'Any',
+    baths: document.getElementById('filterBaths').value || 'Any',
+    types: Array.prototype.slice.call(document.querySelectorAll('#pillsType .pill.active')).map(function(p) { return p.dataset.value; })
+  };
+}
+
+function formatPriceShortMobile(n) {
+  n = parseInt(n, 10);
+  if (!n) return '';
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(n >= 10e6 ? 1 : 2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1e3) return '$' + Math.round(n / 1e3) + 'K';
+  return '$' + n;
+}
+
+function openFilterSheet(filterType) {
+  activeMiniFilter = filterType;
+  pendingFilters = {};
+  var sheet = document.getElementById('filterMiniSheet');
+  var title = document.getElementById('filterMiniTitle');
+  var body = document.getElementById('filterMiniBody');
+  var cf = readCurrentFilters();
+  var html = '';
+  var titleText = '';
+
+  if (filterType === 'saleRent') {
+    titleText = 'Listing Type';
+    var current = pendingFilters.mode || cf.mode;
+    ['sale', 'rent'].forEach(function(v) {
+      var label = v === 'sale' ? 'For Sale' : 'For Rent';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'mode\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (current === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'price') {
+    titleText = 'Price Range';
+    var pmin = pendingFilters.priceMin !== undefined ? pendingFilters.priceMin : cf.priceMin;
+    var pmax = pendingFilters.priceMax !== undefined ? pendingFilters.priceMax : cf.priceMax;
+    html = '<div style="margin-bottom:16px"><label style="font-size:13px;color:#666">Minimum</label>' +
+      '<input type="text" inputmode="numeric" id="miniPriceMin" placeholder="No min" value="' + (pmin || '') + '" oninput="pendingFilters.priceMin=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>' +
+      '<div><label style="font-size:13px;color:#666">Maximum</label>' +
+      '<input type="text" inputmode="numeric" id="miniPriceMax" placeholder="No max" value="' + (pmax || '') + '" oninput="pendingFilters.priceMax=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>';
+  } else if (filterType === 'beds') {
+    titleText = 'Bedrooms';
+    var bedsVal = pendingFilters.beds !== undefined ? pendingFilters.beds : cf.beds;
+    ['Any', '1', '2', '3', '4', '5'].forEach(function(v) {
+      var label = v === 'Any' ? 'Any' : v + '+';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'beds\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (bedsVal === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'baths') {
+    titleText = 'Bathrooms';
+    var bathsVal = pendingFilters.baths !== undefined ? pendingFilters.baths : cf.baths;
+    ['Any', '1', '2', '3', '4'].forEach(function(v) {
+      var label = v === 'Any' ? 'Any' : v + '+';
+      html += '<div class="filter-option-row" onclick="setMiniValue(\'baths\',\'' + v + '\')"><span>' + label + '</span><span class="filter-check">' + (bathsVal === v ? '✓' : '') + '</span></div>';
+    });
+  } else if (filterType === 'sqft') {
+    titleText = 'Square Feet';
+    var sqMin = pendingFilters.sqftMin !== undefined ? pendingFilters.sqftMin : (document.getElementById('filterSqftMin').value || '');
+    var sqMax = pendingFilters.sqftMax !== undefined ? pendingFilters.sqftMax : (document.getElementById('filterSqftMax').value || '');
+    html = '<div style="margin-bottom:16px"><label style="font-size:13px;color:#666">Minimum</label>' +
+      '<input type="text" inputmode="numeric" id="miniSqftMin" placeholder="No min" value="' + sqMin + '" oninput="pendingFilters.sqftMin=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>' +
+      '<div><label style="font-size:13px;color:#666">Maximum</label>' +
+      '<input type="text" inputmode="numeric" id="miniSqftMax" placeholder="No max" value="' + sqMax + '" oninput="pendingFilters.sqftMax=this.value.replace(/[^0-9]/g,\'\'); previewMiniCount();" class="filter-full-input" style="margin-top:6px" /></div>';
+  } else if (filterType === 'type') {
+    titleText = 'Property Type';
+    var typesVal = pendingFilters.types !== undefined ? pendingFilters.types : cf.types.slice();
+    pendingFilters.types = typesVal;
+    var opts = [
+      { v: 'Single Family Residence', l: 'House' },
+      { v: 'Condominium', l: 'Condo' },
+      { v: 'Townhouse', l: 'Townhouse' },
+      { v: 'Residential Income', l: 'Multi-Family' },
+      { v: 'Commercial Sale', l: 'Commercial' },
+      { v: 'Land', l: 'Land' }
+    ];
+    opts.forEach(function(o) {
+      html += '<div class="filter-option-row" onclick="toggleMiniMulti(\'types\',\'' + o.v + '\')"><span>' + o.l + '</span><span class="filter-check">' + (typesVal.indexOf(o.v) >= 0 ? '✓' : '') + '</span></div>';
+    });
+  }
+
+  title.textContent = titleText;
+  body['inner' + 'HTML'] = html;
+  sheet.classList.add('active');
+  // Initialize Apply button with current total, then live-preview will update it on input
+  var miniBtn = document.querySelector('.filter-mini-apply');
+  if (miniBtn && typeof totalResults !== 'undefined') {
+    miniBtn.textContent = 'Show ' + formatNumber(totalResults) + (totalResults === 1 ? ' home' : ' homes');
+  }
+  previewMiniCount();
+}
+
+function closeFilterSheet() {
+  document.getElementById('filterMiniSheet').classList.remove('active');
+  activeMiniFilter = null;
+  pendingFilters = {};
+}
+
+function setMiniValue(filter, val) {
+  pendingFilters[filter] = val;
+  openFilterSheet(activeMiniFilter);
+  previewMiniCount();
+}
+
+function toggleMiniMulti(filter, val) {
+  if (!pendingFilters[filter]) pendingFilters[filter] = [];
+  var idx = pendingFilters[filter].indexOf(val);
+  if (idx >= 0) pendingFilters[filter].splice(idx, 1);
+  else pendingFilters[filter].push(val);
+  openFilterSheet(activeMiniFilter);
+  previewMiniCount();
+}
+
+function applyMiniFilter() {
+  if (pendingFilters.mode) setListingMode(pendingFilters.mode);
+  if (pendingFilters.priceMin !== undefined) document.getElementById('filterPriceMin').value = pendingFilters.priceMin;
+  if (pendingFilters.priceMax !== undefined) document.getElementById('filterPriceMax').value = pendingFilters.priceMax;
+  if (pendingFilters.beds !== undefined) document.getElementById('filterBeds').value = pendingFilters.beds === 'Any' ? '' : pendingFilters.beds;
+  if (pendingFilters.baths !== undefined) document.getElementById('filterBaths').value = pendingFilters.baths === 'Any' ? '' : pendingFilters.baths;
+  if (pendingFilters.sqftMin !== undefined) document.getElementById('filterSqftMin').value = pendingFilters.sqftMin;
+  if (pendingFilters.sqftMax !== undefined) document.getElementById('filterSqftMax').value = pendingFilters.sqftMax;
+  if (pendingFilters.types !== undefined) {
+    document.querySelectorAll('#pillsType .pill').forEach(function(p) {
+      p.classList.toggle('active', pendingFilters.types.indexOf(p.dataset.value) >= 0);
+    });
+  }
+  pendingFilters = {};
+  closeFilterSheet();
+  updateChipLabels();
+  searchProperties();
+}
+
+function resetMiniFilter() {
+  if (activeMiniFilter === 'price') {
+    document.getElementById('filterPriceMin').value = '';
+    document.getElementById('filterPriceMax').value = '';
+  } else if (activeMiniFilter === 'beds') {
+    document.getElementById('filterBeds').value = '';
+  } else if (activeMiniFilter === 'baths') {
+    document.getElementById('filterBaths').value = '';
+  } else if (activeMiniFilter === 'sqft') {
+    document.getElementById('filterSqftMin').value = '';
+    document.getElementById('filterSqftMax').value = '';
+  } else if (activeMiniFilter === 'type') {
+    document.querySelectorAll('#pillsType .pill').forEach(function(p) { p.classList.remove('active'); });
+  } else if (activeMiniFilter === 'saleRent') {
+    setListingMode('sale');
+  }
+  pendingFilters = {};
+  closeFilterSheet();
+  updateChipLabels();
+  searchProperties();
+}
+
+function updateChipLabels() {
+  if (!document.getElementById('chipSaleRent')) return;
+  var cf = readCurrentFilters();
+  document.getElementById('chipSaleRent').textContent = cf.mode === 'rent' ? 'For Rent' : 'For Sale';
+  var priceLabel = 'Price';
+  if (cf.priceMin || cf.priceMax) {
+    var minLbl = cf.priceMin ? formatPriceShortMobile(cf.priceMin) : '$0';
+    var maxLbl = cf.priceMax ? formatPriceShortMobile(cf.priceMax) : 'Any';
+    priceLabel = minLbl + ' – ' + maxLbl;
+  }
+  document.getElementById('chipPrice').textContent = priceLabel;
+  document.getElementById('chipBeds').textContent = (cf.beds && cf.beds !== 'Any') ? cf.beds + '+ beds' : 'Beds';
+  document.getElementById('chipBaths').textContent = (cf.baths && cf.baths !== 'Any') ? cf.baths + '+ baths' : 'Baths';
+
+  // Sqft chip label
+  var sqMin = (document.getElementById('filterSqftMin') || {}).value || '';
+  var sqMax = (document.getElementById('filterSqftMax') || {}).value || '';
+  var sqftEl = document.getElementById('chipSqft');
+  if (sqftEl) {
+    if (sqMin || sqMax) {
+      var sqMinLbl = sqMin ? Number(sqMin).toLocaleString('en-US') : '0';
+      var sqMaxLbl = sqMax ? Number(sqMax).toLocaleString('en-US') : 'Any';
+      sqftEl.textContent = sqMinLbl + '–' + sqMaxLbl + ' sqft';
+    } else {
+      sqftEl.textContent = 'Sqft';
+    }
+  }
+
+  document.getElementById('chipType').textContent = cf.types.length > 0
+    ? (cf.types.length === 1 ? cf.types[0].replace('Single Family Residence', 'House').replace('Condominium', 'Condo').replace('Residential Income', 'Multi-Family').replace('Commercial Sale', 'Commercial') : cf.types.length + ' types')
+    : 'Type';
+
+  document.querySelectorAll('.filter-chip').forEach(function(c) {
+    var f = c.dataset.filter;
+    var active = false;
+    if (f === 'saleRent' && cf.mode === 'rent') active = true;
+    else if (f === 'price' && (cf.priceMin || cf.priceMax)) active = true;
+    else if (f === 'beds' && cf.beds && cf.beds !== 'Any') active = true;
+    else if (f === 'baths' && cf.baths && cf.baths !== 'Any') active = true;
+    else if (f === 'sqft' && (sqMin || sqMax)) active = true;
+    else if (f === 'type' && cf.types.length > 0) active = true;
+    c.classList.toggle('active', active);
+  });
+
+  // Mobile "More Filters" badge — count of advanced filters (sqft, year, hoa, dom, status, keyword)
+  var moreBadge = document.getElementById('moreFiltersBadge');
+  if (moreBadge) {
+    var moreCount = 0;
+    if (document.getElementById('filterYearMin').value || document.getElementById('filterYearMax').value) moreCount++;
+    if (document.getElementById('filterHOA').value) moreCount++;
+    if (document.getElementById('filterDOM').value) moreCount++;
+    if (document.getElementById('filterKeyword').value.trim()) moreCount++;
+    var modalStatuses = (function() {
+      var arr = [];
+      document.querySelectorAll('#pillsStatus .pill.active').forEach(function(p) { arr.push(p.dataset.value); });
+      return arr;
+    })();
+    if (!(modalStatuses.length === 1 && modalStatuses[0] === 'Active')) moreCount++;
+    if ((document.getElementById('filterCity').value || '').trim() && (document.getElementById('filterCity').value || '').trim() !== 'Pinecrest') moreCount++;
+    if (moreCount > 0) {
+      moreBadge.textContent = moreCount;
+      moreBadge.style.display = '';
+    } else {
+      moreBadge.style.display = 'none';
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// LIVE RESULT COUNT — preview count for modal & mini sheet
+// ═══════════════════════════════════════
+var _previewTimer = null;
+var _miniPreviewTimer = null;
+
+function buildFilterStrFromModal() {
+  // Build OData filter using committed chip values + uncommitted modal values.
+  // Modal values override the hidden inputs for: city, year, hoa, keyword, dom, status.
+  var v = function(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; };
+  var city = (v('modalCity') || '').trim();
+  var yearMin = v('modalYearMin').replace(/[^0-9]/g, '');
+  var yearMax = v('modalYearMax').replace(/[^0-9]/g, '');
+  var hoaMax = v('modalHOA').replace(/[^0-9]/g, '');
+  var keyword = (v('modalKeyword') || '').trim();
+  var dom = v('modalDOM');
+  var modalStatuses = [];
+  document.querySelectorAll('#filterFullBody .filter-full-pill.active').forEach(function(p) { modalStatuses.push(p.dataset.status); });
+
+  // Chip-controlled (already committed to hidden inputs)
+  var priceMin = (document.getElementById('filterPriceMin').value || '').replace(/[^0-9]/g, '');
+  var priceMax = (document.getElementById('filterPriceMax').value || '').replace(/[^0-9]/g, '');
+  var beds = document.getElementById('filterBeds').value;
+  var baths = document.getElementById('filterBaths').value;
+  var sqftMin = (document.getElementById('filterSqftMin').value || '').replace(/[^0-9]/g, '');
+  var sqftMax = (document.getElementById('filterSqftMax').value || '').replace(/[^0-9]/g, '');
+  var propTypes = getActivePills('pillsType');
+
+  var filters = [];
+  filters.push(listingMode === 'rent' ? "PropertyType eq 'Residential Lease'" : "PropertyType ne 'Residential Lease'");
+  if (city) {
+    if (/^\d{5}$/.test(city)) filters.push("PostalCode eq '" + city + "'");
+    else {
+      var titleCity = city.replace(/\w\S*/g, function(w) { return w.charAt(0).toUpperCase() + w.substring(1).toLowerCase(); });
+      filters.push("City eq '" + titleCity + "'");
+    }
+  }
+  if (priceMin) filters.push('ListPrice ge ' + parseInt(priceMin, 10));
+  if (priceMax) filters.push('ListPrice le ' + parseInt(priceMax, 10));
+  if (beds) filters.push('BedroomsTotal ge ' + beds);
+  if (baths) filters.push('BathroomsTotalInteger ge ' + baths);
+  if (sqftMin) filters.push('LivingArea ge ' + sqftMin);
+  if (sqftMax) filters.push('LivingArea le ' + sqftMax);
+  if (yearMin) filters.push('YearBuilt ge ' + yearMin);
+  if (yearMax) filters.push('YearBuilt le ' + yearMax);
+  if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
+  if (keyword) filters.push("contains(PublicRemarks, '" + keyword.replace(/'/g, "''") + "')");
+  if (dom) filters.push('DaysOnMarket le ' + dom);
+
+  if (propTypes.length > 0) {
+    var typeFilters = propTypes.map(function(t) {
+      if (['Single Family Residence', 'Condominium', 'Townhouse'].indexOf(t) !== -1) return "PropertySubType eq '" + t + "'";
+      return "PropertyType eq '" + t + "'";
+    });
+    filters.push('(' + typeFilters.join(' or ') + ')');
+  }
+  if (modalStatuses.length > 0) {
+    filters.push('(' + modalStatuses.map(function(s) { return "StandardStatus eq '" + s + "'"; }).join(' or ') + ')');
+  } else {
+    filters.push("StandardStatus eq 'Active'");
+  }
+  return filters.join(' and ');
+}
+
+async function fetchCount(filterStr) {
+  var url = BRIDGE_CONFIG.BASE_URL + '/' + BRIDGE_CONFIG.DATASET + '/Property'
+    + '?$filter=' + encodeURIComponent(filterStr)
+    + '&$top=0&$count=true';
+  try {
+    var r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + BRIDGE_CONFIG.API_KEY, 'Accept': 'application/json' } });
+    if (!r.ok) return null;
+    var d = await r.json();
+    return d['@odata.count'] || 0;
+  } catch (e) { return null; }
+}
+
+function previewModalCount() {
+  if (_previewTimer) clearTimeout(_previewTimer);
+  var btn = document.querySelector('.filter-full-apply');
+  var countEl = document.getElementById('filterResultCount');
+  if (btn) btn.classList.add('counting');
+  _previewTimer = setTimeout(async function() {
+    var fs = buildFilterStrFromModal();
+    var n = await fetchCount(fs);
+    var btnTextEl = document.getElementById('filterResultBtnText');
+    if (btnTextEl) {
+      if (n === null) {
+        btnTextEl.textContent = 'Apply Filters';
+      } else {
+        btnTextEl.innerHTML = 'Show <span id="filterResultCount">' + formatNumber(n) + '</span> ' + (n === 1 ? 'home' : 'homes');
+      }
+    } else if (countEl) {
+      countEl.textContent = (n === null ? '—' : formatNumber(n));
+    }
+    if (btn) btn.classList.remove('counting');
+  }, 350);
+}
+
+function previewMiniCount() {
+  if (_miniPreviewTimer) clearTimeout(_miniPreviewTimer);
+  var btn = document.querySelector('.filter-mini-apply');
+  if (!btn) return;
+  btn.classList.add('counting');
+  _miniPreviewTimer = setTimeout(async function() {
+    // Temporarily commit pendingFilters to hidden inputs, build filter string, fetch count, then revert.
+    var saved = {};
+    var commitTemp = function(id, val) {
+      saved[id] = document.getElementById(id).value;
+      document.getElementById(id).value = val;
+    };
+    if (pendingFilters.priceMin !== undefined) commitTemp('filterPriceMin', pendingFilters.priceMin);
+    if (pendingFilters.priceMax !== undefined) commitTemp('filterPriceMax', pendingFilters.priceMax);
+    if (pendingFilters.beds !== undefined) commitTemp('filterBeds', pendingFilters.beds === 'Any' ? '' : pendingFilters.beds);
+    if (pendingFilters.baths !== undefined) commitTemp('filterBaths', pendingFilters.baths === 'Any' ? '' : pendingFilters.baths);
+    if (pendingFilters.sqftMin !== undefined) commitTemp('filterSqftMin', pendingFilters.sqftMin);
+    if (pendingFilters.sqftMax !== undefined) commitTemp('filterSqftMax', pendingFilters.sqftMax);
+    var fs = buildFilterStr();
+    Object.keys(saved).forEach(function(k) { document.getElementById(k).value = saved[k]; });
+    var n = await fetchCount(fs);
+    btn.textContent = n === null ? 'Apply' : 'Show ' + formatNumber(n) + (n === 1 ? ' home' : ' homes');
+    btn.classList.remove('counting');
+  }, 300);
+}
+
+function openFullFilterModal() {
+  var modal = document.getElementById('filterFullModal');
+  var body = document.getElementById('filterFullBody');
+  var statusVals = Array.prototype.slice.call(document.querySelectorAll('#pillsStatus .pill'));
+  var statusHTML = statusVals.map(function(p) {
+    return '<button type="button" class="filter-full-pill' + (p.classList.contains('active') ? ' active' : '') + '" data-status="' + p.dataset.value + '" onclick="this.classList.toggle(\'active\'); previewModalCount();">' + p.textContent + '</button>';
+  }).join('');
+
+  var v = function(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; };
+
+  var html = '';
+
+  // ── LOCATION ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Location</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">City or ZIP</div>';
+  html += '<input type="text" class="filter-full-input" id="modalCity" value="' + v('filterCity') + '" placeholder="City or ZIP" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
+  // ── HOME ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Home</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Year Built</div><div class="filter-full-range">' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMin" placeholder="Min" value="' + v('filterYearMin') + '" oninput="previewModalCount()" />' +
+    '<span>–</span>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMax" placeholder="Max" value="' + v('filterYearMax') + '" oninput="previewModalCount()" />' +
+    '</div></div>';
+  html += '</div>';
+
+  // ── PRICE & FEES ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Price &amp; Fees</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA / Condo Fee</div>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + v('filterHOA') + '" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
+  // ── LISTING STATUS ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Listing</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Status</div><div class="filter-full-pills">' + statusHTML + '</div></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Days on Market</div>' +
+    '<select class="filter-full-input" id="modalDOM" onchange="previewModalCount()"><option value="">Any</option><option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>';
+  html += '</div>';
+
+  // ── KEYWORDS ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Keywords</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Description contains</div>' +
+    '<input type="text" class="filter-full-input" id="modalKeyword" placeholder="e.g. pool, waterfront, ocean view" value="' + v('filterKeyword') + '" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
+  body['inner' + 'HTML'] = html;
+  var modalDOM = document.getElementById('modalDOM');
+  if (modalDOM) modalDOM.value = document.getElementById('filterDOM').value || '';
+  var countEl = document.getElementById('filterResultCount');
+  if (countEl) countEl.textContent = formatNumber(typeof totalResults !== 'undefined' ? totalResults : 0);
+  // Fire an initial count preview based on current modal state
+  previewModalCount();
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFullFilterModal() {
+  document.getElementById('filterFullModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function applyAllFilters() {
+  var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+  document.getElementById('filterCity').value = get('modalCity');
+  document.getElementById('filterYearMin').value = get('modalYearMin');
+  document.getElementById('filterYearMax').value = get('modalYearMax');
+  document.getElementById('filterHOA').value = get('modalHOA');
+  document.getElementById('filterKeyword').value = get('modalKeyword');
+  document.getElementById('filterDOM').value = get('modalDOM');
+
+  var modalStatusActive = Array.prototype.slice.call(document.querySelectorAll('#filterFullBody .filter-full-pill.active')).map(function(p) { return p.dataset.status; });
+  document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
+    p.classList.toggle('active', modalStatusActive.indexOf(p.dataset.value) >= 0);
+  });
+
+  closeFullFilterModal();
+  updateChipLabels();
+  searchProperties();
+}
+
+function resetAllFilters() {
+  document.getElementById('filterCity').value = '';
+  document.getElementById('filterSqftMin').value = '';
+  document.getElementById('filterSqftMax').value = '';
+  document.getElementById('filterYearMin').value = '';
+  document.getElementById('filterYearMax').value = '';
+  document.getElementById('filterHOA').value = '';
+  document.getElementById('filterKeyword').value = '';
+  document.getElementById('filterDOM').value = '';
+  document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.value === 'Active');
+  });
+  closeFullFilterModal();
+  updateChipLabels();
+  searchProperties();
+}
+
+// ═══════════════════════════════════════
+// MOBILE BOTTOM SHEET
+// ═══════════════════════════════════════
+(function() {
+  var sheet = document.getElementById('mobileBottomSheet');
+  var handle = document.getElementById('sheetHandle');
+  if (!sheet || !handle) return;
+
+  // On mobile, move propertyGrid into the sheet so listings render there
+  function maybeMoveGrid() {
+    if (window.innerWidth <= 768) {
+      var grid = document.getElementById('propertyGrid');
+      var sheetContent = document.getElementById('sheetContent');
+      if (grid && sheetContent && grid.parentNode !== sheetContent) {
+        sheetContent.appendChild(grid);
+      }
+    }
+  }
+  maybeMoveGrid();
+  window.addEventListener('resize', maybeMoveGrid);
+
+  var startY = 0, startTransform = 0, currentY = 0, dragging = false;
+
+  function getCurrentTranslate() {
+    var m = window.getComputedStyle(sheet).transform;
+    if (m === 'none') return 0;
+    var values = m.match(/matrix.*\((.+)\)/)[1].split(', ');
+    return parseFloat(values[5]);
+  }
+
+  function setTranslate(y) {
+    sheet.style.transform = 'translateY(' + y + 'px)';
+  }
+
+  function snapTo(position) {
+    sheet.classList.remove('dragging', 'half', 'full');
+    if (position === 'peek') sheet.style.transform = '';
+    else if (position === 'half') { sheet.classList.add('half'); sheet.style.transform = ''; }
+    else if (position === 'full') { sheet.classList.add('full'); sheet.style.transform = ''; }
+  }
+
+  function onStart(e) {
+    dragging = true;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    startTransform = getCurrentTranslate();
+    sheet.classList.add('dragging');
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    var delta = currentY - startY;
+    var newY = Math.max(window.innerHeight * 0.1, startTransform + delta);
+    setTranslate(newY);
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    var finalY = getCurrentTranslate();
+    var percentage = finalY / window.innerHeight;
+    if (percentage < 0.3) snapTo('full');
+    else if (percentage < 0.7) snapTo('half');
+    else snapTo('peek');
+  }
+
+  handle.addEventListener('touchstart', onStart, { passive: true });
+  handle.addEventListener('touchmove', onMove, { passive: true });
+  handle.addEventListener('touchend', onEnd);
+  handle.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+
+  var tapStart = 0;
+  handle.addEventListener('touchstart', function() { tapStart = Date.now(); });
+  handle.addEventListener('touchend', function() {
+    if (Date.now() - tapStart < 200 && Math.abs(currentY - startY) < 10) {
+      var p = getCurrentTranslate() / window.innerHeight;
+      if (p > 0.7) snapTo('half');
+      else snapTo('peek');
+    }
+  });
+})();
+
+// ─── Apply ?community= URL param from Featured Communities cards ───
+(function applyCommunityParam() {
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('community');
+  if (!slug) return;
+  var slugToCity = {
+    'key-biscayne': 'Key Biscayne',
+    'coral-gables': 'Coral Gables',
+    'kendall': 'Kendall',
+    'brickell': 'Brickell',
+    'pinecrest': 'Pinecrest',
+    'miami-beach': 'Miami Beach'
+  };
+  var city = slugToCity[slug];
+  if (!city) return;
+  var input = document.getElementById('filterCity');
+  if (input) input.value = city;
+})();
+
+// Auto-search on page load
+searchProperties();
+</script>
+
+</body>
+</html>

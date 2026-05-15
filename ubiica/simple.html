@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UBIICA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #fff; }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter Tight', sans-serif;
+    gap: 80px;
+    padding: 40px;
+  }
+  h1 {
+    font-size: clamp(80px, 16vw, 220px);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    color: #0a0a0a;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .tagline {
+    font-size: 14px;
+    color: #585858;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .tagline .divider {
+    width: 24px;
+    height: 1px;
+    background: #c8c8c8;
+  }
+  .doors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 1100px;
+    border-top: 1px solid #c8c8c8;
+  }
+  .door {
+    padding: 60px 40px;
+    text-align: center;
+    text-decoration: none;
+    color: #0a0a0a;
+  }
+  .door + .door {
+    border-left: 1px solid #c8c8c8;
+  }
+  .door-label {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    display: block;
+  }
+  .door-sub {
+    margin-top: 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #585858;
+    display: block;
+  }
+  .door:hover { background: #0a0a0a; color: #fff; }
+  .door:hover .door-sub { color: rgba(255,255,255,0.65); }
+</style>
+</head>
+<body>
+
+<h1>UBIICA</h1>
+
+<div class="tagline">
+  <span>&#x2726;</span>
+  <span>Development</span>
+  <span class="divider"></span>
+  <span>Realty</span>
+  <span class="divider"></span>
+  <span>Miami</span>
+</div>
+
+<div class="doors">
+  <a href="development/" class="door">
+    <span class="door-label">Development</span>
+    <span class="door-sub">Build with us</span>
+  </a>
+  <a href="realty/" class="door">
+    <span class="door-label">Realty</span>
+    <span class="door-sub">Buy, sell, invest</span>
+  </a>
+</div>
+
+</body>
+</html>

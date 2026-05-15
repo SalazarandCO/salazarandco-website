@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>UBIICA Logo Test</title>
+<style>
+  body { background: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-family: sans-serif; flex-direction: column; gap: 30px; }
+  .test { padding: 20px; border: 1px dashed #ccc; }
+  .label { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  img { display: block; max-width: 400px; height: auto; }
+</style>
+</head>
+<body>
+
+<div class="test">
+  <div class="label">Test 1: file path</div>
+  <img src="images/ubiica-logo.png" alt="file path logo" onerror="this.parentNode.style.background='#fee'; this.parentNode.querySelector('.label').textContent='Test 1: FILE FAILED';">
+</div>
+
+<div class="test" style="background:#000">
+  <div class="label" style="color:#fff">Test 2: white version (file path)</div>
+  <img src="images/ubiica-logo-white.png" alt="white logo" onerror="this.parentNode.style.background='#600'; this.parentNode.querySelector('.label').textContent='Test 2: FILE FAILED';">
+</div>
+
+</body>
+</html>

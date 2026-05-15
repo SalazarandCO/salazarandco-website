@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UBIICA Development — Sourcing, Capital, Execution</title>
+<meta name="description" content="UBIICA Development — a Miami-based development practice led by Alex Salazar and Rodrigo Gana. Sourcing, capital partnerships, and execution across South Florida and Orlando.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   UBIICA DEVELOPMENT — Nichols editorial system
+   ══════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --gray: rgb(88, 88, 88);
+  --gray-light: rgb(200, 200, 200);
+  --gray-bg: #f5f5f5;
+  --accent-1: #0a3a5c;   /* Deep institutional navy */
+  --accent-2: #c9a25a;   /* Warm bronze */
+  --font: 'Inter Tight', sans-serif;
+}
+
+html { scroll-behavior: smooth; cursor: none; font-variant-emoji: text; }
+
+body {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  background: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+.container { max-width: 1410px; margin: 0 30px; padding: 0 15px; }
+@media (min-width: 1470px) { .container { margin: 0 auto; } }
+
+
+/* ─── NAVBAR ─── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: var(--white);
+  padding: 24px 0;
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: padding 0.35s ease, box-shadow 0.35s ease;
+}
+.navbar.scrolled { padding: 14px 0; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+.navbar .container {
+  display: flex; align-items: center; justify-content: space-between; height: 23px;
+}
+.nav-left { display: flex; align-items: center; gap: 24px; }
+.nav-logo {
+  font-size: 18px; font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.nav-arms {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--gray-light);
+  border-radius: 6px;
+  padding: 2px;
+  margin-left: 8px;
+}
+.nav-arm {
+  font-size: 12px; font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+.nav-arm.active {
+  background: var(--black);
+  color: var(--white);
+}
+.nav-arm:not(.active):hover {
+  color: var(--black);
+}
+.nav-right { display: flex; align-items: center; gap: 24px; }
+.nav-link {
+  font-size: 14px; font-weight: 400;
+  text-transform: capitalize;
+  color: var(--black);
+  transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+
+
+/* ─── HERO ─── */
+.section-hero { padding: 130px 0 20px; }
+.banner-wrapper { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 100px; }
+.hero-titles h1 {
+  font-family: var(--font);
+  font-size: 160px;
+  font-weight: 500;
+  line-height: 144px;
+  letter-spacing: -11.2px;
+  text-transform: uppercase;
+  color: var(--black);
+  margin: 0;
+  padding: 0;
+}
+.hero-sub {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-top: 8px;
+}
+.hero-tagline-wrap { display: flex; align-items: center; gap: 10px; white-space: nowrap; padding-bottom: 4px; }
+.icon-star { font-size: 14px; color: var(--gray); line-height: 1; }
+.hero-tagline { font-size: 18px; font-weight: 400; color: var(--gray); letter-spacing: -0.18px; }
+
+.banner-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+.hero-bio {
+  max-width: 550px;
+  font-size: 18px; font-weight: 400; line-height: 1.3;
+  letter-spacing: -0.18px;
+  color: var(--black);
+  opacity: 0; transform: translateX(-100px);
+  animation: bioslideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 1.5s;
+}
+@keyframes bioslideIn { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
+.banner-bottom .btn-primary { opacity: 0; transform: translateX(100px); animation: btnSlideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 1.8s; }
+@keyframes btnSlideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+.btn-primary {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--black); color: var(--white);
+  padding: 10px 16px;
+  font-family: var(--font); font-size: 18px; font-weight: 400;
+  letter-spacing: -0.18px;
+  border: none; cursor: pointer;
+  transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  width: 296px; border-radius: 8px;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(10,10,10,0.2); }
+.arrow { display: inline-flex; align-items: center; justify-content: center; width: 1em; height: 1em; margin-left: 4px; }
+.arrow svg { width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+
+/* ─── EDITORIAL SPLIT (Video pane) ─── */
+.section-video { padding: 0; position: relative; z-index: 1; }
+.video-wrapper {
+  margin: 0 30px;
+  max-width: 1410px;
+  aspect-ratio: 16 / 9;
+  background: #0a1a28 url('../images/dev-hero.png') center/cover no-repeat;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  transform: scale(0.85);
+  opacity: 0.8;
+  transition: transform 0.1s ease-out, border-radius 0.1s ease-out, opacity 0.1s ease-out;
+  will-change: transform, border-radius, opacity;
+  display: flex; align-items: stretch;
+}
+.video-wrapper::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.65) 100%);
+  z-index: 1;
+}
+@media (min-width: 1470px) { .video-wrapper { margin: 0 auto; } }
+.editorial-full {
+  flex: 1; position: relative;
+  z-index: 2;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 60px;
+  color: var(--white);
+}
+.editorial-full .editorial-headline { text-shadow: 0 2px 16px rgba(0,0,0,0.3); }
+.editorial-full .editorial-meta {
+  display: flex; justify-content: space-between;
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  opacity: 0.6; font-weight: 500;
+  color: rgba(255,255,255,0.85);
+}
+.editorial-full .editorial-headline {
+  font-size: clamp(40px, 5vw, 76px);
+  line-height: 1.02; letter-spacing: -2.4px;
+  font-weight: 500; margin: 0;
+  color: var(--white);
+  max-width: 1000px;
+}
+.editorial-full .editorial-headline em {
+  font-style: italic; font-weight: 400; opacity: 0.7;
+}
+
+
+/* ─── ABOUT / JOURNEY ─── */
+.section-about { padding: 75px 0; }
+h2 {
+  font-family: var(--font);
+  font-size: 82px; font-weight: 500; line-height: 82px;
+  letter-spacing: -3.28px; text-transform: uppercase;
+  color: var(--black);
+}
+.about-grid { display: grid; grid-template-columns: 525px 1fr; gap: 16px; }
+.about-left { display: flex; flex-direction: column; justify-content: space-between; }
+.about-stats-row { display: flex; gap: 12px; justify-content: flex-end; align-items: flex-start; margin-bottom: 80px; flex-wrap: wrap; }
+.stat-labels { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.stat-label { font-size: 18px; font-weight: 400; color: var(--gray); letter-spacing: normal; line-height: 1.3; }
+.about-content-text {
+  font-size: 32px; font-weight: 400; line-height: 1.3;
+  letter-spacing: -0.96px; color: var(--black);
+  max-width: 705px;
+}
+.about-content-text .text-line { display: block; opacity: 0.15; transition: opacity 0.4s ease; will-change: opacity; }
+
+
+/* ─── PROJECTS — Stacking Cards ─── */
+.section-projects { padding: 75px 0 0; }
+.section-title { margin-bottom: 40px; }
+.stack-container { position: relative; }
+.stack-card {
+  position: sticky; top: 100px;
+  border-radius: 12px; overflow: hidden;
+  transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+  transform-origin: center top;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  will-change: transform;
+  margin-bottom: 40vh;
+  background: var(--white);
+}
+.stack-card:last-child { margin-bottom: 0; }
+.stack-container > .stack-card:nth-last-child(2) { margin-bottom: 20vh; }
+.stack-card-ghost { height: 1px; min-height: 1px; padding: 0; margin-bottom: 0; box-shadow: none !important; visibility: hidden; pointer-events: none; border-radius: 0; }
+.stack-card-inner { display: grid; grid-template-columns: 1fr 1fr; min-height: 420px; }
+.stack-card-image { width: 100%; height: 100%; min-height: 420px; position: relative; overflow: hidden; }
+.stack-card-image::after {
+  content: attr(data-label); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 14px; color: rgba(255,255,255,0.25); letter-spacing: 1px; text-transform: uppercase;
+}
+.stack-card-content { display: flex; flex-direction: column; justify-content: flex-end; padding: 48px; }
+.stack-card-tag { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 16px; }
+.stack-card-name {
+  font-family: var(--font);
+  font-size: 36px; font-weight: 500; line-height: 1.15;
+  letter-spacing: -1.5px; color: var(--black);
+  margin-bottom: 16px;
+}
+.stack-card-desc { font-size: 16px; line-height: 1.5; color: var(--gray); max-width: 400px; }
+.stack-card-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 24px;
+  font-size: 15px; font-weight: 500; color: var(--black);
+  transition: opacity 0.3s;
+}
+.stack-card-link:hover { opacity: 0.6; }
+
+
+/* ─── CAPABILITIES (Horizontal Scroll) ─── */
+.capabilities-scroll-outer { position: relative; }
+.capabilities-scroll-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; padding: 0 30px; }
+.capabilities-scroll-sticky .container { max-width: 1410px; }
+@media (min-width: 1470px) { .capabilities-scroll-sticky .container { margin: 0 auto; } }
+h3 {
+  font-family: var(--font);
+  font-size: 54px; font-weight: 500; line-height: 1.1;
+  letter-spacing: -2.7px; text-transform: uppercase;
+  color: var(--black);
+}
+.capabilities-header { margin-bottom: 48px; }
+.capabilities-meta { margin-top: 16px; font-size: 14px; color: var(--gray); display: flex; align-items: center; gap: 8px; }
+.capabilities-scroll-track { display: flex; gap: 24px; will-change: transform; }
+.capability-card { flex: 0 0 380px; padding-top: 32px; min-height: 320px; position: relative; overflow: hidden; }
+.capability-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px; background: var(--gray-light);
+}
+.capability-num {
+  font-size: 13px; font-weight: 500;
+  color: var(--accent-1);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.capability-title {
+  font-family: var(--font);
+  font-size: 32px; font-weight: 500;
+  line-height: 1.2; letter-spacing: -1.2px;
+  color: var(--black);
+}
+.capability-desc {
+  font-size: 16px; font-weight: 400;
+  line-height: 1.5; letter-spacing: -0.16px;
+  color: var(--gray); margin-top: 16px;
+  max-width: 340px;
+}
+
+
+/* ─── FOUNDERS ─── */
+.section-founders { padding: 120px 0; background: var(--gray-bg); }
+.founders-header { margin-bottom: 60px; }
+.founders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.founder-card {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--white); border-radius: 12px; overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  text-decoration: none; color: var(--black);
+}
+.founder-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+.founder-image {
+  width: 100%; aspect-ratio: 4/5;
+  position: relative;
+  display: flex; align-items: flex-end;
+  padding: 32px 36px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #1a1a1a;
+  overflow: hidden;
+  isolation: isolate;
+}
+.founder-alex { background-image: url('../images/alex-headshot.jpg'); background-position: center 30%; }
+.founder-rodrigo { background-image: url('../images/rodrigo-headshot.jpg'); background-position: center 25%; }
+/* Bottom-gradient overlay so the name is always readable */
+.founder-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0) 60%);
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+.founder-card:hover .founder-image::before { opacity: 0.85; }
+.founder-image > * { position: relative; z-index: 2; }
+.founder-image > img.headshot-img {
+  display: none;
+}
+.founder-name {
+  font-family: var(--font);
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 500; line-height: 1;
+  letter-spacing: -1.8px;
+  color: var(--white);
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.founder-body { padding: 32px 36px; display: flex; flex-direction: column; gap: 14px; }
+.founder-role {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--gray);
+}
+.founder-desc { font-size: 16px; line-height: 1.5; color: var(--gray); }
+.founder-cta {
+  margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500; color: var(--black);
+  letter-spacing: 0.5px;
+}
+.founder-card:hover .founder-cta { gap: 14px; }
+
+
+/* ─── STRATEGIC PARTNERSHIPS ─── */
+.section-partners { padding: 120px 0; }
+.partners-layout {
+  display: grid;
+  grid-template-columns: 525px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.partners-header { display: flex; flex-direction: column; }
+.partners-statement {
+  max-width: 720px;
+  padding-top: 8px;
+}
+.partners-lead {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.96px;
+  color: var(--black);
+  margin-bottom: 28px;
+}
+.partners-body {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.18px;
+  color: var(--gray);
+  margin-bottom: 18px;
+}
+.partners-body em {
+  font-style: italic;
+  color: var(--accent-1);
+  font-weight: 500;
+}
+.partners-body:last-child {
+  margin-top: 24px;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--black);
+  letter-spacing: -0.4px;
+}
+
+
+/* ─── TRACK RECORD ─── */
+.section-completed { padding: 80px 0 20px; }
+.completed-header { margin-bottom: 40px; }
+.completed-meta { margin-top: 12px; font-size: 12px; color: var(--gray); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.completed-stack-container { position: relative; }
+.completed-row {
+  position: sticky; top: 100px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  background: var(--white); padding: 16px 0;
+  margin-bottom: 50vh;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  transform-origin: center top;
+  will-change: transform, opacity;
+  z-index: 1;
+}
+.completed-row:nth-child(2) { z-index: 2; }
+.completed-row:last-of-type { margin-bottom: 0; }
+.completed-row-ghost { height: 1px; visibility: hidden; pointer-events: none; }
+.completed-card {
+  display: flex; flex-direction: column;
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.completed-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+.completed-card-image { width: 100%; aspect-ratio: 4/3; position: relative; }
+.completed-card-body { padding: 16px 18px 20px; }
+.completed-card-meta {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  font-size: 10px; color: var(--gray); letter-spacing: 0.8px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.completed-card-company {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  font-size: 9px; font-weight: 600; letter-spacing: 1px; white-space: nowrap;
+}
+.company-ubiica { background: rgba(10,58,92,0.10); color: var(--accent-1); }
+.company-alta { background: rgba(88,88,88,0.10); color: var(--gray); }
+.completed-card-name {
+  font-family: var(--font);
+  font-size: 18px; font-weight: 500;
+  line-height: 1.2; letter-spacing: -0.4px;
+  color: var(--black); margin-bottom: 6px;
+}
+.completed-card-desc { font-size: 13px; line-height: 1.45; color: var(--gray); }
+
+
+/* ─── PRESS ─── */
+.section-press { padding: 40px 0 80px; }
+.press-carousel-wrapper { position: relative; margin-top: 60px; }
+.press-carousel { overflow: hidden; padding: 0 30px; }
+.press-track { display: flex; gap: 24px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+.press-card {
+  flex: 0 0 calc(33.333% - 16px);
+  display: flex; flex-direction: column;
+  border-radius: 12px; overflow: hidden;
+  background: var(--gray-bg);
+  text-decoration: none; color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.press-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+.press-card-image { width: 100%; aspect-ratio: 16/10; }
+.press-card-content { padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.press-card-source { display: flex; justify-content: space-between; align-items: center; }
+.press-publication { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-1); }
+.press-date { font-size: 12px; color: var(--gray); letter-spacing: 0.5px; }
+.press-card-title { font-size: 20px; font-weight: 600; line-height: 1.25; letter-spacing: -0.5px; color: var(--black); }
+.press-card-desc { font-size: 15px; line-height: 1.45; color: var(--gray); }
+.press-controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 40px; }
+.press-arrow {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: transparent;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  color: var(--black); cursor: pointer;
+}
+.press-arrow:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+.press-dots { display: flex; gap: 8px; }
+.press-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-light); transition: background 0.3s ease, transform 0.3s ease; cursor: pointer; }
+.press-dot.active { background: var(--accent-1); transform: scale(1.3); }
+
+
+/* ─── FOOTER ─── */
+.footer { padding: 60px 0 40px; border-top: 1px solid rgba(0,0,0,0.06); }
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.5fr; gap: 40px; }
+.footer-logo { font-family: var(--font); font-size: 20px; font-weight: 500; color: var(--black); margin-bottom: 24px; letter-spacing: -0.5px; }
+.footer-label { font-size: 14px; color: var(--gray); margin-bottom: 4px; }
+.footer-value { font-size: 16px; color: var(--black); line-height: 1.5; }
+.footer-col-title { font-size: 14px; color: var(--gray); margin-bottom: 16px; }
+.footer-col a { display: block; font-size: 16px; color: var(--black); margin-bottom: 10px; transition: opacity 0.3s; }
+.footer-col a:hover { opacity: 0.5; }
+h4 { font-family: var(--font); font-size: 28px; font-weight: 500; line-height: 1.2; letter-spacing: -1px; color: var(--black); }
+.footer-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 60px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.06); font-size: 14px; color: var(--gray); }
+.footer-bottom a { margin-left: 24px; transition: opacity 0.3s; }
+.footer-bottom a:hover { opacity: 0.5; }
+
+
+/* ─── SCROLL PROGRESS ─── */
+.scroll-progress { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); z-index: 10000; will-change: width; }
+
+
+/* ─── REVEALS ─── */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+.text-reveal { clip-path: inset(0 100% 0 0); opacity: 0; transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; will-change: clip-path, opacity; }
+.text-reveal.visible { clip-path: inset(0 0% 0 0); opacity: 1; }
+
+
+/* ─── HERO NAME ANIMATION ─── */
+.hero-titles h1 { overflow: visible; display: flex; align-items: baseline; }
+.hero-titles h1 .name-color, .hero-titles h1 .name-slide { display: inline-block; }
+.decode-char { display: inline-block; transition: transform 0.15s ease; }
+.decode-char.locked { animation: lockPulse 0.2s ease forwards; }
+@keyframes lockPulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.name-color { transition: color 0.5s ease, text-shadow 0.5s ease; }
+.name-navy.active { color: var(--accent-1); text-shadow: 0 0 14px rgba(10,58,92,0.30), 0 0 28px rgba(10,58,92,0.10); }
+@keyframes colorGlow { 0%, 100% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; } 50% { text-shadow: 0 0 28px currentColor, 0 0 52px currentColor; } }
+.name-color.glow { animation: colorGlow 2.5s ease-in-out infinite; }
+.name-slide { transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, letter-spacing 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+
+
+/* ─── CUSTOM CURSOR ─── */
+.cursor-dot { position: fixed; top: 0; left: 0; width: 12px; height: 12px; background: var(--accent-1); border-radius: 50%; pointer-events: none; z-index: 99999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, opacity 0.2s; mix-blend-mode: difference; opacity: 0; }
+.cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1.5px solid rgba(10,58,92,0.4); border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, border-color 0.3s, opacity 0.2s; opacity: 0; }
+.cursor-dot.visible, .cursor-ring.visible { opacity: 1; }
+.cursor-dot.hover { width: 48px; height: 48px; background: rgba(10,58,92,0.15); mix-blend-mode: normal; }
+.cursor-ring.hover { width: 48px; height: 48px; border-color: rgba(10,58,92,0.6); }
+@media (hover: none) and (pointer: coarse) { html { cursor: auto !important; } .cursor-dot, .cursor-ring { display: none !important; } }
+*, *::before, *::after { cursor: none !important; }
+a, button, [role="button"], input, select, textarea, label { cursor: none !important; }
+
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1200px) {
+  .hero-titles h1 { font-size: 120px; line-height: 108px; letter-spacing: -8px; }
+  h2 { font-size: 64px; line-height: 64px; letter-spacing: -2.5px; }
+  h3 { font-size: 42px; letter-spacing: -2px; }
+  .completed-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1024px) {
+  .press-card { flex: 0 0 calc(50% - 12px); }
+}
+@media (max-width: 768px) {
+  .container { margin: 0 20px; padding: 0; }
+  .hero-titles h1 { font-size: 64px; line-height: 58px; letter-spacing: -4px; }
+  h2 { font-size: 42px; line-height: 42px; letter-spacing: -1.8px; }
+  h3 { font-size: 28px; letter-spacing: -1.2px; }
+  .banner-wrapper { flex-direction: column; align-items: flex-start; margin-bottom: 60px; gap: 32px; }
+  .banner-bottom { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .hero-bio { max-width: 100%; }
+  .btn-primary { width: 100%; }
+  .nav-arms { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 32px; }
+  .about-left { gap: 32px; }
+  .about-stats-row { justify-content: flex-start; margin-bottom: 40px; }
+  .founders-grid { grid-template-columns: 1fr; }
+  .partners-layout { grid-template-columns: 1fr; gap: 32px; }
+  .partners-lead { font-size: 26px; letter-spacing: -0.6px; }
+  .partners-body { font-size: 16px; }
+  .stack-card { top: 80px; margin-bottom: 30vh; }
+  .stack-card-inner { grid-template-columns: 1fr; min-height: auto; }
+  .stack-card-image { min-height: 240px; }
+  .stack-card-content { padding: 28px 24px; }
+  .stack-card-name { font-size: 26px; letter-spacing: -1px; }
+  .capabilities-scroll-outer { height: auto !important; }
+  .capabilities-scroll-sticky { position: relative; top: auto; height: auto; padding: 75px 20px; }
+  .capabilities-scroll-track { flex-direction: column; transform: none !important; }
+  .capability-card { flex: none; width: 100%; }
+  .completed-row { position: relative; top: auto; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; padding: 0; }
+  .completed-card-name { font-size: 18px; }
+  .press-card { flex: 0 0 calc(100% - 24px); }
+  .press-carousel { padding: 0 20px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .video-wrapper { margin: 0 20px; border-radius: 8px; aspect-ratio: auto; flex-direction: column; min-height: 480px; }
+  .editorial-full { padding: 32px 24px; gap: 32px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+
+<!-- NAVBAR -->
+<div class="scroll-progress" id="scrollProgress"></div>
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-left">
+      <a href="../" class="nav-logo">UBIICA</a>
+      <div class="nav-arms">
+        <a href="../development/" class="nav-arm active">Development</a>
+        <a href="../realty/" class="nav-arm">Realty</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a href="#partners" class="nav-link">Partners</a>
+      <a href="#projects" class="nav-link">Projects</a>
+      <a href="../contact.html" class="nav-link">Contact</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<section class="section-hero">
+  <div class="container">
+    <div class="banner-wrapper">
+      <div class="hero-titles">
+        <h1><span class="name-color name-navy">UBI</span><span class="name-slide name-slide-right">ICA</span></h1>
+        <div class="hero-sub">Development</div>
+      </div>
+      <div class="hero-tagline-wrap text-reveal">
+        <span class="icon-star">&#x2726;</span>
+        <span class="hero-tagline">A partnership-led development practice</span>
+      </div>
+    </div>
+
+    <div class="banner-bottom">
+      <div class="hero-bio">
+        UBIICA Development is a Miami-based real estate practice led by Alex Salazar and Rodrigo Gana — combining institutional-grade execution with operator instinct. We source, capitalize and deliver ground-up residential, mixed-use and hospitality projects across South Florida and Orlando.
+      </div>
+      <a href="#contact" class="btn-primary">
+        <span>Bring Us A Deal</span>
+        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- EDITORIAL SPLIT -->
+<section class="section-video" id="sectionVideo">
+  <div class="video-wrapper">
+    <div class="editorial-full">
+      <div class="editorial-meta">
+        <span><span class="icon-star">&#x2726;</span> &nbsp; UBIICA Development</span>
+        <span>Miami, FL</span>
+      </div>
+      <h3 class="editorial-headline">Two partners.<br>Two decades. <em>One discipline.</em></h3>
+      <div class="editorial-meta">
+        <span>3,000+ Units Delivered</span>
+        <span>Est. 2018</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ABOUT -->
+<section class="section-about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-left">
+        <div class="reveal">
+          <h2>A Development</h2>
+          <h2>Practice</h2>
+        </div>
+        <div class="reveal">
+          <a href="#contact" class="btn-primary">
+            <span>Get In Touch</span>
+            <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </a>
+        </div>
+      </div>
+      <div class="about-right">
+        <div class="about-stats-row">
+          <div class="stat-labels">
+            <span class="stat-label">3,000+ Units</span>
+            <span class="stat-label">$300M+ Delivered</span>
+            <span class="stat-label">South FL &middot; Orlando</span>
+          </div>
+        </div>
+        <div>
+          <p class="about-content-text" id="aboutText">UBIICA Development is the joint practice of Alex Salazar and Rodrigo Gana — two partners who source, structure and deliver real estate together. We bring complementary strengths: institutional-scale execution and on-the-ground operator instincts. Every project we underwrite is sourced strategically, capitalized deal-by-deal with the right partners, and executed with the discipline of teams that have been in the trenches before.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CAPABILITIES -->
+<div class="capabilities-scroll-outer" id="capabilitiesScrollOuter">
+  <div class="capabilities-scroll-sticky">
+    <div class="container">
+      <div class="capabilities-header reveal">
+        <h3>What we</h3>
+        <h3>do</h3>
+        <div class="capabilities-meta">
+          <span class="icon-star">&#x2726;</span>
+          <span>End-to-end real estate development</span>
+        </div>
+      </div>
+      <div class="capabilities-scroll-track" id="capabilitiesTrack">
+        <div class="capability-card">
+          <div class="capability-num">01</div>
+          <div class="capability-title">Sourcing &amp; Acquisitions</div>
+          <p class="capability-desc">We surface off-market opportunities through deep South Florida and Orlando relationships — and underwrite every site against an institutional pro-forma.</p>
+        </div>
+        <div class="capability-card">
+          <div class="capability-num">02</div>
+          <div class="capability-title">Capital Partnerships</div>
+          <p class="capability-desc">Each deal gets a bespoke capital structure. We bring institutional LPs, family offices, and brand partners (Marriott Bonvoy among them) into the projects where the strategy fits.</p>
+        </div>
+        <div class="capability-card">
+          <div class="capability-num">03</div>
+          <div class="capability-title">Development &amp; Execution</div>
+          <p class="capability-desc">From entitlements through GC selection through delivery — we run point on the operating cadence that keeps complex projects on schedule and on basis.</p>
+        </div>
+        <div class="capability-card">
+          <div class="capability-num">04</div>
+          <div class="capability-title">Asset Management &amp; Disposition</div>
+          <p class="capability-desc">Repositioning, lease-up, and exit. We've assembled the Coral Gables portfolio, taken AmTrust off-market, and sold 2701 Ponce at a $23M price tag.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ACTIVE PIPELINE -->
+<section class="section-projects" id="projects">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>Active</h2>
+      <h2>Pipeline</h2>
+    </div>
+
+    <div class="stack-container" id="stackContainer">
+      <div class="stack-card" style="z-index: 10; background: #f5f8f5;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="EDGEWOOD OAKS" style="background: url('../images/edgewood-oaks-hero.jpg') center/cover no-repeat;"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Fort Lauderdale &middot; Residential</span>
+            <div class="stack-card-name">Edgewood Oaks — Gated Townhome Community</div>
+            <p class="stack-card-desc">67 ground-up townhomes in Fort Lauderdale's Marina Mile Blvd corridor. A flagship UBIICA development.</p>
+            <a href="#contact" class="stack-card-link">Inquire <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card" style="z-index: 20; background: #f5f8fa;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="NEO AT SODO" style="background: #1a2530 url('../images/neo-at-sodo-hero.jpg') center/cover no-repeat;"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Downtown Orlando &middot; Mixed-Use</span>
+            <div class="stack-card-name">Multifamily SoDo — 3509 S Orange Ave</div>
+            <p class="stack-card-desc">Ground-up multifamily development in Downtown Orlando's SoDo (South of Downtown) district — residential over ground-floor retail. Currently under construction.</p>
+            <a href="#contact" class="stack-card-link">Inquire <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card" style="z-index: 30; background: #f8f9f7;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="AMBAR" style="background: url('../images/ambar-hero.jpg') center/cover no-repeat;"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Kissimmee, FL &middot; Hospitality + Residential</span>
+            <div class="stack-card-name">AMBAR Residences — Apartments by Marriott Bonvoy</div>
+            <p class="stack-card-desc">A 322-unit luxury apartment-hotel concept developed in partnership with Marriott Bonvoy — the first for-sale Apartments by Marriott Bonvoy in the U.S., breaking ground 2026 near Disney World.</p>
+            <a href="#contact" class="stack-card-link">Inquire <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card" style="z-index: 40; background: #f5f8f7;">
+        <div class="stack-card-inner">
+          <div class="stack-card-image" data-label="DANIA CANAL HOMES" style="background: #1c2e35 url('../images/dania-canal-homes.jpg') center/cover no-repeat;"></div>
+          <div class="stack-card-content">
+            <span class="stack-card-tag">Dania Beach &middot; Waterfront</span>
+            <div class="stack-card-name">Dania Canal Homes — 9 Single-Family Residences</div>
+            <p class="stack-card-desc">Ground-up development of 9 waterfront single-family homes on the Dania Canal at 2900 SW 45 St. In design and pre-construction with DCR Exponential.</p>
+            <a href="#contact" class="stack-card-link">Inquire <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card stack-card-ghost" style="z-index: 50;"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOUNDERS -->
+<section class="section-founders" id="founders">
+  <div class="container">
+    <div class="founders-header reveal">
+      <h2>The</h2>
+      <h2>Founders</h2>
+      <div class="completed-meta">
+        <span class="icon-star">&#x2726;</span>
+        <span>Two practices, one partnership</span>
+      </div>
+    </div>
+
+    <div class="founders-grid">
+      <a href="https://salazarandco.com" target="_blank" class="founder-card">
+        <div class="founder-image founder-alex">
+          <span class="founder-name">Alex<br>Salazar</span>
+        </div>
+        <div class="founder-body">
+          <span class="founder-role">Co-Founder, UBIICA &middot; Founder, RETCO</span>
+          <p class="founder-desc">Real estate entrepreneur with 20+ years across Miami and South Florida — brokerage, investment, distressed asset acquisitions, and development. Alex leads sourcing and the buyer-side of every deal.</p>
+          <span class="founder-cta">Visit salazarandco.com <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></span>
+        </div>
+      </a>
+
+      <a href="https://rodrigogana.com" target="_blank" class="founder-card">
+        <div class="founder-image founder-rodrigo">
+          <span class="founder-name">Rodrigo<br>Gana</span>
+        </div>
+        <div class="founder-body">
+          <span class="founder-role">Co-Founder, UBIICA &middot; Co-Founder, Big Key Group</span>
+          <p class="founder-desc">Miami-based real estate developer and investor — 20+ years across residential, hospitality and mixed-use projects with 3,000+ units delivered. Former CEO of ALTA Developers. Rodrigo leads development execution and capital strategy.</p>
+          <span class="founder-cta">Visit rodrigogana.com <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- STRATEGIC PARTNERSHIPS -->
+<section class="section-partners" id="partners">
+  <div class="container">
+    <div class="partners-layout">
+      <div class="partners-header reveal">
+        <h2>Strategic</h2>
+        <h2>Partnerships</h2>
+        <div class="completed-meta">
+          <span class="icon-star">&#x2726;</span>
+          <span>How we build</span>
+        </div>
+      </div>
+      <div class="partners-statement reveal">
+        <p class="partners-lead">We don't build alone &mdash; and we don't build the same project twice.</p>
+        <p class="partners-body">Every UBIICA project is structured around the partners who fit <em>that</em> specific deal. Capital that understands the play. Brand and operating partners who elevate the asset. Lenders, architects, GCs and counsel chosen because they sharpen the outcome, not because they were last on the rolodex.</p>
+        <p class="partners-body">It's how we've taken a Coral Gables office assemblage to disposition, brought Marriott Bonvoy into a first-of-its-kind Orlando product, and put institutional capital behind ground-up residential across South Florida.</p>
+        <p class="partners-body">We value the few. We build with the right.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- TRACK RECORD -->
+<section class="section-completed" id="track-record">
+  <div class="container">
+    <div class="completed-header reveal">
+      <h2>Track</h2>
+      <h2>Record</h2>
+      <div class="completed-meta">
+        <span class="icon-star">&#x2726;</span>
+        <span>Combined completed work</span>
+      </div>
+    </div>
+
+    <div class="completed-stack-container" id="completedStackContainer">
+      <div class="completed-row">
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/Leaprc.jpg') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>1600 SW 1st Ave, Miami, FL</span>
+              <span class="completed-card-company company-alta">ALTA &middot; 2017</span>
+            </div>
+            <h4 class="completed-card-name">Le Parc at Brickell</h4>
+            <p class="completed-card-desc">12-story, 128-unit boutique luxury condo in Miami's Brickell financial district — $79M sellout.</p>
+          </div>
+        </div>
+
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/2701 Ponce.JPG') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>2701 Ponce Blvd, Coral Gables, FL</span>
+              <span class="completed-card-company company-ubiica">UBIICA &middot; 2024</span>
+            </div>
+            <h4 class="completed-card-name">2701 Ponce</h4>
+            <p class="completed-card-desc">3-story office assemblage in Coral Gables, asset-managed by UBIICA — $23M sale.</p>
+          </div>
+        </div>
+
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/Sunset.jpg') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>Coral Gables, FL</span>
+              <span class="completed-card-company company-ubiica">UBIICA</span>
+            </div>
+            <h4 class="completed-card-name">Sunset Residences</h4>
+            <p class="completed-card-desc">Luxury residential development in Coral Gables — UBIICA-led ground-up execution.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="completed-row">
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/Eon.jpg') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>Biscayne Bay, Miami, FL</span>
+              <span class="completed-card-company company-alta">ALTA</span>
+            </div>
+            <h4 class="completed-card-name">EON on Biscayne Bay</h4>
+            <p class="completed-card-desc">Luxury waterfront residential development on Biscayne Bay — delivered through ALTA Developers.</p>
+          </div>
+        </div>
+
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/Neovita.png') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>Doral, FL</span>
+              <span class="completed-card-company company-alta">ALTA</span>
+            </div>
+            <h4 class="completed-card-name">Neovita Doral</h4>
+            <p class="completed-card-desc">Master-planned residential community in Doral — sourced, entitled, capitalized and delivered.</p>
+          </div>
+        </div>
+
+        <div class="completed-card">
+          <div class="completed-card-image" style="background: url('../images/The Mile.jpg') center/cover no-repeat;"></div>
+          <div class="completed-card-body">
+            <div class="completed-card-meta">
+              <span>3622 SW 22nd St, Miami, FL</span>
+              <span class="completed-card-company company-alta">ALTA &middot; 2016</span>
+            </div>
+            <h4 class="completed-card-name">The Mile</h4>
+            <p class="completed-card-desc">12-story, 120-unit multi-family development in Miami — $48M exit.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="completed-row-ghost"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PRESS -->
+<section class="section-press" id="press">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2>In The</h2>
+      <h2>Press</h2>
+    </div>
+  </div>
+  <div class="press-carousel-wrapper">
+    <div class="press-carousel" id="pressCarousel">
+      <div class="press-track" id="pressTrack">
+        <a href="https://therealdeal.com/miami/2019/08/09/amtrust-bank-building-sells-in-coral-gables/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('../images/Amtrsut.JPG') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">August 2019</span>
+            </div>
+            <div class="press-card-title">AmTrust Bank in Coral Gables Sells for $12M</div>
+            <p class="press-card-desc">UBIICA and Maven Real Estate acquired the AmTrust Bank office building and three adjacent lots in Coral Gables — launching one of the area's most significant assemblages.</p>
+          </div>
+        </a>
+
+        <a href="https://therealdeal.com/miami/2021/04/28/ubiica-maven-plan-multifamily-project-in-coral-gables/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('../images/1200-Ubiica-Maven-plan-multifamily-project-in-Coral-Gables-768x479.jpg') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">April 2021</span>
+            </div>
+            <div class="press-card-title">Ubiica, Maven Plan Multifamily Project in Coral Gables</div>
+            <p class="press-card-desc">Plans to develop up to 128 units on the half-acre Almeria Avenue assemblage — multifamily or assisted-living after demolishing the office at 152 Almeria.</p>
+          </div>
+        </a>
+
+        <a href="https://therealdeal.com/miami/2021/06/07/ubiica-maven-buy-coral-gables-office-building-parking-lot-for-9m/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('../images/mia-coral-gables-768x479.jpg') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">The Real Deal</span>
+              <span class="press-date">June 2021</span>
+            </div>
+            <div class="press-card-title">Ubiica, Maven Buy Coral Gables Office Building for $9M</div>
+            <p class="press-card-desc">Completing the Almeria Avenue assemblage with the acquisition of the office at 152 Almeria — the final piece of a multi-year land play.</p>
+          </div>
+        </a>
+
+        <a href="https://www.travelweekly.com/Travel-News/Hotel-News/Marriott-a-partner-for-Ambar-Residences-Orlando" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('../images/Marriott-to-be-affiliated-with-resort-style-reside.webp') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">Travel Weekly</span>
+              <span class="press-date">2025</span>
+            </div>
+            <div class="press-card-title">Marriott to Be Affiliated with Resort-Style Residences Near Disney World</div>
+            <p class="press-card-desc">AMBAR Residences Orlando announced as the first Apartments by Marriott Bonvoy for-sale development in the U.S. — 322 units across 11 acres near Disney World.</p>
+          </div>
+        </a>
+
+        <a href="https://www.growthspotter.com/2025/12/04/marriott-bonvoy-resort-near-disney-slated-to-open-in-2028/" target="_blank" class="press-card">
+          <div class="press-card-image" style="background: url('../images/TGS-L-AMBAR-08.webp') center/cover no-repeat;"></div>
+          <div class="press-card-content">
+            <div class="press-card-source">
+              <span class="press-publication">GrowthSpotter</span>
+              <span class="press-date">December 2025</span>
+            </div>
+            <div class="press-card-title">Marriott Bonvoy Resort Near Disney Slated to Open in 2028</div>
+            <p class="press-card-desc">Orlando Sentinel's GrowthSpotter covers AMBAR Residences — three 7-story buildings, breaking ground 2026, completion targeted for 2028.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="press-controls">
+        <button class="press-arrow press-arrow-left" id="pressLeft" aria-label="Previous">&#8592;</button>
+        <div class="press-dots" id="pressDots"></div>
+        <button class="press-arrow press-arrow-right" id="pressRight" aria-label="Next">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">UBIICA</div>
+        <div class="footer-info-grid">
+          <div>
+            <div class="footer-label">Office</div>
+            <div class="footer-value">1000 Brickell Avenue #1112<br>Miami, FL 33131</div>
+          </div>
+          <div>
+            <div class="footer-label">Email</div>
+            <div class="footer-value">alex@ubiica.com<br>rgana@ubiica.com</div>
+          </div>
+          <div>
+            <div class="footer-label">Phone</div>
+            <div class="footer-value">305.546.8443</div>
+          </div>
+          <div>
+            <div class="footer-label">Practices</div>
+            <div class="footer-value"><a href="../development/">Development</a> &middot; <a href="../realty/">Realty</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Development</div>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#partners">Partners</a>
+        <a href="#track-record">Track Record</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Founders</div>
+        <a href="https://salazarandco.com" target="_blank">Alex Salazar</a>
+        <a href="https://rodrigogana.com" target="_blank">Rodrigo Gana</a>
+      </div>
+      <div>
+        <h4>Develop with us</h4>
+        <p style="font-size:15px;color:var(--gray);line-height:1.5;margin:12px 0 20px;">Have a site, capital, or a project that needs a sponsor? Bring it to us.</p>
+        <a href="mailto:alex@ubiica.com" class="btn-primary" style="width:auto;">
+          <span>Start a Conversation</span>
+          <span class="arrow"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 UBIICA. All rights reserved.</span>
+      <div>
+        <a href="../">Home</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+(function() {
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return;
+
+  var isMobile = window.innerWidth < 768;
+
+  var progressBar = document.getElementById('scrollProgress');
+  var navbar = document.querySelector('.navbar');
+  var hero = document.querySelector('.section-hero');
+  var ticking = false;
+
+  function updateScroll() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if (docHeight > 0) progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+    if (scrollTop > 60) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+    if (hero && scrollTop < window.innerHeight) hero.style.transform = 'translateY(' + (scrollTop * 0.2) + 'px)';
+    ticking = false;
+  }
+  function onScroll() { if (!ticking) { requestAnimationFrame(masterScrollUpdate); ticking = true; } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  function masterScrollUpdate() {
+    updateScroll();
+    updateNameColors();
+    updateAboutTextReveal();
+    if (!isMobile) {
+      updateStackCards();
+      updateCompletedRows();
+      updateCapabilitiesScroll();
+    }
+    ticking = false;
+  }
+
+  // ─── HERO NAME ANIMATION ───
+  var nameNavy = document.querySelector('.name-navy');
+  var nameSlides = document.querySelectorAll('.name-slide');
+  var scrambleChars = '!@#$%&*XVMKQZ0189';
+
+  function runScrambleDecode(span, finalText, startDelay) {
+    var chars = finalText.split('');
+    var resolved = [];
+    var spans = [];
+    span.textContent = '';
+    chars.forEach(function(ch) {
+      var s = document.createElement('span');
+      s.className = 'decode-char';
+      s.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+      span.appendChild(s);
+      spans.push(s);
+      resolved.push(false);
+    });
+    var intervalTime = 30;
+    var resolveDuration = 1500;
+    var perCharDelay = resolveDuration / chars.length;
+    var cycleInterval = setInterval(function() {
+      spans.forEach(function(s, i) {
+        if (!resolved[i]) s.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+      });
+    }, intervalTime);
+    chars.forEach(function(ch, i) {
+      setTimeout(function() {
+        resolved[i] = true;
+        spans[i].textContent = ch;
+        spans[i].classList.add('locked');
+      }, startDelay + i * perCharDelay);
+    });
+    setTimeout(function() { clearInterval(cycleInterval); }, startDelay + resolveDuration + 50);
+  }
+
+  if (nameNavy) runScrambleDecode(nameNavy, 'UBI', 0);
+  if (nameSlides[0]) runScrambleDecode(nameSlides[0], 'ICA', 0);
+
+  var nameAnimated = false;
+  function updateNameColors() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var active = scrollTop > 60;
+    if (active && !nameAnimated) {
+      nameAnimated = true;
+      setTimeout(function() { if (nameNavy) nameNavy.classList.add('active', 'glow'); }, 0);
+    } else if (!active && nameAnimated) {
+      nameAnimated = false;
+      if (nameNavy) nameNavy.classList.remove('active', 'glow');
+    }
+  }
+
+  // ─── VIDEO scroll-scale ───
+  var videoWrapper = document.querySelector('.video-wrapper');
+  var videoObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var ratio = entry.intersectionRatio;
+      var s = 0.85 + ratio * 0.15;
+      var r = 20 - ratio * 12;
+      var o = 0.8 + ratio * 0.2;
+      videoWrapper.style.transform = 'scale(' + s + ')';
+      videoWrapper.style.borderRadius = r + 'px';
+      videoWrapper.style.opacity = o;
+    });
+  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] });
+  if (videoWrapper && !isMobile) videoObserver.observe(videoWrapper);
+
+  // ─── ABOUT line-by-line reveal ───
+  var aboutText = document.getElementById('aboutText');
+  var aboutLines = [];
+  if (aboutText) {
+    var rawText = aboutText.textContent.trim();
+    var sentences = rawText.split(/(?<=\.)\s+|(?<=—)\s+/);
+    aboutText.textContent = '';
+    sentences.forEach(function(sentence) {
+      var span = document.createElement('span');
+      span.className = 'text-line';
+      span.textContent = sentence + ' ';
+      aboutText.appendChild(span);
+      aboutLines.push(span);
+    });
+  }
+  function updateAboutTextReveal() {
+    if (aboutLines.length === 0 || !aboutText) return;
+    var section = document.getElementById('about');
+    if (!section) return;
+    var rect = section.getBoundingClientRect();
+    var sectionH = rect.height;
+    var viewH = window.innerHeight;
+    var progress = Math.min(1, Math.max(0, (viewH - rect.top) / (sectionH + viewH * 0.3)));
+    aboutLines.forEach(function(line, i) {
+      var lineProgress = (progress - (i / aboutLines.length) * 0.6) / 0.4;
+      lineProgress = Math.min(1, Math.max(0, lineProgress));
+      line.style.opacity = 0.15 + lineProgress * 0.85;
+    });
+  }
+
+  // ─── STACK CARDS ───
+  var stackCards = document.querySelectorAll('.stack-card');
+  var stackContainer = document.getElementById('stackContainer');
+  function updateStackCards() {
+    if (stackCards.length === 0 || !stackContainer) return;
+    var stickyTop = 100;
+    stackCards.forEach(function(card, i) {
+      if (card.classList.contains('stack-card-ghost')) return;
+      var cardsOnTop = 0;
+      for (var j = i + 1; j < stackCards.length; j++) {
+        if (stackCards[j].getBoundingClientRect().top <= stickyTop + 10) cardsOnTop++;
+      }
+      if (cardsOnTop > 0) {
+        var scale = Math.max(0.85, 1 - cardsOnTop * 0.04);
+        var opacity = Math.max(0.4, 1 - cardsOnTop * 0.2);
+        var translateY = -(cardsOnTop * 15);
+        card.style.transform = 'scale(' + scale + ') translateY(' + translateY + 'px)';
+        card.style.opacity = opacity;
+        card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.boxShadow = '';
+      }
+    });
+  }
+
+  // ─── COMPLETED ROWS fold ───
+  var completedRows = document.querySelectorAll('.completed-row');
+  function updateCompletedRows() {
+    if (completedRows.length === 0) return;
+    var stickyTop = 100;
+    completedRows.forEach(function(row, i) {
+      var rowsOnTop = 0;
+      for (var j = i + 1; j < completedRows.length; j++) {
+        if (completedRows[j].getBoundingClientRect().top <= stickyTop + 10) rowsOnTop++;
+      }
+      if (rowsOnTop > 0) {
+        var scale = Math.max(0.88, 1 - rowsOnTop * 0.05);
+        var opacity = Math.max(0.35, 1 - rowsOnTop * 0.25);
+        var translateY = -(rowsOnTop * 18);
+        row.style.transform = 'scale(' + scale + ') translateY(' + translateY + 'px)';
+        row.style.opacity = opacity;
+      } else {
+        row.style.transform = '';
+        row.style.opacity = '';
+      }
+    });
+  }
+
+  // ─── CAPABILITIES horizontal scroll ───
+  var capabilitiesOuter = document.getElementById('capabilitiesScrollOuter');
+  var capabilitiesTrack = document.getElementById('capabilitiesTrack');
+  if (capabilitiesOuter && capabilitiesTrack && !isMobile) {
+    var capCards = capabilitiesTrack.querySelectorAll('.capability-card');
+    var trackWidth = 0;
+    capCards.forEach(function(c) { trackWidth += c.offsetWidth + 24; });
+    var scrollDistance = trackWidth - window.innerWidth + 200;
+    capabilitiesOuter.style.height = (window.innerHeight + Math.max(scrollDistance, 0)) + 'px';
+  }
+  function updateCapabilitiesScroll() {
+    if (!capabilitiesOuter || !capabilitiesTrack) return;
+    var rect = capabilitiesOuter.getBoundingClientRect();
+    var outerH = capabilitiesOuter.offsetHeight;
+    var viewH = window.innerHeight;
+    var scrolled = -rect.top;
+    var maxScroll = outerH - viewH;
+    if (maxScroll <= 0) return;
+    var progress = Math.min(1, Math.max(0, scrolled / maxScroll));
+    var capCards = capabilitiesTrack.querySelectorAll('.capability-card');
+    var trackWidth = 0;
+    capCards.forEach(function(c) { trackWidth += c.offsetWidth + 24; });
+    var maxTranslate = Math.max(0, trackWidth - window.innerWidth + 200);
+    capabilitiesTrack.style.transform = 'translateX(' + -(progress * maxTranslate) + 'px)';
+  }
+
+  // ─── REVEALS ───
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .reveal-scale, .text-reveal').forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+  // ─── Word stagger ───
+  document.querySelectorAll('.reveal h2, .reveal h3').forEach(function(heading) {
+    var words = heading.textContent.split(' ');
+    heading.textContent = '';
+    words.forEach(function(word, i) {
+      var span = document.createElement('span');
+      span.style.display = 'inline-block';
+      span.style.opacity = '0';
+      span.style.transform = 'translateY(15px)';
+      span.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (i * 0.1) + 's, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (i * 0.1) + 's';
+      span.textContent = word;
+      heading.appendChild(span);
+      if (i < words.length - 1) heading.appendChild(document.createTextNode(' '));
+    });
+  });
+  var wordObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        var el = mutation.target;
+        if (el.classList.contains('visible')) {
+          el.querySelectorAll('h2 span, h3 span').forEach(function(span) {
+            span.style.opacity = '1';
+            span.style.transform = 'translateY(0)';
+          });
+        }
+      }
+    });
+  });
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    wordObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  updateScroll();
+  updateNameColors();
+  if (!isMobile) updateAboutTextReveal();
+})();
+
+// ─── CUSTOM CURSOR ───
+(function() {
+  var dot = document.getElementById('cursorDot');
+  var ring = document.getElementById('cursorRing');
+  if (!dot || !ring) return;
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouch) return;
+  var mouseX = -100, mouseY = -100, ringX = -100, ringY = -100, visible = false;
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX; mouseY = e.clientY;
+    if (!visible) { visible = true; dot.classList.add('visible'); ring.classList.add('visible'); }
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+  });
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  var hoverTargets = 'a, button, [role="button"], input, select, textarea, .nav-link, .nav-arm, .stack-card-link, .founder-card';
+  document.addEventListener('mouseover', function(e) { if (e.target.closest(hoverTargets)) { dot.classList.add('hover'); ring.classList.add('hover'); } });
+  document.addEventListener('mouseout', function(e) { if (e.target.closest(hoverTargets)) { dot.classList.remove('hover'); ring.classList.remove('hover'); } });
+  document.addEventListener('mouseleave', function() { dot.classList.remove('visible'); ring.classList.remove('visible'); visible = false; });
+  document.addEventListener('mouseenter', function() { dot.classList.add('visible'); ring.classList.add('visible'); visible = true; });
+})();
+
+// ─── PRESS CAROUSEL ───
+(function() {
+  var track = document.getElementById('pressTrack');
+  var carousel = document.querySelector('.press-carousel');
+  var leftBtn = document.getElementById('pressLeft');
+  var rightBtn = document.getElementById('pressRight');
+  var dotsContainer = document.getElementById('pressDots');
+  if (!track || !carousel) return;
+  var cards = track.querySelectorAll('.press-card');
+  var totalCards = cards.length;
+  var currentIndex = 0;
+  var autoplayInterval;
+  function getVisibleCount() { if (window.innerWidth <= 768) return 1; if (window.innerWidth <= 1024) return 2; return 3; }
+  function getMaxIndex() { return Math.max(0, totalCards - getVisibleCount()); }
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    var maxIdx = getMaxIndex();
+    for (var i = 0; i <= maxIdx; i++) {
+      var dot = document.createElement('div');
+      dot.className = 'press-dot' + (i === currentIndex ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', function() { goTo(parseInt(this.dataset.index)); resetAutoplay(); });
+      dotsContainer.appendChild(dot);
+    }
+  }
+  function goTo(index) {
+    var maxIdx = getMaxIndex();
+    currentIndex = Math.max(0, Math.min(index, maxIdx));
+    var cardWidth = cards[0].offsetWidth + 24;
+    track.style.transform = 'translateX(' + (-currentIndex * cardWidth) + 'px)';
+    var dots = dotsContainer.querySelectorAll('.press-dot');
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === currentIndex); });
+  }
+  function next() { if (currentIndex >= getMaxIndex()) goTo(0); else goTo(currentIndex + 1); }
+  function prev() { if (currentIndex <= 0) goTo(getMaxIndex()); else goTo(currentIndex - 1); }
+  function startAutoplay() { autoplayInterval = setInterval(next, 4000); }
+  function stopAutoplay() { clearInterval(autoplayInterval); }
+  function resetAutoplay() { stopAutoplay(); startAutoplay(); }
+  leftBtn.addEventListener('click', function() { prev(); resetAutoplay(); });
+  rightBtn.addEventListener('click', function() { next(); resetAutoplay(); });
+  carousel.addEventListener('mouseenter', stopAutoplay);
+  carousel.addEventListener('mouseleave', startAutoplay);
+  window.addEventListener('resize', function() { buildDots(); goTo(Math.min(currentIndex, getMaxIndex())); });
+  buildDots();
+  startAutoplay();
+})();
+</script>
+
+</body>
+</html>
