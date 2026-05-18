@@ -498,15 +498,31 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   position: relative;
 }
-.property-photo img {
+.property-photo > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
-.property-card:hover .property-photo img {
+/* Hover-zoom only applies to single-image cards (not carousel slides) */
+.property-card:hover .property-photo > img {
   transform: scale(1.03);
 }
+
+/* In-card photo carousel */
+.photo-slides { display: flex; width: 100%; height: 100%; transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+.photo-slides img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; user-select: none; }
+.photo-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: rgba(255,255,255,0.92); color: #0a0a0a; border: 1px solid rgba(0,0,0,0.06); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; font: 600 17px/1 system-ui, -apple-system, sans-serif; transition: opacity .2s, background .2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); z-index: 3; padding: 0; }
+.photo-arrow:hover { background: #fff; }
+.photo-arrow.prev { left: 8px; }
+.photo-arrow.next { right: 8px; }
+.property-photo:hover .photo-arrow:not(.hidden) { opacity: 1; }
+.photo-arrow.hidden { display: none; }
+.photo-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 3; pointer-events: none; }
+.photo-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.55); box-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: background .2s, width .2s, border-radius .2s; }
+.photo-dots span.active { background: #fff; width: 14px; border-radius: 3px; }
+.photo-counter { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; font: 500 11px/1 system-ui, sans-serif; padding: 4px 8px; border-radius: 12px; z-index: 3; pointer-events: none; letter-spacing: 0.02em; }
+@media (max-width: 768px) { .photo-arrow { opacity: 1; width: 32px; height: 32px; } }
 .property-photo .no-photo {
   width: 100%;
   height: 100%;
@@ -2059,29 +2075,23 @@ function renderListings(listings) {
     card.addEventListener('mouseenter', (function(key) { return function() { highlightMarker(key); }; })(lid));
     card.addEventListener('mouseleave', (function(key) { return function() { unhighlightMarker(key); }; })(lid));
 
-    // Photo container
+    // Photo container — populated with an in-card carousel using all
+    // available Media URLs (sorted by Order, capped at 10 for perf).
     var photoDiv = document.createElement('div');
     photoDiv.className = 'property-photo';
 
-    if (photo) {
-      var img = document.createElement('img');
-      img.src = photo;
-      img.alt = address;
-      img.loading = 'lazy';
-      img.onerror = function() {
-        var noPhoto = document.createElement('div');
-        noPhoto.className = 'no-photo';
-        noPhoto.textContent = 'No Photo';
-        photoDiv.textContent = '';
-        photoDiv.appendChild(noPhoto);
-      };
-      photoDiv.appendChild(img);
-    } else {
-      var noPhoto = document.createElement('div');
-      noPhoto.className = 'no-photo';
-      noPhoto.textContent = 'No Photo';
-      photoDiv.appendChild(noPhoto);
-    }
+    var photoUrls = (Array.isArray(listing.Media) ? listing.Media : [])
+      .slice()
+      .sort(function(a, b) {
+        var ao = (a && a.Order != null) ? a.Order : 999;
+        var bo = (b && b.Order != null) ? b.Order : 999;
+        return ao - bo;
+      })
+      .map(function(m) { return m && m.MediaURL; })
+      .filter(Boolean)
+      .slice(0, 10);
+
+    photoDiv.innerHTML = buildCarouselHtml(photoUrls, address);
 
     // Status badge
     if (status && status !== 'Active') {
@@ -2190,6 +2200,9 @@ function renderListings(listings) {
     grid.appendChild(card);
   });
 
+  // Wire up the in-card photo carousels (arrows, dots, swipe).
+  wireCarousels(grid);
+
   var resultsCountEl = document.getElementById('resultsCount');
   resultsCountEl.textContent = '';
   var strong = document.createElement('strong');
@@ -2201,6 +2214,82 @@ function renderListings(listings) {
   if (sheetTitleEl) {
     sheetTitleEl.textContent = formatNumber(totalResults) + ' home' + (totalResults === 1 ? '' : 's');
   }
+}
+
+// ═══════════════════════════════════════
+// IN-CARD PHOTO CAROUSEL
+// Lets the user flip through photos without opening the detail page.
+// Used by renderListings(). Arrows/dots stopPropagation so they
+// don't trigger the wrapping card link.
+// ═══════════════════════════════════════
+function buildCarouselHtml(photos, alt) {
+  if (!photos || photos.length === 0) {
+    return '<div class="no-photo">No Photo</div>';
+  }
+  var safeAlt = String(alt || 'Listing').replace(/"/g, '&quot;');
+  if (photos.length === 1) {
+    return '<img src="' + photos[0] + '" alt="' + safeAlt + '" loading="lazy" />';
+  }
+  var n = photos.length;
+  var slides = photos.map(function(url, i) {
+    return '<img src="' + url + '" alt="' + safeAlt + '" loading="' + (i === 0 ? 'eager' : 'lazy') + '" draggable="false" />';
+  }).join('');
+  var overlay = (n <= 8)
+    ? '<div class="photo-dots">' + photos.map(function(_, i) {
+        return '<span' + (i === 0 ? ' class="active"' : '') + '></span>';
+      }).join('') + '</div>'
+    : '<div class="photo-counter"><span class="cur">1</span> / ' + n + '</div>';
+  return ''
+    + '<div class="photo-slides" data-idx="0" data-count="' + n + '">' + slides + '</div>'
+    + '<button type="button" class="photo-arrow prev hidden" aria-label="Previous photo">‹</button>'
+    + '<button type="button" class="photo-arrow next" aria-label="Next photo">›</button>'
+    + overlay;
+}
+
+function wireCarousels(root) {
+  root = root || document;
+  root.querySelectorAll('.property-photo').forEach(function(box) {
+    if (box.dataset.cwired === '1') return;
+    var slides = box.querySelector('.photo-slides');
+    if (!slides) return;
+    box.dataset.cwired = '1';
+
+    var count = parseInt(slides.dataset.count, 10);
+    var prevBtn = box.querySelector('.photo-arrow.prev');
+    var nextBtn = box.querySelector('.photo-arrow.next');
+    var dots = box.querySelectorAll('.photo-dots span');
+    var counterEl = box.querySelector('.photo-counter .cur');
+
+    function getIdx() { return parseInt(slides.dataset.idx || '0', 10); }
+    function setIdx(i) {
+      i = Math.max(0, Math.min(count - 1, i));
+      slides.dataset.idx = i;
+      slides.style.transform = 'translateX(-' + (i * 100) + '%)';
+      if (prevBtn) prevBtn.classList.toggle('hidden', i === 0);
+      if (nextBtn) nextBtn.classList.toggle('hidden', i === count - 1);
+      dots.forEach(function(d, di) { d.classList.toggle('active', di === i); });
+      if (counterEl) counterEl.textContent = String(i + 1);
+    }
+    function stop(e) { e.preventDefault(); e.stopPropagation(); }
+    if (prevBtn) prevBtn.addEventListener('click', function(e) { stop(e); setIdx(getIdx() - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function(e) { stop(e); setIdx(getIdx() + 1); });
+
+    // Touch swipe — horizontal only so vertical page scroll isn't hijacked.
+    var sx = null, sy = null;
+    box.addEventListener('touchstart', function(e) {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    box.addEventListener('touchend', function(e) {
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx;
+      var dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        e.stopPropagation();
+        setIdx(getIdx() + (dx < 0 ? 1 : -1));
+      }
+      sx = sy = null;
+    }, { passive: true });
+  });
 }
 
 
