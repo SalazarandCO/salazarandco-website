@@ -1852,6 +1852,7 @@ function buildFilterStr() {
   var yearMax = document.getElementById('filterYearMax').value.replace(/[^0-9]/g, '');
   var hoaMax = document.getElementById('filterHOA').value.replace(/[^0-9]/g, '');
   var keyword = document.getElementById('filterKeyword').value.trim();
+  var hasPool = ((document.getElementById('filterPool') || {}).value === 'yes');
 
   var filters = [];
 
@@ -1898,6 +1899,7 @@ function buildFilterStr() {
   if (yearMax) filters.push('YearBuilt le ' + yearMax);
   if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
   if (keyword) filters.push("contains(PublicRemarks, '" + keyword + "')");
+  if (hasPool) filters.push('PoolPrivateYN eq true');
 
   if (drawnBounds) {
     var bb = drawnBounds.bbox;
@@ -3055,6 +3057,7 @@ function updateChipLabels() {
     })();
     if (!(modalStatuses.length === 1 && modalStatuses[0] === 'Active')) moreCount++;
     if ((document.getElementById('filterCity').value || '').trim() && (document.getElementById('filterCity').value || '').trim() !== 'Pinecrest') moreCount++;
+    if (((document.getElementById('filterPool') || {}).value) === 'yes') moreCount++;
     if (moreCount > 0) {
       moreBadge.textContent = moreCount;
       moreBadge.style.display = '';
@@ -3094,13 +3097,26 @@ function buildFilterStrFromModal() {
   var modalStatuses = [];
   document.querySelectorAll('#filterFullBody .filter-full-pill.active').forEach(function(p) { modalStatuses.push(p.dataset.status); });
 
-  // Chip-controlled (already committed to hidden inputs)
-  var priceMin = (document.getElementById('filterPriceMin').value || '').replace(/[^0-9]/g, '');
-  var priceMax = (document.getElementById('filterPriceMax').value || '').replace(/[^0-9]/g, '');
-  var beds = document.getElementById('filterBeds').value;
-  var baths = document.getElementById('filterBaths').value;
-  var sqftMin = (document.getElementById('filterSqftMin').value || '').replace(/[^0-9]/g, '');
-  var sqftMax = (document.getElementById('filterSqftMax').value || '').replace(/[^0-9]/g, '');
+  // Live-preview also reflects any uncommitted modal values for price/beds/
+  // baths/sqft/pool. When the modal isn't open these fall back to the hidden
+  // inputs (chip-committed) — same behavior as before.
+  var modalEl = function(id) { return document.getElementById(id); };
+  var pickModalOrFilter = function(modalId, filterId) {
+    var m = modalEl(modalId);
+    if (m && m.value !== '') return m.value;
+    var f = modalEl(filterId);
+    return f ? f.value : '';
+  };
+  var priceMin = (pickModalOrFilter('modalPriceMin', 'filterPriceMin') || '').replace(/[^0-9]/g, '');
+  var priceMax = (pickModalOrFilter('modalPriceMax', 'filterPriceMax') || '').replace(/[^0-9]/g, '');
+  var beds = pickModalOrFilter('modalBeds', 'filterBeds');
+  var baths = pickModalOrFilter('modalBaths', 'filterBaths');
+  var sqftMin = (pickModalOrFilter('modalSqftMin', 'filterSqftMin') || '').replace(/[^0-9]/g, '');
+  var sqftMax = (pickModalOrFilter('modalSqftMax', 'filterSqftMax') || '').replace(/[^0-9]/g, '');
+  var poolToggle = modalEl('modalPoolToggle');
+  var hasPool = poolToggle
+    ? poolToggle.classList.contains('active')
+    : ((modalEl('filterPool') || {}).value === 'yes');
   var propTypes = getActivePills('pillsType');
 
   var filters = [];
@@ -3123,6 +3139,7 @@ function buildFilterStrFromModal() {
   if (hoaMax) filters.push('AssociationFee le ' + hoaMax);
   if (keyword) filters.push("contains(PublicRemarks, '" + keyword.replace(/'/g, "''") + "')");
   if (dom) filters.push('DaysOnMarket le ' + dom);
+  if (hasPool) filters.push('PoolPrivateYN eq true');
 
   if (propTypes.length > 0) {
     var typeFilters = propTypes.map(function(t) {
@@ -3217,19 +3234,48 @@ function openFullFilterModal() {
   html += '<input type="text" class="filter-full-input" id="modalCity" value="' + v('filterCity') + '" placeholder="City or ZIP" oninput="previewModalCount()" /></div>';
   html += '</div>';
 
+  // ── PRICE & FEES ──
+  html += '<div class="filter-full-group"><div class="filter-full-group-title">Price &amp; Fees</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Price</div><div class="filter-full-range">' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalPriceMin" placeholder="Min $" value="' + v('filterPriceMin') + '" oninput="previewModalCount()" />' +
+    '<span>–</span>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalPriceMax" placeholder="Max $" value="' + v('filterPriceMax') + '" oninput="previewModalCount()" />' +
+    '</div></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA / Condo Fee</div>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + v('filterHOA') + '" oninput="previewModalCount()" /></div>';
+  html += '</div>';
+
   // ── HOME ──
+  var bedsOpts = ['','1','2','3','4','5'].map(function(n) {
+    var label = n === '' ? 'Any' : (n + '+');
+    var sel = (v('filterBeds') === n) ? ' selected' : '';
+    return '<option value="' + n + '"' + sel + '>' + label + '</option>';
+  }).join('');
+  var bathsOpts = ['','1','2','3','4','5'].map(function(n) {
+    var label = n === '' ? 'Any' : (n + '+');
+    var sel = (v('filterBaths') === n) ? ' selected' : '';
+    return '<option value="' + n + '"' + sel + '>' + label + '</option>';
+  }).join('');
+  var poolActive = (v('filterPool') === 'yes') ? ' active' : '';
+
   html += '<div class="filter-full-group"><div class="filter-full-group-title">Home</div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Bedrooms</div>' +
+    '<select class="filter-full-input" id="modalBeds" onchange="previewModalCount()">' + bedsOpts + '</select></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Bathrooms</div>' +
+    '<select class="filter-full-input" id="modalBaths" onchange="previewModalCount()">' + bathsOpts + '</select></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Square Feet</div><div class="filter-full-range">' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalSqftMin" placeholder="Min" value="' + v('filterSqftMin') + '" oninput="previewModalCount()" />' +
+    '<span>–</span>' +
+    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalSqftMax" placeholder="Max" value="' + v('filterSqftMax') + '" oninput="previewModalCount()" />' +
+    '</div></div>';
   html += '<div class="filter-full-section"><div class="filter-full-section-title">Year Built</div><div class="filter-full-range">' +
     '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMin" placeholder="Min" value="' + v('filterYearMin') + '" oninput="previewModalCount()" />' +
     '<span>–</span>' +
     '<input type="text" inputmode="numeric" class="filter-full-input" id="modalYearMax" placeholder="Max" value="' + v('filterYearMax') + '" oninput="previewModalCount()" />' +
     '</div></div>';
-  html += '</div>';
-
-  // ── PRICE & FEES ──
-  html += '<div class="filter-full-group"><div class="filter-full-group-title">Price &amp; Fees</div>';
-  html += '<div class="filter-full-section"><div class="filter-full-section-title">Max HOA / Condo Fee</div>' +
-    '<input type="text" inputmode="numeric" class="filter-full-input" id="modalHOA" placeholder="$/mo" value="' + v('filterHOA') + '" oninput="previewModalCount()" /></div>';
+  html += '<div class="filter-full-section"><div class="filter-full-section-title">Features</div><div class="filter-full-pills">' +
+    '<button type="button" class="filter-full-pill' + poolActive + '" id="modalPoolToggle" onclick="this.classList.toggle(\'active\'); previewModalCount();">Has pool</button>' +
+    '</div></div>';
   html += '</div>';
 
   // ── LISTING STATUS ──
@@ -3264,13 +3310,24 @@ function closeFullFilterModal() {
 function applyAllFilters() {
   var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
   document.getElementById('filterCity').value = get('modalCity');
+  document.getElementById('filterPriceMin').value = get('modalPriceMin');
+  document.getElementById('filterPriceMax').value = get('modalPriceMax');
+  document.getElementById('filterBeds').value = get('modalBeds');
+  document.getElementById('filterBaths').value = get('modalBaths');
+  document.getElementById('filterSqftMin').value = get('modalSqftMin');
+  document.getElementById('filterSqftMax').value = get('modalSqftMax');
   document.getElementById('filterYearMin').value = get('modalYearMin');
   document.getElementById('filterYearMax').value = get('modalYearMax');
   document.getElementById('filterHOA').value = get('modalHOA');
   document.getElementById('filterKeyword').value = get('modalKeyword');
   document.getElementById('filterDOM').value = get('modalDOM');
 
-  var modalStatusActive = Array.prototype.slice.call(document.querySelectorAll('#filterFullBody .filter-full-pill.active')).map(function(p) { return p.dataset.status; });
+  // Pool toggle — write "yes" / "" into the hidden filterPool input so
+  // buildFilterStr can read it like any other filter.
+  var poolEl = document.getElementById('modalPoolToggle');
+  ensureFilterPoolInput().value = (poolEl && poolEl.classList.contains('active')) ? 'yes' : '';
+
+  var modalStatusActive = Array.prototype.slice.call(document.querySelectorAll('#filterFullBody .filter-full-pill[data-status].active')).map(function(p) { return p.dataset.status; });
   document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
     p.classList.toggle('active', modalStatusActive.indexOf(p.dataset.value) >= 0);
   });
@@ -3280,8 +3337,26 @@ function applyAllFilters() {
   searchProperties();
 }
 
+// Lazy-create the hidden filterPool input the first time it's needed so
+// the existing HTML doesn't have to change. Subsequent calls just return it.
+function ensureFilterPoolInput() {
+  var el = document.getElementById('filterPool');
+  if (!el) {
+    el = document.createElement('input');
+    el.type = 'hidden';
+    el.id = 'filterPool';
+    el.value = '';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
 function resetAllFilters() {
   document.getElementById('filterCity').value = '';
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+  document.getElementById('filterBeds').value = '';
+  document.getElementById('filterBaths').value = '';
   document.getElementById('filterSqftMin').value = '';
   document.getElementById('filterSqftMax').value = '';
   document.getElementById('filterYearMin').value = '';
@@ -3289,6 +3364,7 @@ function resetAllFilters() {
   document.getElementById('filterHOA').value = '';
   document.getElementById('filterKeyword').value = '';
   document.getElementById('filterDOM').value = '';
+  ensureFilterPoolInput().value = '';
   document.querySelectorAll('#pillsStatus .pill').forEach(function(p) {
     p.classList.toggle('active', p.dataset.value === 'Active');
   });
