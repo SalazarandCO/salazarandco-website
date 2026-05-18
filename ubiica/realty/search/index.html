@@ -1016,17 +1016,59 @@ img { max-width: 100%; display: block; }
   .more-filters-panel { display: none !important; }
 }
 
-/* Mobile filter chip bar */
+/* Mobile filter chip bar — pinned below navbar (which is ~71px tall, z-index 1000)
+   so chips don't get clipped or covered. */
 .mobile-filter-bar {
   display: none;
   position: fixed;
-  top: 60px;
+  top: 71px;
   left: 0;
   right: 0;
   background: #fff;
-  z-index: 800;
+  z-index: 1001;
   border-bottom: 1px solid rgba(0,0,0,0.06);
   padding: 10px 0;
+}
+
+/* Mobile Filters FAB — always-visible, unmissable entry to the full filter
+   modal. Floats above the listings sheet (z=900) and even the modal triggers,
+   so users never wonder how to filter. Hidden on desktop. */
+.mobile-filters-fab {
+  display: none;
+  position: fixed;
+  bottom: 84px;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  background: #0a0a0a;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 24px;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.18);
+  align-items: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-filters-fab:active { transform: translateX(-50%) scale(0.96); }
+.mobile-filters-fab svg { width: 16px; height: 16px; flex-shrink: 0; }
+.mobile-filters-fab .fab-badge {
+  background: #228B22;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 2px;
+}
+@media (max-width: 768px) {
+  .mobile-filters-fab { display: inline-flex; }
 }
 .filter-chips-scroll {
   display: flex;
@@ -1342,6 +1384,18 @@ img { max-width: 100%; display: block; }
     </button>
   </div>
 </div>
+
+<!-- MOBILE FILTERS FAB — always-visible floating button. Reuses the existing
+     filterFullModal so users on iPhone Chrome don't miss the chip bar. -->
+<button class="mobile-filters-fab" id="mobileFiltersFab" type="button" onclick="openFullFilterModal()" aria-label="Open filters">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <line x1="4" y1="6" x2="20" y2="6"/>
+    <line x1="6" y1="12" x2="18" y2="12"/>
+    <line x1="9" y1="18" x2="15" y2="18"/>
+  </svg>
+  Filters
+  <span class="fab-badge" id="mobileFiltersFabBadge" style="display:none">0</span>
+</button>
 
 
 <!-- FILTERS BAR -->
@@ -3006,6 +3060,17 @@ function updateChipLabels() {
       moreBadge.style.display = '';
     } else {
       moreBadge.style.display = 'none';
+    }
+    // Mirror the count onto the always-visible mobile FAB so users see
+    // there are active advanced filters without opening the chip bar.
+    var fabBadge = document.getElementById('mobileFiltersFabBadge');
+    if (fabBadge) {
+      if (moreCount > 0) {
+        fabBadge.textContent = moreCount;
+        fabBadge.style.display = '';
+      } else {
+        fabBadge.style.display = 'none';
+      }
     }
   }
 }
