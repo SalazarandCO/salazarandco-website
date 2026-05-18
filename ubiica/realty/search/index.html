@@ -1924,6 +1924,10 @@ async function searchProperties(page) {
   if (page === undefined) page = 1;
   currentPage = page;
 
+  // Persist filter state in the URL so browser Back from a property
+  // detail page restores the same search.
+  syncFiltersToUrl();
+
   var sort = document.getElementById('sortSelect').value;
   var filterStr = buildFilterStr();
   console.log('[UBIICA Search] OData $filter:', filterStr);
@@ -3242,8 +3246,128 @@ function resetAllFilters() {
   if (input) input.value = city;
 })();
 
-// Auto-search on page load
-searchProperties();
+// ═══════════════════════════════════════
+// SEARCH STATE PERSISTENCE
+// Filter values mirror to and from the URL so the browser Back button
+// from property-detail.html restores the same search. Scroll position
+// inside the listings panel is restored once on initial load.
+// ═══════════════════════════════════════
+function syncFiltersToUrl() {
+  try {
+    var p = new URLSearchParams();
+    var put = function(key, val) {
+      if (val !== null && val !== undefined && val !== '') p.set(key, val);
+    };
+
+    put('mode',     listingMode === 'rent' ? 'rent' : '');
+    put('city',     document.getElementById('filterCity').value.trim());
+    put('priceMin', document.getElementById('filterPriceMin').value.replace(/[^0-9]/g, ''));
+    put('priceMax', document.getElementById('filterPriceMax').value.replace(/[^0-9]/g, ''));
+    put('beds',     document.getElementById('filterBeds').value);
+    put('baths',    document.getElementById('filterBaths').value);
+    put('dom',      document.getElementById('filterDOM').value);
+    put('sqftMin',  document.getElementById('filterSqftMin').value.replace(/[^0-9]/g, ''));
+    put('sqftMax',  document.getElementById('filterSqftMax').value.replace(/[^0-9]/g, ''));
+    put('yearMin',  document.getElementById('filterYearMin').value.replace(/[^0-9]/g, ''));
+    put('yearMax',  document.getElementById('filterYearMax').value.replace(/[^0-9]/g, ''));
+    put('hoaMax',   document.getElementById('filterHOA').value.replace(/[^0-9]/g, ''));
+    put('keyword',  document.getElementById('filterKeyword').value.trim());
+    put('sort',     document.getElementById('sortSelect').value);
+
+    var types    = getActivePills('pillsType');
+    var statuses = getActivePills('pillsStatus');
+    if (types.length)    p.set('types',  types.join('|'));
+    if (statuses.length) p.set('status', statuses.join('|'));
+    if (currentPage && currentPage > 1) p.set('page', String(currentPage));
+
+    var qs = p.toString();
+    var newUrl = qs ? (window.location.pathname + '?' + qs) : window.location.pathname;
+    var currentFull = window.location.pathname + (window.location.search || '');
+    if (newUrl !== currentFull) history.replaceState(null, '', newUrl);
+  } catch (_) { /* SecurityError on file:// preview — non-fatal */ }
+}
+
+function hydrateFiltersFromUrl() {
+  var p = new URLSearchParams(window.location.search);
+  var hasAny = false;
+  p.forEach(function() { hasAny = true; });
+  if (!hasAny) return false;
+
+  var setVal = function(id, key) {
+    var el = document.getElementById(id);
+    var v  = p.get(key);
+    if (el && v != null && v !== '') el.value = v;
+  };
+
+  if (p.get('mode') === 'rent') {
+    listingMode = 'rent';
+    var saleBtn = document.getElementById('toggleSale');
+    var rentBtn = document.getElementById('toggleRent');
+    if (saleBtn) saleBtn.classList.remove('active');
+    if (rentBtn) rentBtn.classList.add('active');
+    document.getElementById('filterPriceMin').placeholder = 'Min $/mo';
+    document.getElementById('filterPriceMax').placeholder = 'Max $/mo';
+  }
+
+  setVal('filterCity',     'city');
+  setVal('filterBeds',     'beds');
+  setVal('filterBaths',    'baths');
+  setVal('filterDOM',      'dom');
+  setVal('filterSqftMin',  'sqftMin');
+  setVal('filterSqftMax',  'sqftMax');
+  setVal('filterYearMin',  'yearMin');
+  setVal('filterYearMax',  'yearMax');
+  setVal('filterHOA',      'hoaMax');
+  setVal('filterKeyword',  'keyword');
+  setVal('sortSelect',     'sort');
+
+  var pmin = p.get('priceMin');
+  var pmax = p.get('priceMax');
+  var pminEl = document.getElementById('filterPriceMin');
+  var pmaxEl = document.getElementById('filterPriceMax');
+  if (pmin && pminEl) pminEl.value = '$' + parseInt(pmin, 10).toLocaleString('en-US');
+  if (pmax && pmaxEl) pmaxEl.value = '$' + parseInt(pmax, 10).toLocaleString('en-US');
+
+  var applyPills = function(containerId, values) {
+    var wanted = new Set(values);
+    document.querySelectorAll('#' + containerId + ' .pill').forEach(function(pill) {
+      pill.classList.toggle('active', wanted.has(pill.dataset.value));
+    });
+  };
+  var typesRaw    = p.get('types');
+  var statusesRaw = p.get('status');
+  if (typesRaw)    applyPills('pillsType',   typesRaw.split('|').filter(Boolean));
+  if (statusesRaw) applyPills('pillsStatus', statusesRaw.split('|').filter(Boolean));
+
+  var pageNum = parseInt(p.get('page') || '1', 10);
+  if (pageNum > 1) currentPage = pageNum;
+
+  if (typeof updateFilterBadge === 'function') updateFilterBadge();
+  if (typeof updateChipLabels  === 'function') updateChipLabels();
+  return true;
+}
+
+(function setupScrollRestore() {
+  var SCROLL_KEY = 'ubiica:searchScroll:' + window.location.pathname;
+  window.addEventListener('pagehide', function() {
+    try {
+      var panel = document.getElementById('listingsPanel');
+      if (panel) sessionStorage.setItem(SCROLL_KEY, String(panel.scrollTop));
+    } catch (_) {}
+  });
+
+  hydrateFiltersFromUrl();
+
+  searchProperties().then(function() {
+    try {
+      var y = parseInt(sessionStorage.getItem(SCROLL_KEY) || '', 10);
+      if (Number.isFinite(y) && y > 0) {
+        var panel = document.getElementById('listingsPanel');
+        if (panel) requestAnimationFrame(function() { panel.scrollTop = y; });
+      }
+    } catch (_) {}
+  });
+})();
 </script>
 
 </body>
