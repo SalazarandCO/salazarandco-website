@@ -9,14 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
 <style>
 :root{--fg:#111;--muted:#666;--border:#e5e5e5;--bg:#fff;--panel:#fafafa;--shadow:0 20px 60px rgba(17,17,17,.08);--new:#f5f5f4;--open:#f7f7f7;--done:#ecfdf5;--green:#16a34a;--yellow:#eab308;--red:#dc2626;}
-*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility} button,input,textarea,select{font:inherit;color:inherit} a{color:inherit} main{max-width:1600px;margin:0 auto;padding:24px} .header,.search,.column,.modal,.drawer{border:1px solid var(--border);background:#fff;box-shadow:var(--shadow)} .header,.search,.column,.modal{border-radius:16px} .header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px} .header h1{margin:0;font-size:28px;line-height:1.1;letter-spacing:-.04em;text-transform:uppercase} .counts{display:flex;flex-wrap:wrap;gap:8px} .pill,.statuspill,.priority{border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;background:#fff} .pill{background:#fafafa} .btn{border:1px solid var(--border);border-radius:10px;background:#111;color:#fff;padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer} .btn.secondary{background:#fff;color:#111} .search{padding:14px 16px;margin-top:16px} .search input,.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:10px;background:#fafafa;padding:12px 14px;outline:none} .search input:focus,.field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,.08)} .columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px} .column{padding:16px;min-height:300px} .column.new{background:var(--new)} .column.open{background:var(--open)} .column.done{background:var(--done)} .column-top{display:flex;justify-content:space-between;align-items:end;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border)} .column-top h2{margin:0;font-size:20px;line-height:1.1} .column-top .meta{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#999} .bar{height:5px;width:72px;border-radius:999px;margin-bottom:12px} .new .bar{background:#a8a29e}.open .bar{background:#737373}.done .bar{background:#10b981} .task{border:1px solid var(--border);border-radius:14px;background:#fff;padding:14px;cursor:pointer;margin-top:12px;transition:transform .15s ease,border-color .15s ease} .task:hover{transform:translateY(-1px);border-color:#111} .task.selected{background:#fafafa;border-color:#d4d4d4} .task-top{display:flex;justify-content:space-between;gap:12px;align-items:start} .task h3{margin:0;font-size:16px;line-height:1.4} .sub{margin-top:6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#999} .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px} .tag{padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fafafa;font-size:11px;font-weight:700} .task-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;font-size:12px;color:#777} .priority.low{border-color:#86efac;background:#f0fdf4;color:#166534}.priority.medium{border-color:#fde68a;background:#fffbeb;color:#a16207}.priority.high{border-color:#fca5a5;background:#fef2f2;color:#991b1b} .statuspill.new{border-color:#d6d3d1;background:#fff;color:#111}.statuspill.open{border-color:#d4d4d4;background:#fafafa;color:#111}.statuspill.done{border-color:#a7f3d0;background:#ecfdf5;color:#065f46} .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px;z-index:40} .overlay.show{display:flex} .modal{width:min(1100px,100%);max-height:92vh;overflow:auto} .modal-head{display:flex;justify-content:space-between;gap:16px;align-items:start;padding:18px 20px;border-bottom:1px solid var(--border)} .modal-head h2{margin:0;font-size:24px;line-height:1.1;letter-spacing:-.04em} .modal-grid{display:grid;grid-template-columns:1.1fr .9fr} .pane{padding:18px 20px} .pane.left{border-right:1px solid var(--border)} .sectionlabel{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#999} .chips{display:flex;flex-wrap:wrap;gap:8px} .meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px} .field{margin-top:12px}.field label{display:block;margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#888} .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px} .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px} .actions .btn{padding:12px 14px;border-radius:12px;background:#fff;color:#111} .actions .btn.active{border-color:#d4d4d4;background:#fafafa} .notes{display:grid;gap:10px} .note{border:1px solid var(--border);border-radius:12px;background:#fafafa;padding:14px} .note p{margin:0;line-height:1.55} .note small{display:block;margin-top:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#999} .addnote{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)} .composer .modal-head{border-bottom:1px solid var(--border)} .drawer-spacer{height:1px} @media (max-width: 1100px){.columns{grid-template-columns:1fr}.modal-grid{grid-template-columns:1fr}.pane.left{border-right:0;border-bottom:1px solid var(--border)}.row,.meta-grid,.actions{grid-template-columns:1fr}.header{align-items:start;flex-direction:column}.counts{justify-content:flex-start}} @media (max-width: 720px){main{padding:14px}.header h1{font-size:22px}}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility} button,input,textarea,select{font:inherit;color:inherit} a{color:inherit}
+main{max-width:1600px;margin:0 auto;padding:24px}
+.header,.search,.column,.modal{border:1px solid var(--border);background:#fff;box-shadow:var(--shadow)} .header,.search,.column,.modal{border-radius:16px}
+.header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.header h1{margin:0;font-size:28px;line-height:1.1;letter-spacing:-.04em;text-transform:uppercase}.header-left{display:flex;flex-direction:column;gap:8px}.sync{font-size:11px;line-height:1;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:#fafafa;width:max-content}
+.counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pill,.statuspill,.priority,.sync{border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;background:#fff}.pill{background:#fafafa}.btn{border:1px solid var(--border);border-radius:10px;background:#111;color:#fff;padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}.btn.secondary{background:#fff;color:#111}.btn.active{border-color:#d4d4d4;background:#fafafa}.search{padding:14px 16px;margin-top:16px}.search input,.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:10px;background:#fafafa;padding:12px 14px;outline:none}.search input:focus,.field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+.columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}.column{padding:16px;min-height:300px}.column.new{background:var(--new)}.column.open{background:var(--open)}.column.done{background:var(--done)}.column-top{display:flex;justify-content:space-between;align-items:end;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}.column-top h2{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}.meta{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}.bar{width:44px;height:3px;border-radius:999px;margin-bottom:10px}
+.task{border:1px solid var(--border);border-radius:16px;background:#fff;padding:14px;margin-top:12px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.task:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(17,17,17,.08);border-color:#d8d8d8}.task.selected{border-color:#111}.task-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.task h3{margin:4px 0 0;font-size:18px;line-height:1.2;letter-spacing:-.02em}.sub{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.tag{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:999px;border:1px solid var(--border);padding:6px 10px;background:#fafafa}.task-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;font-size:12px;font-weight:700;color:#555}.statuspill.new{background:#fff7ed;border-color:#fed7aa;color:#9a3412}.statuspill.open{background:#f8fafc;border-color:#d4d4d8;color:#334155}.statuspill.done{background:#ecfdf5;border-color:#bbf7d0;color:#166534}.priority.low{background:#f0fdf4;border-color:#86efac;color:var(--green)}.priority.medium{background:#fefce8;border-color:#fde68a;color:var(--yellow)}.priority.high{background:#fef2f2;border-color:#fca5a5;color:var(--red)}.overlay{position:fixed;inset:0;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto;z-index:50}.overlay.show{display:flex}.modal{width:min(1200px,100%);margin:auto}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:18px 20px;border-bottom:1px solid var(--border)}.modal-head h2{margin:0;font-size:24px;line-height:1.1;letter-spacing:-.03em}.modal-grid{display:grid;grid-template-columns:1.1fr .9fr}.pane{padding:18px 20px}.pane.left{border-right:1px solid var(--border)}.sectionlabel{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#999}.chips{display:flex;flex-wrap:wrap;gap:8px}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:8px;margin-top:14px}.field label{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#777}.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.actions .btn{padding:12px 14px;border-radius:12px;background:#fff;color:#111}.actions .btn.active{border-color:#d4d4d4;background:#fafafa}.priority-select{margin-top:0}.notes{display:grid;gap:10px}.note{border:1px solid var(--border);border-radius:12px;background:#fafafa;padding:14px}.note p{margin:0;line-height:1.55}.note small{display:block;margin-top:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}.addnote{margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}.message{margin-top:14px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}.message.error{color:var(--red)}.message.ok{color:var(--green)}.emptycard{border:1px dashed var(--border);border-radius:14px;background:rgba(255,255,255,.65);padding:14px;margin-top:12px;color:var(--muted)}
+@media (max-width: 1080px){.columns{grid-template-columns:1fr}.modal-grid{grid-template-columns:1fr}.pane.left{border-right:0;border-bottom:1px solid var(--border)}.row{grid-template-columns:1fr}.header{align-items:flex-start}.counts{order:3;width:100%}}
 </style>
 </head>
 <body>
 <main>
   <header class="header">
-    <div>
-      <h1>SALAZAR &amp; CO Tasks</h1>
+    <div class="header-left">
+      <div>
+        <h1>SALAZAR &amp; CO Tasks</h1>
+      </div>
+      <div class="sync" id="syncStatus">Connecting…</div>
     </div>
     <div class="counts" id="counts"></div>
     <button class="btn" id="newTaskBtn" type="button">New task</button>
@@ -26,57 +36,298 @@
     <input id="search" placeholder="Search tasks, notes, tags, names, or dates" autocomplete="off">
   </section>
 
+  <div class="message" id="message"></div>
   <section class="columns" id="columns"></section>
 </main>
 
 <div class="overlay" id="overlay"></div>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-const STORAGE_KEY = 'salazar-co-tasks-v1';
-const today = () => new Date().toISOString().slice(0,10);
-const addDays = (days) => { const d = new Date(); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); };
-const fmtDate = (value) => { if(!value) return 'Not set'; const d = new Date(value+'T00:00:00'); return isNaN(d) ? value : d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); };
-const fmtTime = (value) => new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-const esc = (s='') => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-const STATUS = ['NEW_TASK','OPEN','COMPLETED'];
+const SUPABASE_URL = 'https://mpdftzjyjgqayuwyojub.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wZGZ0emp5amdxYXl1d3lvanViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5Mjc4ODYsImV4cCI6MjA4ODUwMzg4Nn0.0YbovCIB0a6HyjysW3ZHeC7XQ9tM7pHr1pxOimJz2TE';
+const TABLE = 'salazar_tasks';
+const LEGACY_CACHE_KEY = 'salazar-co-tasks-v1';
+const CACHE_KEY = 'salazar-co-tasks-cloud-cache-v1';
+const { createClient } = window.supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+
+const STATUS = ['NEW_TASK', 'OPEN', 'COMPLETED'];
 const statusLabel = s => s === 'NEW_TASK' ? 'New task' : s === 'OPEN' ? 'Open in process' : 'Completed';
 const statusMeta = s => s === 'NEW_TASK' ? ['New task','Fresh items waiting to be started'] : s === 'OPEN' ? ['Open in process','Active work you are moving through'] : ['Completed','Closed out and ready for reference'];
-const theme = { NEW_TASK:{panel:'new', accent:'#a8a29e', chip:'new'}, OPEN:{panel:'open', accent:'#737373', chip:'open'}, COMPLETED:{panel:'done', accent:'#10b981', chip:'done'} };
-const seed = () => ([
-  {id:'task-1',title:'Call title company about Marriott package',status:'NEW_TASK',priority:'High',owner:'Aiden',startedDate:today(),targetCloseDate:addDays(2),tags:['Legal','AMBAR'],updatedAt:new Date().toISOString(),notes:[{id:'note-1',body:'Review the latest email chain and confirm what changed in the OA vs. guaranty documents.',createdAt:new Date().toISOString()}]},
-  {id:'task-2',title:'Draft Kendall blog for tomorrow morning',status:'OPEN',priority:'Medium',owner:'Aiden',startedDate:today(),targetCloseDate:addDays(1),tags:['KHF','Content'],updatedAt:new Date().toISOString(),notes:[{id:'note-1',body:'Need a local angle, plain-English headline, and one image-first opener.',createdAt:new Date().toISOString()}]},
-  {id:'task-3',title:'Send follow-up on Victoria Park call prep',status:'COMPLETED',priority:'Low',owner:'Aiden',startedDate:addDays(-2),targetCloseDate:addDays(-1),tags:['Real Estate'],updatedAt:new Date().toISOString(),notes:[{id:'note-1',body:'Workbook delivered and scope narrowed to new-construction townhomes only.',createdAt:new Date().toISOString()}]},
+const theme = { NEW_TASK:{panel:'new', accent:'#a8a29e'}, OPEN:{panel:'open', accent:'#737373'}, COMPLETED:{panel:'done', accent:'#10b981'} };
+const today = () => new Date().toISOString().slice(0,10);
+const addDays = (days) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); };
+const fmtDate = (value) => { if (!value) return 'Not set'; const d = new Date(value + 'T00:00:00'); return isNaN(d) ? value : d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); };
+const fmtTime = (value) => { const d = new Date(value); return isNaN(d) ? 'Just now' : d.toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); };
+const esc = (s = '') => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'task-' + Math.random().toString(36).slice(2, 12));
+const defaultSeed = () => ([
+  { id: uid(), title:'Call title company about Marriott package', status:'NEW_TASK', priority:'High', owner:'Aiden', startedDate:today(), targetCloseDate:addDays(2), tags:['Legal','AMBAR'], notes:[{ id: uid(), body:'Review the latest email chain and confirm what changed in the OA vs. guaranty documents.', createdAt:new Date().toISOString() }], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
+  { id: uid(), title:'Draft Kendall blog for tomorrow morning', status:'OPEN', priority:'Medium', owner:'Aiden', startedDate:today(), targetCloseDate:addDays(1), tags:['KHF','Content'], notes:[{ id: uid(), body:'Need a local angle, plain-English headline, and one image-first opener.', createdAt:new Date().toISOString() }], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
+  { id: uid(), title:'Send follow-up on Victoria Park call prep', status:'COMPLETED', priority:'Low', owner:'Aiden', startedDate:addDays(-2), targetCloseDate:addDays(-1), tags:['Real Estate'], notes:[{ id: uid(), body:'Workbook delivered and scope narrowed to new-construction townhomes only.', createdAt:new Date().toISOString() }], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
 ]);
-const uid = (p) => p + '-' + Math.random().toString(36).slice(2,10);
-let state = { tasks: [], query: '', selectedId: null, modal: null, draft: null, noteText: '' };
-function load(){ try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return seed(); const parsed = JSON.parse(raw); return Array.isArray(parsed) && parsed.length ? parsed : seed(); } catch { return seed(); } }
-function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks)); }
+const blankTask = () => ({ id: uid(), title:'', status:'NEW_TASK', priority:'Medium', owner:'Aiden', startedDate:today(), targetCloseDate:addDays(7), tags:['Task'], notes:[], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
+const state = { tasks: [], query: '', selectedId: null, modal: null, draft: null, noteText: '', loading: true, syncState: 'Connecting…', message: '', messageTone: '' };
+let liveChannel = null;
+
+function normalizeTask(task){
+  const tags = Array.isArray(task.tags) ? task.tags : [];
+  const notes = Array.isArray(task.notes) ? task.notes : [];
+  return {
+    id: task.id,
+    title: task.title || '',
+    status: STATUS.includes(task.status) ? task.status : 'NEW_TASK',
+    priority: ['Low','Medium','High'].includes(task.priority) ? task.priority : 'Medium',
+    owner: task.owner || 'Aiden',
+    startedDate: task.startedDate || task.started_date || today(),
+    targetCloseDate: task.targetCloseDate || task.target_close_date || '',
+    tags,
+    notes,
+    createdAt: task.createdAt || task.created_at || new Date().toISOString(),
+    updatedAt: task.updatedAt || task.updated_at || new Date().toISOString(),
+  };
+}
+function rowToTask(row){
+  return normalizeTask({
+    id: row.id,
+    title: row.title,
+    status: row.status,
+    priority: row.priority,
+    owner: row.owner,
+    startedDate: row.started_date,
+    targetCloseDate: row.target_close_date,
+    tags: row.tags || [],
+    notes: row.notes || [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  });
+}
+function taskToRow(task){
+  return {
+    id: task.id,
+    title: task.title.trim(),
+    status: task.status,
+    priority: task.priority,
+    owner: task.owner.trim() || 'Aiden',
+    started_date: task.startedDate || today(),
+    target_close_date: task.targetCloseDate || null,
+    tags: task.tags || [],
+    notes: task.notes || [],
+  };
+}
+function loadLegacySeed(){
+  try { const raw = localStorage.getItem(LEGACY_CACHE_KEY); if (!raw) return []; const parsed = JSON.parse(raw); return Array.isArray(parsed) ? parsed.map(normalizeTask) : []; } catch { return []; }
+}
+function loadCache(){
+  try { const raw = localStorage.getItem(CACHE_KEY); if (!raw) return []; const parsed = JSON.parse(raw); return Array.isArray(parsed) ? parsed.map(normalizeTask) : []; } catch { return []; }
+}
+function saveCache(tasks){
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(tasks)); } catch {}
+}
+function setMessage(text, tone = ''){ state.message = text; state.messageTone = tone; }
+function setSync(text){ state.syncState = text; }
 function priorityClass(priority){ return priority === 'High' ? 'high' : priority === 'Medium' ? 'medium' : 'low'; }
 function statusChipClass(status){ return status === 'NEW_TASK' ? 'new' : status === 'OPEN' ? 'open' : 'done'; }
-function counts(){ const c = {NEW_TASK:0, OPEN:0, COMPLETED:0}; state.tasks.filter(matches).forEach(t => c[t.status]++); return c; }
-function matches(task){ const q = state.query.trim().toLowerCase(); if (!q) return true; return [task.title, task.owner, task.priority, task.tags.join(' '), task.startedDate, task.targetCloseDate, (task.notes||[]).map(n => n.body).join(' ')].join(' ').toLowerCase().includes(q); }
-function openTask(id){ const task = state.tasks.find(t=>t.id===id); if (!task) return; state.selectedId = id; state.modal = 'edit'; state.draft = structuredClone(task); state.noteText=''; render(); }
-function openComposer(){ state.modal = 'create'; state.selectedId = null; state.noteText=''; state.draft = { id: uid('task'), title:'', status:'NEW_TASK', priority:'Medium', owner:'Aiden', startedDate: today(), targetCloseDate: addDays(7), tags:['Task'], updatedAt: new Date().toISOString(), notes: [] }; render(); }
+function sortTasks(a, b){
+  const byStatus = STATUS.indexOf(a.status) - STATUS.indexOf(b.status);
+  if (byStatus !== 0) return byStatus;
+  return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+}
+function matches(task){
+  const q = state.query.trim().toLowerCase();
+  if (!q) return true;
+  return [
+    task.title,
+    task.owner,
+    task.priority,
+    task.tags.join(' '),
+    task.startedDate,
+    task.targetCloseDate,
+    (task.notes || []).map(n => n.body).join(' '),
+  ].join(' ').toLowerCase().includes(q);
+}
+function counts(){ const c = { NEW_TASK: 0, OPEN: 0, COMPLETED: 0 }; state.tasks.filter(matches).forEach(t => { c[t.status] += 1; }); return c; }
+function openTask(id){ const task = state.tasks.find(t => t.id === id); if (!task) return; state.selectedId = id; state.modal = 'edit'; state.draft = JSON.parse(JSON.stringify(task)); state.noteText = ''; render(); }
+function openComposer(){ state.modal = 'create'; state.selectedId = null; state.noteText = ''; state.draft = blankTask(); render(); }
 function closeModal(){ state.modal = null; state.draft = null; state.noteText = ''; render(); }
-function updateDraft(field, value){ state.draft[field] = value; }
+function updateDraft(field, value){ if (!state.draft) return; state.draft[field] = value; }
 function setPriority(value){ if (!state.draft) return; state.draft.priority = value; render(); }
-function addTagList(text){ return text.split(',').map(s=>s.trim()).filter(Boolean).slice(0,4); }
-function saveDraft(){ if (!state.draft || !state.draft.title.trim()) return; const next = { ...state.draft, title: state.draft.title.trim(), owner: state.draft.owner.trim() || 'Aiden', updatedAt: new Date().toISOString(), tags: addTagList(state.draft.tags.join(', ')) }; if (state.modal === 'create') state.tasks.unshift(next); else state.tasks = state.tasks.map(t => t.id === next.id ? next : t); save(); closeModal(); }
-function deleteDraft(){ if (!state.draft) return; state.tasks = state.tasks.filter(t => t.id !== state.draft.id); save(); state.selectedId = null; closeModal(); }
-function saveNote(){ const body = state.noteText.trim(); if (!body || !state.draft) return; state.draft.notes = [{id: uid('note'), body, createdAt: new Date().toISOString()}, ...(state.draft.notes||[])]; state.noteText=''; if (state.modal === 'edit') saveDraft(); else render(); }
-function setStatus(taskId, status){ state.tasks = state.tasks.map(t => t.id === taskId ? {...t, status, updatedAt:new Date().toISOString()} : t); save(); }
+function addTagList(text){ return text.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); }
+function isValidDraft(){ return !!(state.draft && state.draft.title && state.draft.title.trim()); }
+async function fetchTasks(){
+  const { data, error } = await db.from(TABLE).select('*').order('updated_at', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(rowToTask).sort(sortTasks);
+}
+async function seedFromLocalOrBlank(){
+  const legacy = loadLegacySeed();
+  if (legacy.length) {
+    const { error } = await db.from(TABLE).insert(legacy.map(taskToRow));
+    if (error) throw error;
+    return await fetchTasks();
+  }
+  return [];
+}
+async function loadRemote({ silent = false } = {}){
+  if (!silent) {
+    state.loading = true;
+    setSync('Loading shared tasks…');
+    setMessage('');
+    render();
+  }
+  try {
+    let tasks = await fetchTasks();
+    if (!tasks.length) {
+      setSync('Cloud empty — checking this browser for unsynced tasks…');
+      render();
+      tasks = await seedFromLocalOrBlank();
+    }
+    state.tasks = tasks.sort(sortTasks);
+    state.selectedId = state.selectedId && state.tasks.some(t => t.id === state.selectedId) ? state.selectedId : null;
+    saveCache(state.tasks);
+    setSync(state.tasks.length ? 'Synced to cloud' : 'Cloud ready — create the first task');
+    setMessage('');
+  } catch (err) {
+    const fallback = loadCache();
+    state.tasks = (fallback.length ? fallback : defaultSeed()).map(normalizeTask).sort(sortTasks);
+    setSync('Offline cache');
+    setMessage('Cloud sync unavailable — showing this browser\'s cached board.', 'error');
+  } finally {
+    state.loading = false;
+    render();
+  }
+}
+async function saveDraft(){
+  if (!isValidDraft()) return;
+  const next = normalizeTask({
+    ...state.draft,
+    title: state.draft.title.trim(),
+    owner: state.draft.owner.trim() || 'Aiden',
+    tags: addTagList(Array.isArray(state.draft.tags) ? state.draft.tags.join(', ') : String(state.draft.tags || '')),
+    updatedAt: new Date().toISOString(),
+    createdAt: state.draft.createdAt || new Date().toISOString(),
+  });
+  const previous = state.tasks.slice();
+  state.tasks = state.modal === 'create'
+    ? [next, ...state.tasks.filter(t => t.id !== next.id)]
+    : state.tasks.map(t => t.id === next.id ? next : t);
+  render();
+  try {
+    setSync('Saving…');
+    render();
+    const { error } = await db.from(TABLE).upsert(taskToRow(next));
+    if (error) throw error;
+    await loadRemote({ silent: true });
+    closeModal();
+    setMessage('Saved to shared board.', 'ok');
+  } catch (err) {
+    state.tasks = previous;
+    setSync('Save failed');
+    setMessage('Could not save the task to the shared board.', 'error');
+    render();
+  }
+}
+async function deleteDraft(){
+  if (!state.draft) return;
+  const id = state.draft.id;
+  const previous = state.tasks.slice();
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  render();
+  try {
+    setSync('Deleting…');
+    render();
+    const { error } = await db.from(TABLE).delete().eq('id', id);
+    if (error) throw error;
+    await loadRemote({ silent: true });
+    state.selectedId = null;
+    closeModal();
+    setMessage('Task deleted from the shared board.', 'ok');
+  } catch (err) {
+    state.tasks = previous;
+    setSync('Delete failed');
+    setMessage('Could not delete the task.', 'error');
+    render();
+  }
+}
+async function saveNote(){
+  const body = state.noteText.trim();
+  if (!body || !state.draft) return;
+  state.draft.notes = [{ id: uid(), body, createdAt: new Date().toISOString() }, ...(state.draft.notes || [])];
+  state.noteText = '';
+  render();
+  if (state.modal === 'edit') await saveDraft();
+}
+async function setStatus(taskId, status){
+  const current = state.tasks.find(t => t.id === taskId);
+  if (!current || current.status === status) return;
+  const next = normalizeTask({ ...current, status, updatedAt: new Date().toISOString() });
+  const previous = state.tasks.slice();
+  state.tasks = state.tasks.map(t => t.id === taskId ? next : t);
+  render();
+  try {
+    setSync('Saving status…');
+    render();
+    const { error } = await db.from(TABLE).update({ status, updated_at: new Date().toISOString() }).eq('id', taskId);
+    if (error) throw error;
+    await loadRemote({ silent: true });
+    setMessage('Task moved.', 'ok');
+  } catch (err) {
+    state.tasks = previous;
+    setSync('Save failed');
+    setMessage('Could not move the task.', 'error');
+    render();
+  }
+}
 function dragStart(ev, id){ ev.dataTransfer.setData('text/task-id', id); }
 function dragOver(ev){ ev.preventDefault(); }
-function dropStatus(ev, status){ ev.preventDefault(); const id = ev.dataTransfer.getData('text/task-id'); if (id) { setStatus(id, status); state.selectedId = id; render(); } }
-function renderCounts(){ const c = counts(); const html = Object.entries(c).map(([k,v]) => `<div class="pill">${v} ${k.toLowerCase().replace('_task',' new')}</div>`).join(''); document.getElementById('counts').innerHTML = html; }
-function renderColumns(){ const cols = STATUS.map(status => { const [title, subtitle] = statusMeta(status); const items = state.tasks.filter(t => t.status === status && matches(t)); return `<section class="column ${theme[status].panel}" ondragover="dragOver(event)" ondrop="dropStatus(event, '${status}')"><div class="column-top"><div><div class="bar" style="background:${theme[status].accent}"></div><div class="meta">${esc(subtitle)}</div><h2>${esc(title)}</h2></div><div class="pill">${items.length}</div></div><div>${items.map(task => taskCard(task)).join('') || '<div class="task" style="cursor:default"><div class="sub">Drop a task here, or create a new one.</div></div>'}</div></section>`; }).join(''); document.getElementById('columns').innerHTML = cols; }
-function taskCard(task){ const selected = state.selectedId === task.id ? 'selected' : ''; const chip = statusChipClass(task.status); return `<article class="task ${selected}" draggable="true" ondragstart="dragStart(event, '${task.id}')" onclick="openTask('${task.id}')"><div class="task-top"><div style="min-width:0"><div class="sub">${esc(task.owner)} · ${fmtDate(task.startedDate)}</div><h3>${esc(task.title)}</h3></div><span class="statuspill ${chip}">${statusLabel(task.status)}</span></div><div class="tags">${(task.tags||[]).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div><div class="task-foot"><span class="priority ${priorityClass(task.priority)}">${task.priority}</span><span>${task.notes?.length || 0} note${(task.notes?.length||0)===1?'':'s'}</span></div></article>`; }
-function overlayMarkup(){ if (!state.modal || !state.draft) return ''; const draft = state.draft; const isCreate = state.modal === 'create'; return `<div class="modal ${isCreate ? 'composer' : ''}"><div class="modal-head"><div><div class="sectionlabel">${isCreate ? 'New task' : 'Task details'}</div><h2>${isCreate ? 'Create a task' : 'Edit and save changes'}</h2></div><button class="btn secondary" onclick="closeModal()">Close</button></div><div class="modal-grid"><div class="pane left"><div class="chips"><span class="statuspill ${statusChipClass(draft.status)}">${statusLabel(draft.status)}</span><span class="priority ${priorityClass(draft.priority)}">${draft.priority}</span></div><div class="field"><label>Task name</label><input value="${esc(draft.title)}" oninput="updateDraft('title', this.value)"></div><div class="row"><div class="field"><label>Name</label><input value="${esc(draft.owner)}" oninput="updateDraft('owner', this.value)"></div><div class="field"><label>Priority</label><div class="actions priority-select"><button class="btn ${draft.priority==='Low'?'active':''} secondary" onclick="setPriority('Low')">Low</button><button class="btn ${draft.priority==='Medium'?'active':''} secondary" onclick="setPriority('Medium')">Medium</button><button class="btn ${draft.priority==='High'?'active':''} secondary" onclick="setPriority('High')">High</button></div></div></div><div class="row"><div class="field"><label>Date started</label><input type="date" value="${draft.startedDate}" oninput="updateDraft('startedDate', this.value)"></div><div class="field"><label>Date to end or close</label><input type="date" value="${draft.targetCloseDate}" oninput="updateDraft('targetCloseDate', this.value)"></div></div><div class="field"><label>Tags</label><input value="${esc((draft.tags||[]).join(', '))}" oninput="updateDraft('tags', this.value.split(',').map(s => s.trim()).filter(Boolean).slice(0,4))"></div><div class="actions">${STATUS.map(s => `<button class="btn ${draft.status===s?'active':''} secondary" onclick="updateDraft('status','${s}')">${statusLabel(s)}</button>`).join('')}</div><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" style="flex:1" onclick="saveDraft()">Save changes</button><button class="btn secondary" onclick="closeModal()">Cancel</button>${state.modal === 'edit' ? '<button class="btn secondary" style="border-color:#fca5a5;color:#991b1b" onclick="deleteDraft()">Delete task</button>' : ''}</div></div><div class="pane"><div class="sectionlabel">Notes</div><div class="notes">${(draft.notes||[]).length ? draft.notes.map(n => `<div class="note"><p>${esc(n.body)}</p><small>${fmtTime(n.createdAt)}</small></div>`).join('') : '<div class="note" style="background:#fff">No notes yet.</div>'}</div><div class="addnote"><div class="field"><label>Add note</label><textarea rows="4" placeholder="What happened? What should happen next?" oninput="state.noteText=this.value">${esc(state.noteText||'')}</textarea></div><button class="btn" style="width:100%" onclick="saveNote()">Save note</button></div></div></div></div>`; }
-function render(){ renderCounts(); renderColumns(); const overlay = document.getElementById('overlay'); overlay.classList.toggle('show', !!state.modal); overlay.innerHTML = overlayMarkup(); }
-window.openTask = openTask; window.openComposer = openComposer; window.closeModal = closeModal; window.dragOver = dragOver; window.dropStatus = dropStatus; window.dragStart = dragStart; window.updateDraft = updateDraft; window.saveDraft = saveDraft; window.saveNote = saveNote; window.state = state;
+function dropStatus(ev, status){ ev.preventDefault(); const id = ev.dataTransfer.getData('text/task-id'); if (id) setStatus(id, status); }
+function renderCounts(){ const c = counts(); document.getElementById('counts').innerHTML = Object.entries(c).map(([k, v]) => `<div class="pill">${v} ${k.toLowerCase().replace('_task', ' new')}</div>`).join(''); }
+function taskCard(task){ const selected = state.selectedId === task.id ? 'selected' : ''; const chip = statusChipClass(task.status); return `<article class="task ${selected}" draggable="true" ondragstart="dragStart(event, '${task.id}')" onclick="openTask('${task.id}')"><div class="task-top"><div style="min-width:0"><div class="sub">${esc(task.owner)} · ${fmtDate(task.startedDate)}</div><h3>${esc(task.title)}</h3></div><span class="statuspill ${chip}">${statusLabel(task.status)}</span></div><div class="tags">${(task.tags || []).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div><div class="task-foot"><span class="priority ${priorityClass(task.priority)}">${task.priority}</span><span>${task.notes?.length || 0} note${(task.notes?.length || 0) === 1 ? '' : 's'}</span></div></article>`; }
+function renderColumns(){
+  const cols = STATUS.map(status => {
+    const [title, subtitle] = statusMeta(status);
+    const items = state.tasks.filter(t => t.status === status && matches(t)).sort(sortTasks);
+    const body = items.length ? items.map(task => taskCard(task)).join('') : '<div class="emptycard">Drop a task here, or create a new one.</div>';
+    return `<section class="column ${theme[status].panel}" ondragover="dragOver(event)" ondrop="dropStatus(event, '${status}')"><div class="column-top"><div><div class="bar" style="background:${theme[status].accent}"></div><div class="meta">${esc(subtitle)}</div><h2>${esc(title)}</h2></div><div class="pill">${items.length}</div></div><div>${body}</div></section>`;
+  }).join('');
+  document.getElementById('columns').innerHTML = cols;
+}
+function overlayMarkup(){
+  if (!state.modal || !state.draft) return '';
+  const draft = state.draft;
+  const isCreate = state.modal === 'create';
+  return `<div class="modal ${isCreate ? 'composer' : ''}"><div class="modal-head"><div><div class="sectionlabel">${isCreate ? 'New task' : 'Task details'}</div><h2>${isCreate ? 'Create a task' : 'Edit and save changes'}</h2></div><button class="btn secondary" onclick="closeModal()">Close</button></div><div class="modal-grid"><div class="pane left"><div class="chips"><span class="statuspill ${statusChipClass(draft.status)}">${statusLabel(draft.status)}</span><span class="priority ${priorityClass(draft.priority)}">${draft.priority}</span></div><div class="field"><label>Task name</label><input value="${esc(draft.title)}" oninput="updateDraft('title', this.value)"></div><div class="row"><div class="field"><label>Name</label><input value="${esc(draft.owner)}" oninput="updateDraft('owner', this.value)"></div><div class="field"><label>Priority</label><div class="actions priority-select"><button class="btn ${draft.priority === 'Low' ? 'active' : ''} secondary" onclick="setPriority('Low')">Low</button><button class="btn ${draft.priority === 'Medium' ? 'active' : ''} secondary" onclick="setPriority('Medium')">Medium</button><button class="btn ${draft.priority === 'High' ? 'active' : ''} secondary" onclick="setPriority('High')">High</button></div></div></div><div class="row"><div class="field"><label>Date started</label><input type="date" value="${draft.startedDate}" oninput="updateDraft('startedDate', this.value)"></div><div class="field"><label>Date to end or close</label><input type="date" value="${draft.targetCloseDate || ''}" oninput="updateDraft('targetCloseDate', this.value)"></div></div><div class="field"><label>Tags</label><input value="${esc((draft.tags || []).join(', '))}" oninput="updateDraft('tags', this.value.split(',').map(s => s.trim()).filter(Boolean).slice(0,4))"></div><div class="actions">${STATUS.map(s => `<button class="btn ${draft.status === s ? 'active' : ''} secondary" onclick="updateDraft('status','${s}')">${statusLabel(s)}</button>`).join('')}</div><div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap"><button class="btn" style="flex:1" onclick="saveDraft()">Save changes</button><button class="btn secondary" onclick="closeModal()">Cancel</button>${state.modal === 'edit' ? '<button class="btn secondary" style="border-color:#fca5a5;color:#991b1b" onclick="deleteDraft()">Delete task</button>' : ''}</div></div><div class="pane"><div class="sectionlabel">Notes</div><div class="notes">${(draft.notes || []).length ? draft.notes.map(n => `<div class="note"><p>${esc(n.body)}</p><small>${fmtTime(n.createdAt)}</small></div>`).join('') : '<div class="note" style="background:#fff">No notes yet.</div>'}</div><div class="addnote"><div class="field"><label>Add note</label><textarea rows="4" placeholder="What happened? What should happen next?" oninput="state.noteText=this.value">${esc(state.noteText || '')}</textarea></div><button class="btn" style="width:100%" onclick="saveNote()">Save note</button></div></div></div></div>`;
+}
+function render(){
+  renderCounts();
+  renderColumns();
+  document.getElementById('overlay').classList.toggle('show', !!state.modal);
+  document.getElementById('overlay').innerHTML = overlayMarkup();
+  document.getElementById('syncStatus').textContent = state.syncState;
+  const message = document.getElementById('message');
+  message.textContent = state.message;
+  message.className = state.message ? `message ${state.messageTone || ''}`.trim() : 'message';
+}
+window.openTask = openTask;
+window.openComposer = openComposer;
+window.closeModal = closeModal;
+window.dragOver = dragOver;
+window.dropStatus = dropStatus;
+window.dragStart = dragStart;
+window.updateDraft = updateDraft;
+window.saveDraft = saveDraft;
+window.saveNote = saveNote;
+window.deleteDraft = deleteDraft;
+window.setPriority = setPriority;
+window.state = state;
+window.addEventListener('focus', () => { if (!state.loading && !state.modal) loadRemote({ silent: true }); });
 document.getElementById('search').addEventListener('input', e => { state.query = e.target.value; render(); });
 document.getElementById('newTaskBtn').addEventListener('click', openComposer);
 document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') closeModal(); });
-state.tasks = load(); render();
+(async function init(){
+  await loadRemote();
+  liveChannel = db.channel('salazar_tasks_changes').on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, () => { if (!state.modal) loadRemote({ silent: true }); }).subscribe();
+})();
 </script>
 </body>
 </html>
