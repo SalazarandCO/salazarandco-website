@@ -58,9 +58,9 @@ const CACHE_KEY = 'salazar-co-tasks-cloud-cache-v1';
 const { createClient } = window.supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 
-const STATUS = ['NEW_TASK', 'OPEN'];
+const STATUS = ['NEW_TASK', 'OPEN', 'COMPLETED'];
 const statusLabel = s => s === 'NEW_TASK' ? 'New task' : s === 'OPEN' ? 'Open in process' : 'Completed';
-const statusMeta = s => s === 'NEW_TASK' ? ['New task','Fresh items waiting to be started'] : ['Open in process','Active work you are moving through'];
+const statusMeta = s => s === 'NEW_TASK' ? ['New task','Fresh items waiting to be started'] : s === 'OPEN' ? ['Open in process','Active work you are moving through'] : ['Completed','Finished work kept for reference'];
 const theme = { NEW_TASK:{panel:'new', accent:'#2d7ff9'}, OPEN:{panel:'open', accent:'#a855f7'}, COMPLETED:{panel:'done', accent:'#10b981'} };
 const today = () => new Date().toISOString().slice(0,10);
 const addDays = (days) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); };
@@ -139,7 +139,7 @@ function initials(name = ''){ return String(name || 'Task').trim().split(/\s+/).
 function priorityClass(priority){ return priority === 'High' ? 'high' : priority === 'Medium' ? 'medium' : 'low'; }
 function statusChipClass(status){ return status === 'NEW_TASK' ? 'new' : status === 'OPEN' ? 'open' : 'done'; }
 function sortTasks(a, b){
-  const statusOrder = { NEW_TASK: 0, OPEN: 1 };
+  const statusOrder = { NEW_TASK: 0, OPEN: 1, COMPLETED: 2 };
   const byStatus = (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99);
   if (byStatus !== 0) return byStatus;
   return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
