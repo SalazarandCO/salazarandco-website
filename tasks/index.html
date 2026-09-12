@@ -58,9 +58,9 @@ const CACHE_KEY = 'salazar-co-tasks-cloud-cache-v1';
 const { createClient } = window.supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 
-const STATUS = ['NEW_TASK', 'OPEN', 'COMPLETED'];
+const STATUS = ['NEW_TASK', 'OPEN'];
 const statusLabel = s => s === 'NEW_TASK' ? 'New task' : s === 'OPEN' ? 'Open in process' : 'Completed';
-const statusMeta = s => s === 'NEW_TASK' ? ['New task','Fresh items waiting to be started'] : s === 'OPEN' ? ['Open in process','Active work you are moving through'] : ['Completed','Closed out and ready for reference'];
+const statusMeta = s => s === 'NEW_TASK' ? ['New task','Fresh items waiting to be started'] : ['Open in process','Active work you are moving through'];
 const theme = { NEW_TASK:{panel:'new', accent:'#2d7ff9'}, OPEN:{panel:'open', accent:'#a855f7'}, COMPLETED:{panel:'done', accent:'#10b981'} };
 const today = () => new Date().toISOString().slice(0,10);
 const addDays = (days) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); };
@@ -139,16 +139,17 @@ function initials(name = ''){ return String(name || 'Task').trim().split(/\s+/).
 function priorityClass(priority){ return priority === 'High' ? 'high' : priority === 'Medium' ? 'medium' : 'low'; }
 function statusChipClass(status){ return status === 'NEW_TASK' ? 'new' : status === 'OPEN' ? 'open' : 'done'; }
 function sortTasks(a, b){
-  const byStatus = STATUS.indexOf(a.status) - STATUS.indexOf(b.status);
+  const statusOrder = { NEW_TASK: 0, OPEN: 1 };
+  const byStatus = (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99);
   if (byStatus !== 0) return byStatus;
   return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
 }
 function focusMatches(task){
   const days = daysUntil(task.targetCloseDate);
+  if (task.status === 'COMPLETED') return false;
   if (state.focus === 'all') return true;
   if (state.focus === 'new') return task.status === 'NEW_TASK';
   if (state.focus === 'open') return task.status === 'OPEN';
-  if (state.focus === 'done') return task.status === 'COMPLETED';
   if (state.focus === 'overdue') return task.status !== 'COMPLETED' && days !== null && days < 0;
   if (state.focus === 'due_today') return task.status !== 'COMPLETED' && days === 0;
   if (state.focus === 'soon') return task.status !== 'COMPLETED' && days !== null && days > 0 && days <= 3;
@@ -168,7 +169,7 @@ function matches(task){
     (task.notes || []).map(n => n.body).join(' '),
   ].join(' ').toLowerCase().includes(q);
 }
-function counts(){ const c = { NEW_TASK: 0, OPEN: 0, COMPLETED: 0 }; state.tasks.filter(matches).forEach(t => { c[t.status] += 1; }); return c; }
+function counts(){ const c = { NEW_TASK: 0, OPEN: 0 }; state.tasks.filter(matches).forEach(t => { if (t.status in c) c[t.status] += 1; }); return c; }
 function openTask(id){ const task = state.tasks.find(t => t.id === id); if (!task) return; state.selectedId = id; state.modal = 'edit'; state.draft = JSON.parse(JSON.stringify(task)); state.noteText = ''; render(); }
 function openComposer(){ state.modal = 'create'; state.selectedId = null; state.noteText = ''; state.draft = blankTask(); render(); }
 function closeModal(){ state.modal = null; state.draft = null; state.noteText = ''; render(); }
@@ -191,11 +192,11 @@ function renderSummary(){
   const overdue = active.filter(t => { const days = daysUntil(t.targetCloseDate); return days !== null && days < 0; });
   const todayDue = active.filter(t => daysUntil(t.targetCloseDate) === 0);
   const soon = active.filter(t => { const days = daysUntil(t.targetCloseDate); return days !== null && days > 0 && days <= 3; });
-  const counts = { all: visible.length, new: visible.filter(t => t.status === 'NEW_TASK').length, open: visible.filter(t => t.status === 'OPEN').length, done: visible.filter(t => t.status === 'COMPLETED').length, overdue: overdue.length, due_today: todayDue.length, soon: soon.length };
+  const counts = { all: visible.length, new: visible.filter(t => t.status === 'NEW_TASK').length, open: visible.filter(t => t.status === 'OPEN').length, overdue: overdue.length, due_today: todayDue.length, soon: soon.length };
   const button = (key, label) => `<button class="sidebtn ${state.focus === key ? 'active' : ''}" onclick="setFocus('${key}')"><span>${label}</span><span class="count">${counts[key] ?? 0}</span></button>`;
   const nowLabel = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
   // Safe innerHTML here: dynamic fields are escaped or derived from local task data.
-  document.getElementById('sidebar').innerHTML = `<div class="mini">Pipeline</div><h2>Tasks</h2><p>${nowLabel} · task workspace</p><div class="group"><div class="mini">Views</div><div class="sidegrid" style="margin-top:10px">${button('all','All tasks')}${button('new','New')}${button('open','Open')}${button('done','Done')}${button('overdue','Overdue')}${button('due_today','Due today')}${button('soon','Due soon')}</div></div><div class="group"><div class="mini">Today</div><div class="side-card"><h3>${active.length} active tasks</h3><small>${overdue.length} overdue · ${todayDue.length} due now</small></div></div>`;
+  document.getElementById('sidebar').innerHTML = `<div class="mini">Pipeline</div><h2>Tasks</h2><p>${nowLabel} · task workspace</p><div class="group"><div class="mini">Views</div><div class="sidegrid" style="margin-top:10px">${button('all','All tasks')}${button('new','New')}${button('open','Open')}${button('overdue','Overdue')}${button('due_today','Due today')}${button('soon','Due soon')}</div></div><div class="group"><div class="mini">Today</div><div class="side-card"><h3>${active.length} active tasks</h3><small>${overdue.length} overdue · ${todayDue.length} due now</small></div></div>`;
 }
 function renderCounts(){ }
 function taskCard(task){ const selected = state.selectedId === task.id ? 'selected' : ''; const chip = statusChipClass(task.status); const notes = (task.notes || []).slice(0, 2); const latest = notes[0]; const due = dueStatus(task); return `<article class="task ${selected}" style="--accent:${theme[task.status].accent}" draggable="true" ondragstart="dragStart(event, '${task.id}')" onclick="openTask('${task.id}')"><div class="task-top"><div style="min-width:0"><div class="sub">${esc(task.owner)} · ${fmtDate(task.startedDate)}</div><h3>${esc(task.title)}</h3></div><span class="statuspill ${chip}">${statusLabel(task.status)}</span></div><div class="taskmeta"><span class="sub">${esc(task.owner)}</span><span class="priority ${priorityClass(task.priority)}">${task.priority}</span></div>${due ? `<div class="taskflag ${due.kind}">${due.label}</div>` : ''}<div class="tags">${(task.tags || []).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div><div class="notesblock"><div class="notesblock-head"><span>Notes</span><span>${task.notes?.length || 0} note${(task.notes?.length || 0) === 1 ? '' : 's'}</span></div><div class="notespreview">${notes.length ? notes.map(n => `<div class="note-snippet"><p>${esc(n.body.length > 110 ? `${n.body.slice(0, 110).trimEnd()}…` : n.body)}</p><small>${fmtTime(n.createdAt)}</small></div>`).join('') : '<div class="note-snippet"><p>No notes yet.</p></div>'}</div></div></article>`; }
