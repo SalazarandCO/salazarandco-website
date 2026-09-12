@@ -11,6 +11,9 @@
 :root{--fg:#17212b;--muted:#6b7785;--border:#dbe3eb;--bg:#f5f7fa;--panel:#ffffff;--shadow:0 8px 28px rgba(29,40,54,.06);--new:#f8fafc;--open:#ffffff;--done:#f3fbf7;--green:#2eaf62;--yellow:#f2a22c;--red:#d94a4a;--blue:#2d7ff9;--teal:#23b5a4;}
 *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Inter Tight',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility} button,input,textarea,select{font:inherit;color:inherit} a{color:inherit}
 main{max-width:1600px;margin:0 auto;padding:16px 18px 20px}
+.shell{display:grid;grid-template-columns:282px minmax(0,1fr);gap:14px;align-items:start;margin-top:12px}
+.sidebar{position:sticky;top:16px;overflow:hidden;border:1px solid rgba(255,255,255,.18);border-radius:16px;background:linear-gradient(180deg,#2d7ff9 0%,#245fd1 100%);color:#fff;box-shadow:0 16px 34px rgba(36,95,209,.22);padding:14px}.sidebar .mini{opacity:.9;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}.sidebar h2{margin:6px 0 0;font-size:20px;line-height:1.05;letter-spacing:-.04em}.sidebar p{margin:8px 0 0;font-size:12px;line-height:1.45;color:rgba(255,255,255,.84)}.sidebar .group{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.16)}.sidebar .group:first-of-type{border-top:0;padding-top:0}.sidegrid{display:grid;gap:8px}.sidebtn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.12);color:#fff;padding:10px 11px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s ease,transform .15s ease,border-color .15s ease}.sidebtn:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}.sidebtn.active{background:#fff;color:#245fd1;border-color:#fff}.sidebtn .count{font-size:14px;letter-spacing:0;font-weight:800}.side-card{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.12);padding:12px 12px 11px}.side-card + .side-card{margin-top:10px}.side-card h3{margin:0;font-size:13px;line-height:1.2;letter-spacing:-.02em}.side-card small{display:block;margin-top:7px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.76)}.side-action{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.side-action .mini-btn{border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.14);color:#fff;padding:8px 10px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}.side-action .mini-btn:hover{background:rgba(255,255,255,.2)}
+.workspace{min-width:0}
 .header,.search,.column,.modal,.summary-card,.agenda-card{border:1px solid var(--border);background:var(--panel);box-shadow:var(--shadow)} .header,.search,.column,.modal,.summary-card,.agenda-card{border-radius:14px}
 .header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:linear-gradient(180deg,#fff 0%,#fbfcfd 100%)}.header h1{margin:0;font-size:22px;line-height:1.05;letter-spacing:-.04em;text-transform:uppercase}.header-left{display:flex;flex-direction:column;gap:6px}
 .counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pill,.statuspill,.priority{border:1px solid var(--border);border-radius:999px;padding:7px 11px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:#fff;color:#394455}.pill{background:#f7f9fb;box-shadow:0 4px 10px rgba(29,40,54,.03)}.btn{border:1px solid #d6dee8;border-radius:12px;background:#223043;color:#fff;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 12px rgba(29,40,54,.08)}.btn.secondary{background:#fff;color:#223043}.btn.active{border-color:#b9c6d6;background:#eef3f8}.search{padding:12px 14px;margin-top:12px}.search input,.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:12px;background:#fff;padding:12px 14px;outline:none}.search input::placeholder{color:#97a3b3}.search input:focus,.field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:#7b9bd8;box-shadow:0 0 0 3px rgba(45,127,249,.12)}
@@ -21,24 +24,27 @@ main{max-width:1600px;margin:0 auto;padding:16px 18px 20px}
 </head>
 <body>
 <main>
-  <header class="header">
-    <div class="header-left">
-      <div>
-        <h1>SALAZAR &amp; CO Tasks</h1>
-      </div>
-    </div>
-    <div class="counts" id="counts"></div>
-    <button class="btn" id="newTaskBtn" type="button">New task</button>
-  </header>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <section class="workspace">
+      <header class="header">
+        <div class="header-left">
+          <div>
+            <h1>SALAZAR &amp; CO Tasks</h1>
+          </div>
+        </div>
+        <div class="counts" id="counts"></div>
+        <button class="btn" id="newTaskBtn" type="button">New task</button>
+      </header>
 
-  <section class="search">
-    <input id="search" placeholder="Search tasks, notes, tags, names, or dates" autocomplete="off">
-  </section>
+      <section class="search">
+        <input id="search" placeholder="Search tasks, notes, tags, names, or dates" autocomplete="off">
+      </section>
 
-  <section class="summary" id="summary"></section>
-
-  <div class="message" id="message"></div>
-  <section class="columns" id="columns"></section>
+      <div class="message" id="message"></div>
+      <section class="columns" id="columns"></section>
+    </section>
+  </div>
 </main>
 
 <div class="overlay" id="overlay"></div>
@@ -70,7 +76,7 @@ const defaultSeed = () => ([
   { id: uid(), title:'Send follow-up on Victoria Park call prep', status:'COMPLETED', priority:'Low', owner:'Aiden', startedDate:addDays(-2), targetCloseDate:addDays(-1), tags:['Real Estate'], notes:[{ id: uid(), body:'Workbook delivered and scope narrowed to new-construction townhomes only.', createdAt:new Date().toISOString() }], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
 ]);
 const blankTask = () => ({ id: uid(), title:'', status:'NEW_TASK', priority:'Medium', owner:'Aiden', startedDate:today(), targetCloseDate:addDays(7), tags:['Task'], notes:[], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
-const state = { tasks: [], query: '', selectedId: null, modal: null, draft: null, noteText: '', loading: true, syncState: 'Connecting…', message: '', messageTone: '' };
+const state = { tasks: [], query: '', selectedId: null, modal: null, draft: null, noteText: '', loading: true, syncState: 'Connecting…', message: '', messageTone: '', focus: 'all' };
 let liveChannel = null;
 
 function normalizeTask(task){
@@ -137,8 +143,20 @@ function sortTasks(a, b){
   if (byStatus !== 0) return byStatus;
   return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
 }
+function focusMatches(task){
+  const days = daysUntil(task.targetCloseDate);
+  if (state.focus === 'all') return true;
+  if (state.focus === 'new') return task.status === 'NEW_TASK';
+  if (state.focus === 'open') return task.status === 'OPEN';
+  if (state.focus === 'done') return task.status === 'COMPLETED';
+  if (state.focus === 'overdue') return task.status !== 'COMPLETED' && days !== null && days < 0;
+  if (state.focus === 'due_today') return task.status !== 'COMPLETED' && days === 0;
+  if (state.focus === 'soon') return task.status !== 'COMPLETED' && days !== null && days > 0 && days <= 3;
+  return true;
+}
 function matches(task){
   const q = state.query.trim().toLowerCase();
+  if (!focusMatches(task)) return false;
   if (!q) return true;
   return [
     task.title,
@@ -156,6 +174,7 @@ function openComposer(){ state.modal = 'create'; state.selectedId = null; state.
 function closeModal(){ state.modal = null; state.draft = null; state.noteText = ''; render(); }
 function updateDraft(field, value){ if (!state.draft) return; state.draft[field] = value; }
 function setPriority(value){ if (!state.draft) return; state.draft.priority = value; render(); }
+function setFocus(value){ state.focus = value; render(); }
 function addTagList(text){ return text.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); }
 function isValidDraft(){ return !!(state.draft && state.draft.title && state.draft.title.trim()); }
 function dueStatus(task){
@@ -176,16 +195,16 @@ function agendaTasks(){
     .slice(0, 4);
 }
 function renderSummary(){
-  const items = state.tasks.filter(matches);
-  const active = items.filter(t => t.status !== 'COMPLETED');
+  const visible = state.tasks.filter(matches);
+  const active = visible.filter(t => t.status !== 'COMPLETED');
   const overdue = active.filter(t => { const days = daysUntil(t.targetCloseDate); return days !== null && days < 0; });
   const todayDue = active.filter(t => daysUntil(t.targetCloseDate) === 0);
   const soon = active.filter(t => { const days = daysUntil(t.targetCloseDate); return days !== null && days > 0 && days <= 3; });
   const agenda = agendaTasks();
-  document.getElementById('summary').innerHTML = `<div class="summary-card"><div class="summary-top"><div><div class="meta">Daily command center</div><h2>What needs attention today</h2></div><span class="pill">${active.length} open</span></div><div class="summary-grid"><div class="summary-stat overdue"><strong>${overdue.length}</strong><span>Overdue</span></div><div class="summary-stat due"><strong>${todayDue.length}</strong><span>Due today</span></div><div class="summary-stat follow"><strong>${soon.length}</strong><span>Due next 3 days</span></div></div></div><aside class="agenda-card"><div class="summary-top"><div><div class="meta">Next up</div><h2>Follow-up queue</h2></div><span class="pill">${agenda.length} items</span></div><div class="agenda-list">${agenda.length ? agenda.map(({ task, days }) => {
-    const d = dueStatus(task);
-    return `<article class="agenda-item" onclick="openTask('${task.id}')"><div class="top"><div style="min-width:0"><div class="sub">${esc(task.owner)} · ${task.priority}</div><h3>${esc(task.title)}</h3></div><span class="priority ${priorityClass(task.priority)}">${task.priority}</span></div><p>${d ? d.label : `${fmtDate(task.targetCloseDate)}`}</p><div class="meta-row"><span>${statusLabel(task.status)}</span><span>${fmtDate(task.targetCloseDate)}</span></div></article>`;
-  }).join('') : '<div class="agenda-empty">No due tasks match the current search.</div>'}</div></aside>`;
+  const counts = { all: visible.length, new: visible.filter(t => t.status === 'NEW_TASK').length, open: visible.filter(t => t.status === 'OPEN').length, done: visible.filter(t => t.status === 'COMPLETED').length, overdue: overdue.length, due_today: todayDue.length, soon: soon.length };
+  const button = (key, label) => `<button class="sidebtn ${state.focus === key ? 'active' : ''}" onclick="setFocus('${key}')"><span>${label}</span><span class="count">${counts[key] ?? 0}</span></button>`;
+  const nowLabel = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  document.getElementById('sidebar').innerHTML = `<div class="mini">Pipeline</div><h2>SALAZAR &amp; CO</h2><p>${nowLabel} · task workspace</p><div class="group"><div class="mini">Quick actions</div><div class="side-action"><button class="mini-btn" onclick="openComposer()">New task</button><button class="mini-btn" onclick="setFocus('overdue')">Overdue</button><button class="mini-btn" onclick="setFocus('soon')">Due soon</button></div></div><div class="group"><div class="mini">Views</div><div class="sidegrid" style="margin-top:10px">${button('all','All tasks')}${button('new','New')}${button('open','Open')}${button('done','Done')}${button('overdue','Overdue')}${button('due_today','Due today')}${button('soon','Due soon')}</div></div><div class="group"><div class="mini">Today</div><div class="side-card"><h3>${active.length} active tasks</h3><small>${overdue.length} overdue · ${todayDue.length} due now</small><div class="side-action"><button class="mini-btn" onclick="setMessage('Google Calendar sync is next.', 'ok')">Calendar</button><button class="mini-btn" onclick="setMessage('Gmail sync is next.', 'ok')">Mail</button></div></div><div class="side-card"><h3>Follow-up queue</h3><small>${agenda.length} items ready</small><div class="side-action"><button class="mini-btn" onclick="setFocus('due_today')">Due today</button><button class="mini-btn" onclick="setFocus('soon')">Due soon</button></div></div></div>`;
 }
 function renderCounts(){ const c = counts(); document.getElementById('counts').innerHTML = Object.entries(c).map(([k, v]) => `<div class="pill">${v} ${k.toLowerCase().replace('_task', ' new')}</div>`).join(''); }
 function taskCard(task){ const selected = state.selectedId === task.id ? 'selected' : ''; const chip = statusChipClass(task.status); const notes = (task.notes || []).slice(0, 2); const latest = notes[0]; const due = dueStatus(task); return `<article class="task ${selected}" style="--accent:${theme[task.status].accent}" draggable="true" ondragstart="dragStart(event, '${task.id}')" onclick="openTask('${task.id}')"><div class="task-top"><div style="min-width:0"><div class="sub">${esc(task.owner)} · ${fmtDate(task.startedDate)}</div><h3>${esc(task.title)}</h3></div><span class="statuspill ${chip}">${statusLabel(task.status)}</span></div><div class="taskmeta"><span class="sub">${esc(task.owner)}</span><span class="priority ${priorityClass(task.priority)}">${task.priority}</span></div>${due ? `<div class="taskflag ${due.kind}">${due.label}</div>` : ''}<div class="tags">${(task.tags || []).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div><div class="notesblock"><div class="notesblock-head"><span>Notes</span><span>${task.notes?.length || 0} note${(task.notes?.length || 0) === 1 ? '' : 's'}</span></div><div class="notespreview">${notes.length ? notes.map(n => `<div class="note-snippet"><p>${esc(n.body.length > 110 ? `${n.body.slice(0, 110).trimEnd()}…` : n.body)}</p><small>${fmtTime(n.createdAt)}</small></div>`).join('') : '<div class="note-snippet"><p>No notes yet.</p></div>'}</div></div></article>`; }
