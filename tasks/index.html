@@ -33,10 +33,7 @@ main{max-width:1600px;margin:0 auto;padding:16px 18px 20px}
             <h1>SALAZAR &amp; CO Tasks</h1>
           </div>
         </div>
-        <div class="counts" style="margin-left:auto">
-          <button class="btn secondary" id="exportObsidianBtn" type="button">Export Obsidian</button>
-          <button class="btn" id="newTaskBtn" type="button">New task</button>
-        </div>
+        <button class="btn" id="newTaskBtn" type="button">New task</button>
       </header>
 
       <section class="search">
@@ -178,58 +175,6 @@ function updateDraft(field, value){ if (!state.draft) return; state.draft[field]
 function setPriority(value){ if (!state.draft) return; state.draft.priority = value; render(); }
 function setFocus(value){ state.focus = value; render(); }
 function addTagList(text){ return text.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); }
-function slugify(value){ return String(value || '').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').slice(0, 120) || 'untitled'; }
-function obsidianNoteFilename(task){ return `${(task.startedDate || today()).slice(0, 10)} — ${slugify(task.title)}.md`; }
-function obsidianTaskMarkdown(task){
-  const created = task.createdAt || new Date().toISOString();
-  const updated = task.updatedAt || created;
-  const lines = ['---', 'type: task', `task_id: ${task.id}`, `status: ${task.status.toLowerCase()}`, `priority: ${task.priority.toLowerCase()}`];
-  if (task.targetCloseDate) lines.push(`due: ${task.targetCloseDate}`);
-  lines.push(`created: ${created}`, `updated: ${updated}`, 'source: salazar-tasks', 'source_url: https://salazarandco.com/tasks');
-  if (task.tags?.length) lines.push(`tags: [${task.tags.map(t => JSON.stringify(t)).join(', ')}]`);
-  lines.push('---', '', `# ${task.title}`, '', `- Status: ${statusLabel(task.status)}`, `- Priority: ${task.priority}`, `- Owner: ${task.owner}`);
-  if (task.startedDate) lines.push(`- Started: ${task.startedDate}`);
-  if (task.targetCloseDate) lines.push(`- Due: ${task.targetCloseDate}`);
-  if (task.tags?.length) lines.push(`- Tags: ${task.tags.join(', ')}`);
-  lines.push('', '## Notes');
-  if (task.notes?.length) task.notes.forEach(note => lines.push(`- ${note.body}`)); else lines.push('- No notes yet.');
-  return lines.join('\n');
-}
-function obsidianReviewMarkdown(tasks){
-  const date = today();
-  const groups = [
-    ['NEW_TASK', tasks.filter(t => t.status === 'NEW_TASK')],
-    ['OPEN', tasks.filter(t => t.status === 'OPEN')],
-    ['COMPLETED', tasks.filter(t => t.status === 'COMPLETED')],
-  ];
-  const lines = ['---', 'type: task-review', `date: ${date}`, 'source: salazar-tasks', 'source_url: https://salazarandco.com/tasks', '---', '', `# ${date} — Tasks Review`, ''];
-  groups.forEach(([status, items]) => {
-    if (!items.length) return;
-    lines.push(`## ${statusLabel(status)}`);
-    items.sort(sortTasks).forEach(task => lines.push(`- [[${obsidianNoteFilename(task).replace(/\.md$/, '')}]]`));
-    lines.push('');
-  });
-  return lines.join('\n');
-}
-async function exportObsidian(){
-  if (!window.showDirectoryPicker) {
-    setMessage('This browser cannot export directly to a folder.', 'error');
-    return;
-  }
-  const root = await window.showDirectoryPicker({ mode: 'readwrite' });
-  const tasksDir = await root.getDirectoryHandle('Tasks', { create: true });
-  for (const task of state.tasks) {
-    const file = await tasksDir.getFileHandle(obsidianNoteFilename(task), { create: true });
-    const writer = await file.createWritable();
-    await writer.write(obsidianTaskMarkdown(task));
-    await writer.close();
-  }
-  const review = await root.getFileHandle(`${today()} — Tasks Review.md`, { create: true });
-  const reviewWriter = await review.createWritable();
-  await reviewWriter.write(obsidianReviewMarkdown(state.tasks));
-  await reviewWriter.close();
-  setMessage('Obsidian export written to the selected folder.', 'ok');
-}
 function isValidDraft(){ return !!(state.draft && state.draft.title && state.draft.title.trim()); }
 function dueStatus(task){
   const days = daysUntil(task.targetCloseDate);
@@ -420,12 +365,10 @@ window.saveDraft = saveDraft;
 window.saveNote = saveNote;
 window.deleteDraft = deleteDraft;
 window.setPriority = setPriority;
-window.exportObsidian = exportObsidian;
 window.state = state;
 window.addEventListener('focus', () => { if (!state.loading && !state.modal) loadRemote({ silent: true }); });
 document.getElementById('search').addEventListener('input', e => { state.query = e.target.value; render(); });
 document.getElementById('newTaskBtn').addEventListener('click', openComposer);
-document.getElementById('exportObsidianBtn').addEventListener('click', exportObsidian);
 document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') closeModal(); });
 (async function init(){
   await loadRemote();
