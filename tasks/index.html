@@ -145,7 +145,6 @@ function sortTasks(a, b){
 }
 function focusMatches(task){
   const days = daysUntil(task.targetCloseDate);
-  if (task.status === 'COMPLETED') return false;
   if (state.focus === 'all') return true;
   if (state.focus === 'new') return task.status === 'NEW_TASK';
   if (state.focus === 'open') return task.status === 'OPEN';
